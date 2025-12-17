@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../state/app_provider.dart';
+import '../../l10n/app_localizations.dart';
+import '../../state/state.dart';
 import '../../utils/app_colors.dart';
 
 class UserSettingsScreen extends StatefulWidget {
@@ -12,42 +13,34 @@ class UserSettingsScreen extends StatefulWidget {
 }
 
 class _UserSettingsScreenState extends State<UserSettingsScreen> {
-  String selectedTheme = 'Dark';
-  String selectedLanguage = 'Español';
   String selectedPlan = 'Free';
 
-  @override
-  void initState() {
-    super.initState();
-    // Sincronizar el tema seleccionado con el estado actual del AppProvider
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final appProvider = Provider.of<AppProvider>(context, listen: false);
-      setState(() {
-        selectedTheme = appProvider.isDarkMode ? 'Dark' : 'Light';
-      });
-    });
+  String _getLanguageDisplayName(String languageCode) {
+    return languageCode == 'es' ? 'Español' : 'English';
   }
 
   void _changeProfilePhoto() {
     // TODO: Implementar selección de foto con image_picker
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
             backgroundColor: theme.cardTheme.color,
             title: Text(
-              'Cambiar foto de perfil',
+              l10n.changeProfilePhoto,
               style: theme.textTheme.headlineSmall,
             ),
             content: Text(
-              'Esta funcionalidad se implementará con image_picker en una futura versión.',
+              l10n.photoFeatureNotImplemented,
               style: theme.textTheme.bodyMedium,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Entendido'),
+                child: Text(l10n.understood),
               ),
             ],
           ),
@@ -57,18 +50,19 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
   void _showEditNameDialog() {
     final nameController = TextEditingController(text: 'Usuario Principal');
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
             backgroundColor: theme.cardTheme.color,
-            title: Text('Editar nombre', style: theme.textTheme.headlineSmall),
+            title: Text(l10n.editName, style: theme.textTheme.headlineSmall),
             content: TextField(
               controller: nameController,
               style: theme.textTheme.bodyLarge,
               decoration: InputDecoration(
-                hintText: 'Nombre',
+                hintText: l10n.name,
                 hintStyle: theme.textTheme.bodyMedium,
                 filled: true,
                 fillColor: theme.scaffoldBackgroundColor,
@@ -81,15 +75,15 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Cancelar'),
+                child: Text(l10n.cancel),
               ),
               ElevatedButton(
                 onPressed: () {
                   // TODO: Guardar nombre en el backend
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Nombre actualizado'),
+                    SnackBar(
+                      content: Text(l10n.nameUpdated),
                       backgroundColor: AppColors.success,
                     ),
                   );
@@ -97,7 +91,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryBlue,
                 ),
-                child: const Text('Guardar'),
+                child: Text(l10n.save),
               ),
             ],
           ),
@@ -206,7 +200,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -217,7 +211,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
           icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text('Configuración', style: theme.textTheme.headlineMedium),
+        title: Text(l10n.settings, style: theme.textTheme.headlineMedium),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -233,7 +227,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
                       width: 120,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: AppColors.primaryPurple.withOpacity(0.2),
+                        color: AppColors.primaryPurple.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -272,9 +266,9 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
               const SizedBox(height: 32),
 
               // Sección de perfil
-              const Text(
-                'Perfil',
-                style: TextStyle(
+              Text(
+                l10n.profile,
+                style: const TextStyle(
                   color: AppColors.textWhite,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -284,14 +278,14 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
 
               _SettingItem(
                 icon: Icons.person_outline,
-                title: 'Nombre',
+                title: l10n.name,
                 value: 'Usuario Principal',
                 onTap: _showEditNameDialog,
               ),
               const SizedBox(height: 12),
               _SettingItem(
                 icon: Icons.email_outlined,
-                title: 'Correo electrónico',
+                title: l10n.email,
                 value: 'usuario@ejemplo.com',
                 onTap: _showEditEmailDialog,
               ),
@@ -299,9 +293,9 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
               const SizedBox(height: 32),
 
               // Sección de apariencia
-              const Text(
-                'Apariencia',
-                style: TextStyle(
+              Text(
+                l10n.appearance,
+                style: const TextStyle(
                   color: AppColors.textWhite,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -309,111 +303,53 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
               ),
               const SizedBox(height: 16),
 
-              _SettingItem(
-                icon: Icons.palette_outlined,
-                title: 'Tema',
-                value: selectedTheme,
-                onTap: () {
-                  final dialogTheme = Theme.of(context);
-                  showDialog(
-                    context: context,
-                    builder:
-                        (context) => AlertDialog(
-                          backgroundColor: dialogTheme.cardTheme.color,
-                          title: Text(
-                            'Seleccionar tema',
-                            style: dialogTheme.textTheme.headlineSmall,
-                          ),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _RadioOption(
-                                title: 'Dark',
-                                isSelected: selectedTheme == 'Dark',
-                                onTap: () {
-                                  setState(() => selectedTheme = 'Dark');
-                                  Provider.of<AppProvider>(
-                                    context,
-                                    listen: false,
-                                  ).setTheme(true);
-                                  Navigator.pop(context);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Tema oscuro activado'),
-                                      duration: Duration(seconds: 1),
-                                    ),
-                                  );
-                                },
-                              ),
-                              _RadioOption(
-                                title: 'Light',
-                                isSelected: selectedTheme == 'Light',
-                                onTap: () {
-                                  setState(() => selectedTheme = 'Light');
-                                  Provider.of<AppProvider>(
-                                    context,
-                                    listen: false,
-                                  ).setTheme(false);
-                                  Navigator.pop(context);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Tema claro activado'),
-                                      duration: Duration(seconds: 1),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
+              Consumer<AppProvider>(
+                builder: (context, appProvider, child) {
+                  final currentLanguage = _getLanguageDisplayName(
+                    appProvider.locale.languageCode,
                   );
-                },
-              ),
-              const SizedBox(height: 12),
-              _SettingItem(
-                icon: Icons.language_outlined,
-                title: 'Idioma',
-                value: selectedLanguage,
-                onTap: () {
-                  final dialogTheme = Theme.of(context);
-                  showDialog(
-                    context: context,
-                    builder:
-                        (context) => AlertDialog(
-                          backgroundColor: dialogTheme.cardTheme.color,
-                          title: Text(
-                            'Seleccionar idioma',
-                            style: dialogTheme.textTheme.headlineSmall,
-                          ),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _RadioOption(
-                                title: 'Español',
-                                isSelected: selectedLanguage == 'Español',
-                                onTap: () {
-                                  setState(() => selectedLanguage = 'Español');
-                                  Navigator.pop(context);
-                                },
+
+                  return _SettingItem(
+                    icon: Icons.language_outlined,
+                    title: l10n.language,
+                    value: currentLanguage,
+                    onTap: () {
+                      final dialogTheme = Theme.of(context);
+                      showDialog(
+                        context: context,
+                        builder:
+                            (context) => AlertDialog(
+                              backgroundColor: dialogTheme.cardTheme.color,
+                              title: Text(
+                                l10n.selectLanguage,
+                                style: dialogTheme.textTheme.headlineSmall,
                               ),
-                              _RadioOption(
-                                title: 'English',
-                                isSelected: selectedLanguage == 'English',
-                                onTap: () {
-                                  setState(() => selectedLanguage = 'English');
-                                  Navigator.pop(context);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'El idioma inglés se implementará en una futura versión',
-                                      ),
-                                    ),
-                                  );
-                                },
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _RadioOption(
+                                    title: l10n.spanish,
+                                    isSelected:
+                                        appProvider.locale.languageCode == 'es',
+                                    onTap: () {
+                                      appProvider.setLocale(const Locale('es'));
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  _RadioOption(
+                                    title: l10n.english,
+                                    isSelected:
+                                        appProvider.locale.languageCode == 'en',
+                                    onTap: () {
+                                      appProvider.setLocale(const Locale('en'));
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
+                            ),
+                      );
+                    },
                   );
                 },
               ),
@@ -509,7 +445,7 @@ class _SettingItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.primaryBlue.withOpacity(0.2),
+                color: AppColors.primaryBlue.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon, color: AppColors.primaryBlue, size: 20),
@@ -532,7 +468,9 @@ class _SettingItem extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryGreen.withOpacity(0.2),
+                            color: AppColors.primaryGreen.withValues(
+                              alpha: 0.2,
+                            ),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Text(
@@ -686,7 +624,9 @@ class _PlanOption extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryGreen.withOpacity(0.2),
+                            color: AppColors.primaryGreen.withValues(
+                              alpha: 0.2,
+                            ),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Text(

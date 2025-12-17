@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/models.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
@@ -11,6 +12,7 @@ class ShoppingListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       body: SafeArea(
@@ -56,7 +58,7 @@ class ShoppingListScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'SHOPPING LIST',
+                              l10n.shoppingList,
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -66,7 +68,9 @@ class ShoppingListScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${items.length} ${items.length == 1 ? 'ítem' : 'ítems'}',
+                              items.length == 1
+                                  ? l10n.item(items.length)
+                                  : l10n.items(items.length),
                               style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -122,7 +126,7 @@ class ShoppingListScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'TOTAL',
+                                    l10n.total,
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
@@ -152,7 +156,7 @@ class ShoppingListScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
-                                    'REMAINING',
+                                    l10n.remaining,
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
@@ -196,7 +200,11 @@ class ShoppingListScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '${budgetProvider.budgetPercentage.toStringAsFixed(0)}% usado',
+                              l10n.percentageUsed(
+                                budgetProvider.budgetPercentage.toStringAsFixed(
+                                  0,
+                                ),
+                              ),
                               style: TextStyle(
                                 fontSize: 13,
                                 color: AppColors.textGray,
@@ -214,7 +222,7 @@ class ShoppingListScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'Presupuesto excedido',
+                                    l10n.budgetExceeded,
                                     style: TextStyle(
                                       fontSize: 13,
                                       color: AppColors.errorRed,
@@ -234,7 +242,7 @@ class ShoppingListScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'Cerca del límite',
+                                    l10n.nearLimit,
                                     style: TextStyle(
                                       fontSize: 13,
                                       color: AppColors.warningAmber,
@@ -272,9 +280,9 @@ class ShoppingListScreen extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 24),
-                                const Text(
-                                  'Lista vacía',
-                                  style: TextStyle(
+                                Text(
+                                  l10n.emptyShoppingList,
+                                  style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.textWhite,
@@ -286,7 +294,7 @@ class ShoppingListScreen extends StatelessWidget {
                                     horizontal: 48,
                                   ),
                                   child: Text(
-                                    'Agrega ítems a tu lista de compras\npara comenzar',
+                                    l10n.emptyShoppingListDescription,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 15,
@@ -307,7 +315,7 @@ class ShoppingListScreen extends StatelessWidget {
                                     );
                                   },
                                   icon: const Icon(Icons.add),
-                                  label: const Text('Agregar Primer Ítem'),
+                                  label: Text(l10n.addFirstItem),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primaryBlue,
                                     foregroundColor: AppColors.textWhite,
@@ -395,6 +403,7 @@ class ShoppingListScreen extends StatelessWidget {
     ShoppingItemModel item,
     BudgetProvider budgetProvider,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController(text: item.name);
     final priceController = TextEditingController(
       text: item.estimatedPrice.toString(),
@@ -405,24 +414,24 @@ class ShoppingListScreen extends StatelessWidget {
       context: context,
       builder:
           (dialogContext) => AlertDialog(
-            title: const Text('Editar Ítem'),
+            title: Text(l10n.editItem),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
                     controller: nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nombre *',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.nameRequired,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: priceController,
-                    decoration: const InputDecoration(
-                      labelText: 'Precio Estimado *',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.estimatedPriceRequired,
+                      border: const OutlineInputBorder(),
                       prefixText: '\$ ',
                     ),
                     keyboardType: const TextInputType.numberWithOptions(
@@ -432,9 +441,9 @@ class ShoppingListScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   TextField(
                     controller: categoryController,
-                    decoration: const InputDecoration(
-                      labelText: 'Categoría (opcional)',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.categoryOptional,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ],
@@ -443,7 +452,7 @@ class ShoppingListScreen extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('Cancelar'),
+                child: Text(l10n.cancel),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -453,10 +462,8 @@ class ShoppingListScreen extends StatelessWidget {
 
                   if (name.isEmpty || priceStr.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Por favor completa los campos obligatorios',
-                        ),
+                      SnackBar(
+                        content: Text(l10n.requiredFieldsMissing),
                         backgroundColor: AppColors.errorRed,
                       ),
                     );
@@ -466,8 +473,8 @@ class ShoppingListScreen extends StatelessWidget {
                   final price = double.tryParse(priceStr);
                   if (price == null || price <= 0) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Por favor ingresa un precio válido'),
+                      SnackBar(
+                        content: Text(l10n.invalidPriceError),
                         backgroundColor: AppColors.errorRed,
                       ),
                     );
@@ -484,8 +491,8 @@ class ShoppingListScreen extends StatelessWidget {
                   Navigator.pop(dialogContext);
 
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Ítem actualizado'),
+                    SnackBar(
+                      content: Text(l10n.itemUpdated),
                       backgroundColor: AppColors.primaryGreen,
                     ),
                   );
@@ -493,7 +500,7 @@ class ShoppingListScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryGreen,
                 ),
-                child: const Text('Guardar'),
+                child: Text(l10n.save),
               ),
             ],
           ),
@@ -505,18 +512,17 @@ class ShoppingListScreen extends StatelessWidget {
     ShoppingItemModel item,
     BudgetProvider budgetProvider,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder:
           (dialogContext) => AlertDialog(
-            title: const Text('Eliminar Ítem'),
-            content: Text(
-              '¿Estás seguro de que quieres eliminar "${item.name}"?',
-            ),
+            title: Text(l10n.deleteItemTitle),
+            content: Text(l10n.deleteItemConfirm(item.name)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('Cancelar'),
+                child: Text(l10n.cancel),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -525,7 +531,7 @@ class ShoppingListScreen extends StatelessWidget {
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('${item.name} eliminado'),
+                      content: Text(l10n.itemDeleted(item.name)),
                       backgroundColor: AppColors.errorRed,
                     ),
                   );
@@ -533,7 +539,7 @@ class ShoppingListScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.errorRed,
                 ),
-                child: const Text('Eliminar'),
+                child: Text(l10n.delete),
               ),
             ],
           ),

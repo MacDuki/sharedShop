@@ -109,7 +109,6 @@ class BudgetProvider extends ChangeNotifier {
   void updateItem(String itemId, ShoppingItemModel updatedItem) {
     final index = _shoppingItems.indexWhere((item) => item.id == itemId);
     if (index != -1) {
-      final oldItem = _shoppingItems[index];
       _shoppingItems[index] = updatedItem;
 
       // Crear notificación

@@ -2,53 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppProvider extends ChangeNotifier {
-  bool _isDarkMode = true;
+  Locale _locale = const Locale('es'); // Default to Spanish
 
-  bool get isDarkMode => _isDarkMode;
+  Locale get locale => _locale;
 
   AppProvider() {
-    _loadThemePreference();
+    _loadLocale();
   }
 
-  // Cargar la preferencia de tema guardada
-  Future<void> _loadThemePreference() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      _isDarkMode = prefs.getBool('isDarkMode') ?? true;
-      notifyListeners();
-    } catch (e) {
-      // Si hay un error, usar tema oscuro por defecto
-      _isDarkMode = true;
-    }
+  Future<void> _loadLocale() async {
+    final prefs = await SharedPreferences.getInstance();
+    final languageCode = prefs.getString('language_code') ?? 'es';
+    _locale = Locale(languageCode);
+    notifyListeners();
   }
 
-  // Cambiar el tema
-  Future<void> toggleTheme() async {
-    _isDarkMode = !_isDarkMode;
+  Future<void> setLocale(Locale locale) async {
+    if (_locale == locale) return;
+
+    _locale = locale;
     notifyListeners();
 
-    // Guardar la preferencia
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isDarkMode', _isDarkMode);
-    } catch (e) {
-      // Manejo de error silencioso
-    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('language_code', locale.languageCode);
   }
 
-  // Establecer tema específico
-  Future<void> setTheme(bool isDark) async {
-    if (_isDarkMode != isDark) {
-      _isDarkMode = isDark;
-      notifyListeners();
-
-      // Guardar la preferencia
-      try {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('isDarkMode', _isDarkMode);
-      } catch (e) {
-        // Manejo de error silencioso
-      }
+  Future<void> toggleLanguage() async {
+    if (_locale.languageCode == 'es') {
+      await setLocale(const Locale('en'));
+    } else {
+      await setLocale(const Locale('es'));
     }
   }
 }

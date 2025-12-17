@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/models.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
@@ -10,6 +11,7 @@ class NotificationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
@@ -19,9 +21,9 @@ class NotificationsScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: AppColors.textWhite),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Notificaciones',
-          style: TextStyle(
+        title: Text(
+          l10n.notificationsLabel,
+          style: const TextStyle(
             color: AppColors.textWhite,
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -39,18 +41,18 @@ class NotificationsScreen extends StatelessWidget {
                     builder:
                         (context) => AlertDialog(
                           backgroundColor: AppColors.darkCard,
-                          title: const Text(
-                            'Eliminar todas',
-                            style: TextStyle(color: AppColors.textWhite),
+                          title: Text(
+                            l10n.deleteAll,
+                            style: const TextStyle(color: AppColors.textWhite),
                           ),
-                          content: const Text(
-                            '¿Estás seguro de que quieres eliminar todas las notificaciones?',
-                            style: TextStyle(color: AppColors.textGray),
+                          content: Text(
+                            l10n.deleteAllConfirm,
+                            style: const TextStyle(color: AppColors.textGray),
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: const Text('Cancelar'),
+                              child: Text(l10n.cancel),
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -60,15 +62,15 @@ class NotificationsScreen extends StatelessWidget {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.errorRed,
                               ),
-                              child: const Text('Eliminar'),
+                              child: Text(l10n.delete),
                             ),
                           ],
                         ),
                   );
                 },
-                child: const Text(
-                  'Limpiar',
-                  style: TextStyle(
+                child: Text(
+                  l10n.clearAll,
+                  style: const TextStyle(
                     color: AppColors.errorRed,
                     fontWeight: FontWeight.w600,
                   ),
@@ -101,8 +103,8 @@ class NotificationsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'No hay notificaciones',
-                    style: TextStyle(
+                    l10n.emptyNotifications,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textWhite,
@@ -110,8 +112,11 @@ class NotificationsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Las notificaciones aparecerán aquí',
-                    style: TextStyle(fontSize: 14, color: AppColors.textGray),
+                    l10n.emptyNotificationsDescription,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textGray,
+                    ),
                   ),
                 ],
               ),
@@ -178,20 +183,21 @@ class _NotificationItem extends StatelessWidget {
     }
   }
 
-  String _getTimeAgo(DateTime date) {
+  String _getTimeAgo(BuildContext context, DateTime date) {
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inSeconds < 60) {
-      return 'Ahora';
+      return l10n.now;
     } else if (difference.inMinutes < 60) {
-      return 'Hace ${difference.inMinutes}m';
+      return l10n.minutesAgo(difference.inMinutes);
     } else if (difference.inHours < 24) {
-      return 'Hace ${difference.inHours}h';
+      return l10n.hoursAgo(difference.inHours);
     } else if (difference.inDays == 1) {
-      return 'Ayer';
+      return l10n.yesterday;
     } else if (difference.inDays < 7) {
-      return 'Hace ${difference.inDays}d';
+      return l10n.daysAgo(difference.inDays);
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
@@ -254,7 +260,7 @@ class _NotificationItem extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        _getTimeAgo(notification.createdAt),
+                        _getTimeAgo(context, notification.createdAt),
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColors.textGray,

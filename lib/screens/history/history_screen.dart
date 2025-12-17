@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
 
@@ -16,6 +17,7 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
@@ -25,9 +27,9 @@ class HistoryScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: AppColors.textWhite),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Historial',
-          style: TextStyle(
+        title: Text(
+          l10n.historyTitle,
+          style: const TextStyle(
             color: AppColors.textWhite,
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -216,7 +218,7 @@ class HistoryScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      'Excedido',
+                                      l10n.exceeded,
                                       style: TextStyle(
                                         color: AppColors.errorRed,
                                         fontSize: 11,
@@ -239,7 +241,7 @@ class HistoryScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
-                                  'Cerca del límite',
+                                  l10n.nearLimit,
                                   style: TextStyle(
                                     color: AppColors.warningAmber,
                                     fontSize: 11,
@@ -266,7 +268,7 @@ class HistoryScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      'Bajo control',
+                                      l10n.underControl,
                                       style: TextStyle(
                                         color: AppColors.success,
                                         fontSize: 11,
@@ -290,7 +292,7 @@ class HistoryScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Total gastado',
+                                  l10n.totalSpentLabel,
                                   style: TextStyle(
                                     color: AppColors.textGray,
                                     fontSize: 13,
@@ -314,7 +316,9 @@ class HistoryScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  'De \$${budgetAmount.toStringAsFixed(2)}',
+                                  l10n.ofAmount(
+                                    '\$${budgetAmount.toStringAsFixed(2)}',
+                                  ),
                                   style: TextStyle(
                                     color: AppColors.textGray,
                                     fontSize: 13,
@@ -370,7 +374,9 @@ class HistoryScreen extends StatelessWidget {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                'Excedido por \$${(period.totalSpent - budgetAmount).toStringAsFixed(2)}',
+                                l10n.exceededBy(
+                                  '\$${(period.totalSpent - budgetAmount).toStringAsFixed(2)}',
+                                ),
                                 style: TextStyle(
                                   color: AppColors.errorRed,
                                   fontSize: 13,
@@ -390,7 +396,9 @@ class HistoryScreen extends StatelessWidget {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                'Ahorraste \$${(budgetAmount - period.totalSpent).toStringAsFixed(2)}',
+                                l10n.saved(
+                                  '\$${(budgetAmount - period.totalSpent).toStringAsFixed(2)}',
+                                ),
                                 style: TextStyle(
                                   color: AppColors.primaryGreen,
                                   fontSize: 13,

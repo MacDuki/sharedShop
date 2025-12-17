@@ -1,8 +1,10 @@
 import 'package:appfast/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
+import 'l10n/app_localizations.dart';
 // Screens
 import 'screens/screens.dart';
 // Services
@@ -37,9 +39,19 @@ class MyApp extends StatelessWidget {
       builder: (context, appProvider, child) {
         return MaterialApp(
           title: 'Shared Grocery Budget',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: appProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          theme: AppTheme.darkTheme,
+          themeMode: ThemeMode.dark,
+          locale: appProvider.locale,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'), // English
+            Locale('es'), // Spanish
+          ],
           home: const DashboardScreen(),
           debugShowCheckedModeBanner: false,
         );

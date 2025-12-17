@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/models.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
@@ -34,6 +35,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
@@ -65,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'DASHBOARD',
+                            l10n.dashboard,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -74,7 +77,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Hi, ${household.name}',
+                            l10n.dashboardGreeting(household.name),
                             style: theme.textTheme.displayMedium?.copyWith(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
@@ -167,7 +170,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'REMAINING BUDGET',
+                                    l10n.remainingBudget,
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
@@ -240,7 +243,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      'On Track',
+                                      l10n.onTrack,
                                       style: TextStyle(
                                         color: AppColors.primaryGreen,
                                         fontSize: 14,
@@ -259,7 +262,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    '${remainingPercentage.toStringAsFixed(0)}% Remaining',
+                                    l10n.percentageRemaining(
+                                      remainingPercentage.toStringAsFixed(0),
+                                    ),
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
@@ -267,7 +272,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '\$${budgetProvider.totalSpent.toStringAsFixed(2)} Spent',
+                                    l10n.amountSpent(
+                                      budgetProvider.totalSpent.toStringAsFixed(
+                                        2,
+                                      ),
+                                    ),
                                     style: theme.textTheme.bodyMedium,
                                   ),
                                 ],
@@ -304,7 +313,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 iconBackground: AppColors.iconBlue.withOpacity(
                                   0.15,
                                 ),
-                                title: 'TOTAL',
+                                title: l10n.total,
                                 value:
                                     '\$${household.budgetAmount.toStringAsFixed(0)}',
                               ),
@@ -316,7 +325,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 iconColor: AppColors.iconPurple,
                                 iconBackground: AppColors.iconPurple
                                     .withOpacity(0.15),
-                                title: 'DAYS LEFT',
+                                title: l10n.daysLeftLabel,
                                 value: '$daysLeft',
                               ),
                             ),
@@ -330,7 +339,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Notificaciones',
+                              l10n.notificationsLabel,
                               style: theme.textTheme.headlineMedium,
                             ),
                             InkWell(
@@ -345,7 +354,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 );
                               },
                               child: Text(
-                                'Ver todas',
+                                l10n.viewAll,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -369,8 +378,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     notification.id,
                                   );
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Notificación eliminada'),
+                                    SnackBar(
+                                      content: Text(l10n.notificationDeleted),
                                       backgroundColor: AppColors.success,
                                       duration: Duration(seconds: 2),
                                     ),
@@ -417,13 +426,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 _NavItem(
                   icon: Icons.home_rounded,
-                  label: 'Home',
+                  label: l10n.home,
                   isSelected: _selectedIndex == 0,
                   onTap: () => setState(() => _selectedIndex = 0),
                 ),
                 _NavItem(
                   icon: Icons.pie_chart_outline_rounded,
-                  label: 'Budget',
+                  label: l10n.budget,
                   isSelected: _selectedIndex == 1,
                   onTap: () {
                     Navigator.push(
@@ -437,7 +446,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(width: 60),
                 _NavItem(
                   icon: Icons.receipt_long_outlined,
-                  label: 'History',
+                  label: l10n.history,
                   isSelected: _selectedIndex == 2,
                   onTap: () {
                     Navigator.push(
@@ -450,7 +459,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 _NavItem(
                   icon: Icons.people_outline_rounded,
-                  label: 'Family',
+                  label: l10n.family,
                   isSelected: _selectedIndex == 3,
                   onTap: () {
                     Navigator.push(
@@ -595,20 +604,21 @@ class _NotificationItem extends StatelessWidget {
     }
   }
 
-  String _getTimeAgo(DateTime date) {
+  String _getTimeAgo(BuildContext context, DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
+    final l10n = AppLocalizations.of(context)!;
 
     if (difference.inSeconds < 60) {
-      return 'Ahora';
+      return l10n.now;
     } else if (difference.inMinutes < 60) {
-      return 'Hace ${difference.inMinutes}m';
+      return l10n.minutesAgo(difference.inMinutes);
     } else if (difference.inHours < 24) {
-      return 'Hace ${difference.inHours}h';
+      return l10n.hoursAgo(difference.inHours);
     } else if (difference.inDays == 1) {
-      return 'Ayer';
+      return l10n.yesterday;
     } else if (difference.inDays < 7) {
-      return 'Hace ${difference.inDays}d';
+      return l10n.daysAgo(difference.inDays);
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
@@ -666,7 +676,7 @@ class _NotificationItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${notification.description} • ${_getTimeAgo(notification.createdAt)}',
+                  '${notification.description} • ${_getTimeAgo(context, notification.createdAt)}',
                   style: theme.textTheme.bodySmall,
                 ),
               ],

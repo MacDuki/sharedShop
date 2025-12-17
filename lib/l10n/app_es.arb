@@ -1,0 +1,377 @@
+{
+  "@@locale": "es",
+  
+  "dashboard": "DASHBOARD",
+  "dashboardGreeting": "Hola, {name}",
+  "@dashboardGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remainingBudget": "PRESUPUESTO RESTANTE",
+  "budget": "Presupuesto",
+  "remaining": "Restante",
+  "spent": "Gastado",
+  "onTrack": "En buen camino",
+  "percentageRemaining": "{percentage}% Restante",
+  "@percentageRemaining": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "amountSpent": "${amount} Gastado",
+  "@amountSpent": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "total": "TOTAL",
+  "daysLeftLabel": "DÍAS RESTANTES",
+  "daysLeft": "{days} días restantes",
+  "@daysLeft": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "currentBudget": "PRESUPUESTO ACTUAL",
+  "week": "Semana",
+  "month": "Mes",
+  "quarter": "Trimestre",
+  "custom": "Personalizado",
+  "budgetPeriod": "Período del presupuesto",
+  "spentThisMonth": "Gastado este {period}",
+  "@spentThisMonth": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "shoppingList": "LISTA DE COMPRAS",
+  "items": "{count} ítems",
+  "@items": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "item": "{count} ítem",
+  "@item": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addItem": "Agregar Ítem",
+  "pending": "Pendiente",
+  "purchased": "Comprado",
+  "emptyShoppingList": "Lista vacía",
+  "emptyShoppingListDescription": "Agrega ítems a tu lista de compras\npara comenzar",
+  "addFirstItem": "Agregar Primer Ítem",
+  "markAsPurchased": "Marcar como comprado",
+  "deleteItem": "Eliminar ítem",
+  "percentageUsed": "{percentage}% usado",
+  "@percentageUsed": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetExceeded": "Presupuesto excedido",
+  "nearLimit": "Cerca del límite",
+  "editItem": "Editar Ítem",
+  "nameRequired": "Nombre *",
+  "estimatedPriceRequired": "Precio Estimado *",
+  "requiredFieldsMissing": "Por favor completa los campos obligatorios",
+  "invalidPriceError": "Por favor ingresa un precio válido",
+  "itemUpdated": "Ítem actualizado",
+  "deleteItemTitle": "Eliminar Ítem",
+  "deleteItemConfirm": "¿Estás seguro de que quieres eliminar \"{name}\"?",
+  "@deleteItemConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "itemDeleted": "{name} eliminado",
+  "@itemDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "addNewItem": "Agregar Nuevo Ítem",
+  "addItemTitle": "Agregar Ítem",
+  "itemNameLabel": "Nombre del ítem",
+  "itemName": "Nombre del ítem",
+  "itemNameHint": "Ej: Leche, Pan, Huevos...",
+  "estimatedPrice": "Precio estimado",
+  "price": "Precio",
+  "priceHint": "0.00",
+  "categoryOptional": "Categoría (opcional)",
+  "categoryHint": "Ej: Lácteos, Panadería, Frutas...",
+  "quantity": "Cantidad",
+  "quantityHint": "1",
+  "category": "Categoría",
+  "selectCategory": "Selecciona una categoría",
+  "notes": "Notas",
+  "notesHint": "Notas adicionales (opcional)",
+  "cancel": "Cancelar",
+  "save": "Guardar",
+  "itemNameRequired": "Por favor ingresa un nombre",
+  "priceRequired": "Por favor ingresa un precio",
+  "priceInvalid": "Por favor ingresa un precio válido mayor a 0",
+  "quantityRequired": "La cantidad es requerida",
+  "quantityInvalid": "Ingresa una cantidad válida",
+  "itemAddedSuccess": "Ítem agregado exitosamente",
+  "budgetImpact": "Impacto en el presupuesto:",
+  "newRemaining": "Nuevo restante:",
+  "budgetExceededWarning": "¡Excederás el presupuesto!",
+  "itemAddedRemaining": "Ítem agregado. Restante: ${amount}",
+  "@itemAddedRemaining": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "fruits": "Frutas",
+  "vegetables": "Verduras",
+  "meat": "Carnes",
+  "dairy": "Lácteos",
+  "bakery": "Panadería",
+  "beverages": "Bebidas",
+  "snacks": "Snacks",
+  "frozen": "Congelados",
+  "canned": "Enlatados",
+  "condiments": "Condimentos",
+  "other": "Otros",
+  
+  "budgetSettings": "Configuración de Presupuesto",
+  "configureBudget": "Configurar Presupuesto",
+  "budgetInfoText": "Define tu presupuesto para compras compartidas",
+  "budgetAmountLabel": "Monto del presupuesto",
+  "budgetAmount": "Monto del Presupuesto",
+  "budgetAmountHint": "Ingresa el monto",
+  "budgetAmountRequired": "Por favor ingresa un monto",
+  "budgetAmountInvalid": "Por favor ingresa un monto válido mayor a 0",
+  "budgetPeriodLabel": "Período del presupuesto",
+  "budgetPeriodRequired": "Selecciona un período de presupuesto",
+  "customPeriodInvalid": "Selecciona fechas válidas para el período personalizado",
+  "weekly": "Semanal",
+  "weeklyDescription": "El presupuesto se renueva cada semana",
+  "monthly": "Mensual",
+  "monthlyDescription": "El presupuesto se renueva cada mes",
+  "customPeriod": "Personalizado",
+  "customPeriodDescription": "Define tu propio período",
+  "startDateLabel": "Fecha de inicio",
+  "endDateLabel": "Fecha de fin",
+  "startDate": "Fecha de Inicio",
+  "endDate": "Fecha de Fin",
+  "selectDate": "Seleccionar fecha",
+  "selectStartDate": "Selecciona fecha de inicio",
+  "selectEndDate": "Selecciona fecha de fin",
+  "preview": "Vista previa:",
+  "spentLabel": "Gastado:",
+  "remainingLabel": "Restante:",
+  "saveChanges": "Guardar Cambios",
+  "budgetUpdatedSuccess": "Presupuesto actualizado correctamente",
+  
+  "userSettings": "Configuración de Usuario",
+  "settings": "Configuración",
+  "profile": "Perfil",
+  "name": "Nombre",
+  "email": "Correo electrónico",
+  "changeProfilePhoto": "Cambiar foto de perfil",
+  "photoFeatureNotImplemented": "Esta funcionalidad se implementará con image_picker en una futura versión.",
+  "understood": "Entendido",
+  "editName": "Editar nombre",
+  "editEmail": "Editar correo electrónico",
+  "nameUpdated": "Nombre actualizado",
+  "emailUpdated": "Correo actualizado",
+  "appearance": "Apariencia",
+  "language": "Idioma",
+  "selectLanguage": "Seleccionar idioma",
+  "spanish": "Español",
+  "english": "English",
+  "subscription": "Suscripción",
+  "plan": "Plan",
+  "changePlan": "Cambiar plan",
+  "free": "Gratis",
+  "premium": "Premium",
+  "basicFeatures": "Funcionalidades básicas",
+  "allFeatures": "Todas las funcionalidades",
+  "perMonth": "/mes",
+  "close": "Cerrar",
+  "notifications": "Notificaciones",
+  "pushNotifications": "Notificaciones push",
+  "emailNotifications": "Notificaciones por correo",
+  "budgetAlerts": "Alertas de presupuesto",
+  "shoppingReminders": "Recordatorios de compras",
+  "support": "Soporte",
+  "helpCenter": "Centro de Ayuda",
+  "contactSupport": "Contactar Soporte",
+  "reportBug": "Reportar un error",
+  "about": "Acerca de",
+  "version": "Versión",
+  "privacyPolicy": "Política de Privacidad",
+  "termsOfService": "Términos de Servicio",
+  "logout": "Cerrar sesión",
+  
+  "history": "HISTORIAL",
+  "historyTitle": "Historial",
+  "purchaseHistory": "Historial de Compras",
+  "emptyHistory": "Sin historial a\u00fan",
+  "emptyHistoryDescription": "El historial de per\u00edodos anteriores\naparecer\u00e1 aqu\u00ed",
+  "totalSpent": "Total Gastado",
+  "totalSpentLabel": "Total gastado",
+  "viewDetails": "Ver Detalles",
+  "deletePeriod": "Eliminar per\u00edodo",
+  "deletePeriodConfirm": "\u00bfEst\u00e1s seguro de que quieres eliminar este per\u00edodo del historial?",
+  "periodDeleted": "Per\u00edodo eliminado del historial",
+  "exceeded": "Excedido",
+  "underControl": "Bajo control",
+  "ofAmount": "De ${amount}",
+  "@ofAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "exceededBy": "Excedido por ${amount}",
+  "@exceededBy": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "saved": "Ahorraste ${amount}",
+  "@saved": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "notificationsTitle": "NOTIFICACIONES",
+  "notificationsLabel": "Notificaciones",
+  "viewAll": "Ver todas",
+  "notificationDeleted": "Notificación eliminada",
+  "emptyNotifications": "Sin notificaciones",
+  "emptyNotificationsDescription": "Las notificaciones aparecerán aquí",
+  "markAllAsRead": "Marcar todo como leído",
+  "clearAll": "Limpiar",
+  "deleteAll": "Eliminar todas",
+  "deleteAllConfirm": "¿Estás seguro de que quieres eliminar todas las notificaciones?",
+  "delete": "Eliminar",
+  
+  "groupSettings": "Configuración de Grupo",
+  "groupName": "Nombre del Grupo",
+  "members": "Miembros",
+  "addMember": "Agregar Miembro",
+  "removeMember": "Eliminar Miembro",
+  "leaveGroup": "Salir del Grupo",
+  
+  "inviteMembers": "Invitar Miembros",
+  "inviteByEmail": "Invitar por correo",
+  "emailAddress": "Dirección de correo",
+  "sendInvitation": "Enviar Invitación",
+  "invitationSent": "Invitación enviada",
+  "inviteCode": "Código de invitación",
+  "inviteCodeCopied": "Código copiado al portapapeles",
+  "inviteMessageCopied": "Mensaje de invitación copiado",
+  "joinGroupMessage": "Únete a mi grupo de compras compartidas con el código: {code}",
+  "@joinGroupMessage": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "myGroup": "Mi Grupo",
+  "member": "miembro",
+  "copy": "Copiar",
+  "currentMembers": "Miembros actuales",
+  "noMembersYet": "Aún no hay miembros",
+  "membersCanViewEdit": "Los miembros podrán ver y editar la lista de compras y el presupuesto compartido",
+  
+  "login": "Iniciar Sesión",
+  "welcomeBack": "Bienvenido de nuevo",
+  "signInWithGoogle": "Iniciar sesión con Google",
+  "signInWithApple": "Iniciar sesión con Apple",
+  "signInWithEmail": "Iniciar sesión con Email",
+  "dontHaveAccount": "¿No tienes cuenta?",
+  "signUp": "Registrarse",
+  "forgotPassword": "¿Olvidaste tu contraseña?",
+  
+  "now": "Ahora",
+  "minutesAgo": "Hace {minutes}m",
+  "@minutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "Hace {hours}h",
+  "@hoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "yesterday": "Ayer",
+  "daysAgo": "Hace {days}d",
+  "@daysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "home": "Inicio",
+  "family": "Familia",
+  "loading": "Cargando...",
+  "error": "Error",
+  "success": "Éxito",
+  "warning": "Advertencia",
+  "info": "Info",
+  "yes": "Sí",
+  "no": "No",
+  "ok": "OK",
+  "done": "Hecho",
+  "next": "Siguiente",
+  "back": "Atrás",
+  "continueButton": "Continuar",
+  "skip": "Omitir",
+  "search": "Buscar",
+  "filter": "Filtrar",
+  "sort": "Ordenar",
+  "refresh": "Actualizar",
+  "retry": "Reintentar",
+  "share": "Compartir",
+  "edit": "Editar",
+  "delete": "Eliminar",
+  "confirm": "Confirmar",
+  "discard": "Descartar"
+}

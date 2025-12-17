@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
 import '../group_settings/group_settings_screen.dart';
@@ -44,11 +45,12 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
   void _copyToClipboard() {
     if (_inviteCode != null) {
       Clipboard.setData(ClipboardData(text: _inviteCode!));
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Código copiado al portapapeles'),
+        SnackBar(
+          content: Text(l10n.inviteCodeCopied),
           backgroundColor: AppColors.success,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -57,14 +59,14 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
   void _shareInvite() {
     if (_inviteCode != null) {
       // TODO: Implementar share real con share_plus package
-      final message =
-          'Únete a mi grupo de compras compartidas con el código: $_inviteCode';
+      final l10n = AppLocalizations.of(context)!;
+      final message = l10n.joinGroupMessage(_inviteCode!);
       Clipboard.setData(ClipboardData(text: message));
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Mensaje de invitación copiado'),
+        SnackBar(
+          content: Text(l10n.inviteMessageCopied),
           backgroundColor: AppColors.success,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -72,6 +74,7 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
@@ -81,9 +84,9 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
           icon: const Icon(Icons.arrow_back, color: AppColors.textWhite),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Invitar Miembros',
-          style: TextStyle(
+        title: Text(
+          l10n.inviteMembers,
+          style: const TextStyle(
             color: AppColors.textWhite,
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -158,7 +161,7 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            household?.name ?? 'Mi Grupo',
+                            household?.name ?? l10n.myGroup,
                             style: const TextStyle(
                               color: AppColors.textWhite,
                               fontSize: 22,
@@ -167,8 +170,8 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            '${members.length} ${members.length == 1 ? 'miembro' : 'miembros'}',
-                            style: TextStyle(
+                            '${members.length} ${members.length == 1 ? l10n.member : l10n.members}',
+                            style: const TextStyle(
                               color: AppColors.textGray,
                               fontSize: 14,
                             ),
@@ -181,9 +184,9 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                   const SizedBox(height: 32),
 
                   // Sección de invitación
-                  const Text(
-                    'Código de invitación',
-                    style: TextStyle(
+                  Text(
+                    l10n.inviteCode,
+                    style: const TextStyle(
                       color: AppColors.textWhite,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -242,7 +245,7 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                                 child: OutlinedButton.icon(
                                   onPressed: _copyToClipboard,
                                   icon: const Icon(Icons.copy, size: 18),
-                                  label: const Text('Copiar'),
+                                  label: Text(l10n.copy),
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: AppColors.primaryBlue,
                                     side: const BorderSide(
@@ -263,7 +266,7 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                                 child: ElevatedButton.icon(
                                   onPressed: _shareInvite,
                                   icon: const Icon(Icons.share, size: 18),
-                                  label: const Text('Compartir'),
+                                  label: Text(l10n.share),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primaryBlue,
                                     foregroundColor: AppColors.textWhite,
@@ -290,9 +293,9 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Miembros actuales',
-                        style: TextStyle(
+                      Text(
+                        l10n.currentMembers,
+                        style: const TextStyle(
                           color: AppColors.textWhite,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -336,8 +339,8 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Aún no hay miembros',
-                            style: TextStyle(
+                            l10n.noMembersYet,
+                            style: const TextStyle(
                               color: AppColors.textGray,
                               fontSize: 15,
                             ),
@@ -417,7 +420,7 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.info_outline,
                           color: AppColors.primaryBlue,
                           size: 20,
@@ -425,8 +428,8 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'Los miembros podrán ver y editar la lista de compras y el presupuesto compartido',
-                            style: TextStyle(
+                            l10n.membersCanViewEdit,
+                            style: const TextStyle(
                               color: AppColors.textGray,
                               fontSize: 13,
                               height: 1.5,

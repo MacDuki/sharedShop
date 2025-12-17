@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/models.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
@@ -74,11 +75,12 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
       customPeriodEnd: _customEndDate,
     );
 
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Presupuesto actualizado correctamente'),
+      SnackBar(
+        content: Text(l10n.budgetUpdatedSuccess),
         backgroundColor: AppColors.success,
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
       ),
     );
 
@@ -88,6 +90,7 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
@@ -97,9 +100,9 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
           icon: const Icon(Icons.arrow_back, color: AppColors.textWhite),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Configurar Presupuesto',
-          style: TextStyle(
+        title: Text(
+          l10n.configureBudget,
+          style: const TextStyle(
             color: AppColors.textWhite,
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -131,7 +134,7 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Define tu presupuesto para compras compartidas',
+                          l10n.budgetInfoText,
                           style: TextStyle(
                             color: AppColors.textGray,
                             fontSize: 14,
@@ -145,9 +148,9 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                 const SizedBox(height: 32),
 
                 // Monto del presupuesto
-                const Text(
-                  'Monto del presupuesto',
-                  style: TextStyle(
+                Text(
+                  l10n.budgetAmountLabel,
+                  style: const TextStyle(
                     color: AppColors.textWhite,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -191,11 +194,11 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Por favor ingresa un monto';
+                      return l10n.budgetAmountRequired;
                     }
                     final amount = double.tryParse(value.trim());
                     if (amount == null || amount <= 0) {
-                      return 'Por favor ingresa un monto válido mayor a 0';
+                      return l10n.budgetAmountInvalid;
                     }
                     return null;
                   },
@@ -204,9 +207,9 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                 const SizedBox(height: 32),
 
                 // Período del presupuesto
-                const Text(
-                  'Período del presupuesto',
-                  style: TextStyle(
+                Text(
+                  l10n.budgetPeriodLabel,
+                  style: const TextStyle(
                     color: AppColors.textWhite,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -268,9 +271,9 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Semanal',
-                                style: TextStyle(
+                              Text(
+                                l10n.weekly,
+                                style: const TextStyle(
                                   color: AppColors.textWhite,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -278,7 +281,7 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'El presupuesto se renueva cada semana',
+                                l10n.weeklyDescription,
                                 style: TextStyle(
                                   color: AppColors.textGray,
                                   fontSize: 13,
@@ -348,9 +351,9 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Mensual',
-                                style: TextStyle(
+                              Text(
+                                l10n.monthly,
+                                style: const TextStyle(
                                   color: AppColors.textWhite,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -358,7 +361,7 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'El presupuesto se renueva cada mes',
+                                l10n.monthlyDescription,
                                 style: TextStyle(
                                   color: AppColors.textGray,
                                   fontSize: 13,
@@ -428,9 +431,9 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Personalizado',
-                                style: TextStyle(
+                              Text(
+                                l10n.customPeriod,
+                                style: const TextStyle(
                                   color: AppColors.textWhite,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -438,7 +441,7 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Define tu propio período',
+                                l10n.customPeriodDescription,
                                 style: TextStyle(
                                   color: AppColors.textGray,
                                   fontSize: 13,
@@ -469,9 +472,9 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Fecha de inicio
-                        const Text(
-                          'Fecha de inicio',
-                          style: TextStyle(
+                        Text(
+                          l10n.startDateLabel,
+                          style: const TextStyle(
                             color: AppColors.textWhite,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -483,7 +486,7 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                             final date = await _showStyledDatePicker(
                               context,
                               _customStartDate ?? DateTime.now(),
-                              'Selecciona fecha de inicio',
+                              l10n.selectStartDate,
                             );
                             if (date != null) {
                               setState(() {
@@ -507,7 +510,7 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                                 Text(
                                   _customStartDate != null
                                       ? '${_customStartDate!.day}/${_customStartDate!.month}/${_customStartDate!.year}'
-                                      : 'Seleccionar fecha',
+                                      : l10n.selectDate,
                                   style: TextStyle(
                                     color:
                                         _customStartDate != null
@@ -530,9 +533,9 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                         const SizedBox(height: 20),
 
                         // Fecha de fin
-                        const Text(
-                          'Fecha de fin',
-                          style: TextStyle(
+                        Text(
+                          l10n.endDateLabel,
+                          style: const TextStyle(
                             color: AppColors.textWhite,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -545,7 +548,7 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                               context,
                               _customEndDate ??
                                   DateTime.now().add(const Duration(days: 7)),
-                              'Selecciona fecha de fin',
+                              l10n.selectEndDate,
                             );
                             if (date != null) {
                               setState(() {
@@ -569,7 +572,7 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                                 Text(
                                   _customEndDate != null
                                       ? '${_customEndDate!.day}/${_customEndDate!.month}/${_customEndDate!.year}'
-                                      : 'Seleccionar fecha',
+                                      : l10n.selectDate,
                                   style: TextStyle(
                                     color:
                                         _customEndDate != null
@@ -616,9 +619,9 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Vista previa:',
-                              style: TextStyle(
+                            Text(
+                              l10n.preview,
+                              style: const TextStyle(
                                 color: AppColors.textGray,
                                 fontSize: 14,
                               ),
@@ -627,9 +630,9 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
-                                  'Gastado:',
-                                  style: TextStyle(
+                                Text(
+                                  l10n.spentLabel,
+                                  style: const TextStyle(
                                     color: AppColors.textWhite,
                                     fontSize: 14,
                                   ),
@@ -648,9 +651,9 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
-                                  'Restante:',
-                                  style: TextStyle(
+                                Text(
+                                  l10n.remainingLabel,
+                                  style: const TextStyle(
                                     color: AppColors.textWhite,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -718,9 +721,9 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                                 strokeWidth: 2,
                               ),
                             )
-                            : const Text(
-                              'Guardar Cambios',
-                              style: TextStyle(
+                            : Text(
+                              l10n.saveChanges,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),

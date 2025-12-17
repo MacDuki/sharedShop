@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/models.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
@@ -34,6 +35,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isLoading = true);
 
     final budgetProvider = context.read<BudgetProvider>();
@@ -62,7 +64,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Ítem agregado. Restante: \$${newRemaining.toStringAsFixed(2)}',
+          l10n.itemAddedRemaining('\$${newRemaining.toStringAsFixed(2)}'),
         ),
         backgroundColor:
             newRemaining < 0
@@ -80,6 +82,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
@@ -89,9 +92,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
           icon: const Icon(Icons.close, color: AppColors.textWhite),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Agregar Ítem',
-          style: TextStyle(
+        title: Text(
+          l10n.addItemTitle,
+          style: const TextStyle(
             color: AppColors.textWhite,
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -107,9 +110,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Nombre del ítem
-                const Text(
-                  'Nombre del ítem',
-                  style: TextStyle(
+                Text(
+                  l10n.itemNameLabel,
+                  style: const TextStyle(
                     color: AppColors.textWhite,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -120,7 +123,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   controller: _nameController,
                   style: const TextStyle(color: AppColors.textWhite),
                   decoration: InputDecoration(
-                    hintText: 'Ej: Leche, Pan, Huevos...',
+                    hintText: l10n.itemNameHint,
                     hintStyle: const TextStyle(color: AppColors.textGray),
                     filled: true,
                     fillColor: AppColors.darkCard,
@@ -135,7 +138,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Por favor ingresa un nombre';
+                      return l10n.itemNameRequired;
                     }
                     return null;
                   },
@@ -144,9 +147,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 const SizedBox(height: 24),
 
                 // Precio estimado
-                const Text(
-                  'Precio estimado',
-                  style: TextStyle(
+                Text(
+                  l10n.estimatedPrice,
+                  style: const TextStyle(
                     color: AppColors.textWhite,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -189,11 +192,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Por favor ingresa un precio';
+                      return l10n.priceRequired;
                     }
                     final price = double.tryParse(value.trim());
                     if (price == null || price <= 0) {
-                      return 'Por favor ingresa un precio válido mayor a 0';
+                      return l10n.priceInvalid;
                     }
                     return null;
                   },
@@ -202,9 +205,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 const SizedBox(height: 24),
 
                 // Categoría (opcional)
-                const Text(
-                  'Categoría (opcional)',
-                  style: TextStyle(
+                Text(
+                  l10n.categoryOptional,
+                  style: const TextStyle(
                     color: AppColors.textWhite,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -215,7 +218,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   controller: _categoryController,
                   style: const TextStyle(color: AppColors.textWhite),
                   decoration: InputDecoration(
-                    hintText: 'Ej: Lácteos, Panadería, Frutas...',
+                    hintText: l10n.categoryHint,
                     hintStyle: const TextStyle(color: AppColors.textGray),
                     filled: true,
                     fillColor: AppColors.darkCard,
@@ -258,9 +261,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Impacto en el presupuesto:',
-                              style: TextStyle(
+                            Text(
+                              l10n.budgetImpact,
+                              style: const TextStyle(
                                 color: AppColors.textGray,
                                 fontSize: 14,
                               ),
@@ -269,9 +272,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
-                                  'Nuevo restante:',
-                                  style: TextStyle(
+                                Text(
+                                  l10n.newRemaining,
+                                  style: const TextStyle(
                                     color: AppColors.textWhite,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -303,8 +306,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
-                                        '¡Excederás el presupuesto!',
-                                        style: TextStyle(
+                                        l10n.budgetExceededWarning,
+                                        style: const TextStyle(
                                           color: AppColors.errorRed,
                                           fontSize: 13,
                                         ),
@@ -346,9 +349,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                 strokeWidth: 2,
                               ),
                             )
-                            : const Text(
-                              'Agregar Ítem',
-                              style: TextStyle(
+                            : Text(
+                              l10n.addItemTitle,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
