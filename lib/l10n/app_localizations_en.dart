@@ -568,7 +568,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteAllConfirm =>
-      'Are you sure you want to delete all notifications?';
+      'Are you sure you want to delete all notifications from the current budget?';
 
   @override
   String get delete => 'Delete';
@@ -638,6 +638,64 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get membersCanViewEdit =>
       'Members will be able to view and edit the shopping list and shared budget';
+
+  @override
+  String get privateProject => 'Private';
+
+  @override
+  String get privateProjectNote =>
+      'This is a private budget. Only you can see it.';
+
+  @override
+  String get personalProjectWarningTitle => '⚠️ Share personal budget';
+
+  @override
+  String get personalProjectWarning =>
+      'By sharing this code, your personal budget will no longer be private and other people will be able to access it.';
+
+  @override
+  String get budgetMembers => 'Budget members';
+
+  @override
+  String get currentBudgetMembers => 'Members of this budget';
+
+  @override
+  String get onlyYou => 'Only you';
+
+  @override
+  String get shareYourBudget => 'Share your budget';
+
+  @override
+  String get shareYourBudgetDescription =>
+      'You can share the selected budget with other users if you wish. They will be able to view and edit expenses.';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get noEditPermission =>
+      'You don\'t have permission to edit this budget. Only the creator can edit it.';
+
+  @override
+  String get filterAndSort => 'Filter and Sort';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get ascending => 'Ascending';
+
+  @override
+  String get descending => 'Descending';
+
+  @override
+  String get apply => 'Apply';
 
   @override
   String get login => 'Login';
@@ -743,9 +801,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retry => 'Retry';
-
-  @override
-  String get share => 'Share';
 
   @override
   String get edit => 'Edit';

@@ -571,7 +571,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get deleteAllConfirm =>
-      '¿Estás seguro de que quieres eliminar todas las notificaciones?';
+      '¿Estás seguro de que quieres eliminar todas las notificaciones del presupuesto actual?';
 
   @override
   String get delete => 'Eliminar';
@@ -641,6 +641,64 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get membersCanViewEdit =>
       'Los miembros podrán ver y editar la lista de compras y el presupuesto compartido';
+
+  @override
+  String get privateProject => 'Privado';
+
+  @override
+  String get privateProjectNote =>
+      'Este es un presupuesto privado. Solo tú puedes verlo.';
+
+  @override
+  String get personalProjectWarningTitle => '⚠️ Compartir presupuesto personal';
+
+  @override
+  String get personalProjectWarning =>
+      'Al compartir este código, tu presupuesto personal dejará de ser privado y otras personas podrán acceder a él.';
+
+  @override
+  String get budgetMembers => 'Miembros del presupuesto';
+
+  @override
+  String get currentBudgetMembers => 'Miembros de este presupuesto';
+
+  @override
+  String get onlyYou => 'Solo tú';
+
+  @override
+  String get shareYourBudget => 'Comparte tu presupuesto';
+
+  @override
+  String get shareYourBudgetDescription =>
+      'Puedes compartir el presupuesto seleccionado con otros usuarios si lo deseas. Ellos podrán ver y editar los gastos.';
+
+  @override
+  String get share => 'Compartir';
+
+  @override
+  String get noEditPermission =>
+      'No tienes permisos para editar este presupuesto. Solo el creador puede editarlo.';
+
+  @override
+  String get filterAndSort => 'Filtrar y Ordenar';
+
+  @override
+  String get all => 'Todas';
+
+  @override
+  String get sortBy => 'Ordenar por';
+
+  @override
+  String get status => 'Estado';
+
+  @override
+  String get ascending => 'Ascendente';
+
+  @override
+  String get descending => 'Descendente';
+
+  @override
+  String get apply => 'Aplicar';
 
   @override
   String get login => 'Iniciar Sesión';
@@ -746,9 +804,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get retry => 'Reintentar';
-
-  @override
-  String get share => 'Compartir';
 
   @override
   String get edit => 'Editar';

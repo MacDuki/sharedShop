@@ -1151,7 +1151,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteAllConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete all notifications?'**
+  /// **'Are you sure you want to delete all notifications from the current budget?'**
   String get deleteAllConfirm;
 
   /// No description provided for @delete.
@@ -1285,6 +1285,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Members will be able to view and edit the shopping list and shared budget'**
   String get membersCanViewEdit;
+
+  /// No description provided for @privateProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get privateProject;
+
+  /// No description provided for @privateProjectNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a private budget. Only you can see it.'**
+  String get privateProjectNote;
+
+  /// No description provided for @personalProjectWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠️ Share personal budget'**
+  String get personalProjectWarningTitle;
+
+  /// No description provided for @personalProjectWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'By sharing this code, your personal budget will no longer be private and other people will be able to access it.'**
+  String get personalProjectWarning;
+
+  /// No description provided for @budgetMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget members'**
+  String get budgetMembers;
+
+  /// No description provided for @currentBudgetMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Members of this budget'**
+  String get currentBudgetMembers;
+
+  /// No description provided for @onlyYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Only you'**
+  String get onlyYou;
+
+  /// No description provided for @shareYourBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your budget'**
+  String get shareYourBudget;
+
+  /// No description provided for @shareYourBudgetDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You can share the selected budget with other users if you wish. They will be able to view and edit expenses.'**
+  String get shareYourBudgetDescription;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @noEditPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have permission to edit this budget. Only the creator can edit it.'**
+  String get noEditPermission;
+
+  /// No description provided for @filterAndSort.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter and Sort'**
+  String get filterAndSort;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @ascending.
+  ///
+  /// In en, this message translates to:
+  /// **'Ascending'**
+  String get ascending;
+
+  /// No description provided for @descending.
+  ///
+  /// In en, this message translates to:
+  /// **'Descending'**
+  String get descending;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
 
   /// No description provided for @login.
   ///
@@ -1483,12 +1591,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
-
-  /// No description provided for @share.
-  ///
-  /// In en, this message translates to:
-  /// **'Share'**
-  String get share;
 
   /// No description provided for @edit.
   ///

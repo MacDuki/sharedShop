@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../models/models.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
-import '../group_settings/group_settings_screen.dart';
 
 class InviteMembersScreen extends StatefulWidget {
   const InviteMembersScreen({super.key});
@@ -58,6 +58,69 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
 
   void _shareInvite() {
     if (_inviteCode != null) {
+      final l10n = AppLocalizations.of(context)!;
+      final budgetProvider = context.read<BudgetProvider>();
+      final activeBudget = budgetProvider.activeBudget;
+
+      // Si el presupuesto es personal, mostrar advertencia
+      if (activeBudget?.type == BudgetType.personal) {
+        showDialog(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                backgroundColor: AppColors.darkCard,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                title: Text(
+                  l10n.personalProjectWarningTitle,
+                  style: const TextStyle(
+                    color: AppColors.textWhite,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                content: Text(
+                  l10n.personalProjectWarning,
+                  style: const TextStyle(
+                    color: AppColors.textGray,
+                    fontSize: 15,
+                    height: 1.5,
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(
+                      l10n.cancel,
+                      style: const TextStyle(color: AppColors.textGray),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _executeShare();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.warningAmber,
+                      foregroundColor: AppColors.darkBackground,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(l10n.continueButton),
+                  ),
+                ],
+              ),
+        );
+      } else {
+        _executeShare();
+      }
+    }
+  }
+
+  void _executeShare() {
+    if (_inviteCode != null) {
       // TODO: Implementar share real con share_plus package
       final l10n = AppLocalizations.of(context)!;
       final message = l10n.joinGroupMessage(_inviteCode!);
@@ -104,80 +167,53 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Información del grupo
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const GroupSettingsScreen(),
+                  // Texto explicativo sobre compartir presupuesto
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: AppColors.darkCard,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.primaryBlue.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryBlue.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.share_rounded,
+                            color: AppColors.primaryBlue,
+                            size: 32,
+                          ),
                         ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: AppColors.darkCard,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        children: [
-                          Stack(
-                            children: [
-                              Container(
-                                width: 64,
-                                height: 64,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primaryBlue.withOpacity(0.2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.group,
-                                  color: AppColors.primaryBlue,
-                                  size: 32,
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primaryBlue,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: AppColors.darkCard,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: const Icon(
-                                    Icons.edit,
-                                    color: AppColors.textWhite,
-                                    size: 12,
-                                  ),
-                                ),
-                              ),
-                            ],
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.shareYourBudget,
+                          style: const TextStyle(
+                            color: AppColors.textWhite,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            household?.name ?? l10n.myGroup,
-                            style: const TextStyle(
-                              color: AppColors.textWhite,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
-                            ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          l10n.shareYourBudgetDescription,
+                          style: const TextStyle(
+                            color: AppColors.textGray,
+                            fontSize: 15,
+                            height: 1.5,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${members.length} ${members.length == 1 ? l10n.member : l10n.members}',
-                            style: const TextStyle(
-                              color: AppColors.textGray,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
                   ),
 
@@ -289,12 +325,12 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
 
                   const SizedBox(height: 32),
 
-                  // Miembros actuales
+                  // Miembros actuales del presupuesto
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        l10n.currentMembers,
+                        l10n.currentBudgetMembers,
                         style: const TextStyle(
                           color: AppColors.textWhite,
                           fontSize: 16,
@@ -307,13 +343,24 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryBlue.withOpacity(0.2),
+                          color:
+                              budgetProvider.activeBudget?.type ==
+                                      BudgetType.personal
+                                  ? AppColors.primaryPurple.withOpacity(0.2)
+                                  : AppColors.primaryBlue.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          '${members.length}',
-                          style: const TextStyle(
-                            color: AppColors.primaryBlue,
+                          budgetProvider.activeBudget?.type ==
+                                  BudgetType.personal
+                              ? l10n.privateProject
+                              : '${budgetProvider.activeBudget?.memberIds.length ?? 0}',
+                          style: TextStyle(
+                            color:
+                                budgetProvider.activeBudget?.type ==
+                                        BudgetType.personal
+                                    ? AppColors.primaryPurple
+                                    : AppColors.primaryBlue,
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                           ),
@@ -323,7 +370,62 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  if (members.isEmpty)
+                  // Si es presupuesto personal, mostrar mensaje
+                  if (budgetProvider.activeBudget?.type == BudgetType.personal)
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: AppColors.darkCard,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColors.primaryPurple.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryPurple.withOpacity(0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.lock,
+                              color: AppColors.primaryPurple,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.onlyYou,
+                                  style: const TextStyle(
+                                    color: AppColors.textWhite,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.privateProjectNote,
+                                  style: const TextStyle(
+                                    color: AppColors.textGray,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  // Si es presupuesto compartido, mostrar miembros
+                  else if (members.isEmpty)
                     Container(
                       padding: const EdgeInsets.all(32),
                       decoration: BoxDecoration(
@@ -395,7 +497,7 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                                   const SizedBox(height: 4),
                                   Text(
                                     member.email,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: AppColors.textGray,
                                       fontSize: 13,
                                     ),

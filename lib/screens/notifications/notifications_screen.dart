@@ -82,9 +82,9 @@ class NotificationsScreen extends StatelessWidget {
       ),
       body: Consumer<BudgetProvider>(
         builder: (context, budgetProvider, child) {
-          final notifications = budgetProvider.notifications;
+          final allNotifications = budgetProvider.allNotifications;
 
-          if (notifications.isEmpty) {
+          if (allNotifications.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -123,17 +123,91 @@ class NotificationsScreen extends StatelessWidget {
             );
           }
 
-          return ListView.separated(
+          // Agrupar notificaciones por presupuesto
+          final groupedNotifications = <String, List<NotificationModel>>{};
+          for (final notification in allNotifications) {
+            final budgetId = notification.budgetId ?? 'no_budget';
+            if (!groupedNotifications.containsKey(budgetId)) {
+              groupedNotifications[budgetId] = [];
+            }
+            groupedNotifications[budgetId]!.add(notification);
+          }
+
+          return ListView.builder(
             padding: const EdgeInsets.all(20),
-            itemCount: notifications.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final notification = notifications[index];
-              return _NotificationItem(
-                notification: notification,
-                onDelete: () {
-                  budgetProvider.deleteNotification(notification.id);
-                },
+            itemCount: groupedNotifications.length,
+            itemBuilder: (context, groupIndex) {
+              final budgetId = groupedNotifications.keys.elementAt(groupIndex);
+              final notificationsForBudget = groupedNotifications[budgetId]!;
+
+              // Encontrar el presupuesto correspondiente
+              final budget = budgetProvider.budgets.firstWhere(
+                (b) => b.id == budgetId,
+                orElse: () => budgetProvider.budgets.first,
+              );
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header del grupo de presupuesto
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12, top: 8),
+                    child: Row(
+                      children: [
+                        Icon(
+                          budget.type == BudgetType.personal
+                              ? Icons.person_outline
+                              : Icons.group_outlined,
+                          color: AppColors.primaryBlue,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          budget.name,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textWhite,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryBlue.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '${notificationsForBudget.length}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primaryBlue,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Lista de notificaciones del presupuesto
+                  ...notificationsForBudget.map((notification) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _NotificationItem(
+                        notification: notification,
+                        onDelete: () {
+                          budgetProvider.deleteNotification(notification.id);
+                        },
+                      ),
+                    );
+                  }).toList(),
+
+                  const SizedBox(height: 16),
+                ],
               );
             },
           );

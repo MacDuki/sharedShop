@@ -1,6 +1,7 @@
 class NotificationModel {
   final String id;
   final String householdId;
+  final String? budgetId; // Nuevo campo para anclar por presupuesto
   final NotificationType type;
   final String title;
   final String description;
@@ -10,6 +11,7 @@ class NotificationModel {
   NotificationModel({
     required this.id,
     required this.householdId,
+    this.budgetId,
     required this.type,
     required this.title,
     required this.description,
@@ -21,6 +23,7 @@ class NotificationModel {
     return NotificationModel(
       id: json['id'] as String,
       householdId: json['householdId'] as String,
+      budgetId: json['budgetId'] as String?,
       type: NotificationType.values.firstWhere(
         (e) => e.toString() == 'NotificationType.${json['type']}',
       ),
@@ -35,6 +38,7 @@ class NotificationModel {
     return {
       'id': id,
       'householdId': householdId,
+      'budgetId': budgetId,
       'type': type.toString().split('.').last,
       'title': title,
       'description': description,
@@ -46,6 +50,7 @@ class NotificationModel {
   NotificationModel copyWith({
     String? id,
     String? householdId,
+    String? budgetId,
     NotificationType? type,
     String? title,
     String? description,
@@ -55,6 +60,7 @@ class NotificationModel {
     return NotificationModel(
       id: id ?? this.id,
       householdId: householdId ?? this.householdId,
+      budgetId: budgetId ?? this.budgetId,
       type: type ?? this.type,
       title: title ?? this.title,
       description: description ?? this.description,

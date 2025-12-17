@@ -5,8 +5,8 @@ import '../../l10n/app_localizations.dart';
 import '../../models/models.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
+import '../budget_form/budget_form_screen.dart';
 import '../budget_list/budget_list_screen.dart';
-import '../budget_settings/budget_settings_screen.dart';
 import '../history/history_screen.dart';
 import '../invite_members/invite_members_screen.dart';
 import '../notifications/notifications_screen.dart';
@@ -22,6 +22,42 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
+
+  int _calculateRemainingDays(BudgetModel budget) {
+    final now = DateTime.now();
+    DateTime endDate;
+
+    switch (budget.budgetPeriod) {
+      case BudgetPeriod.weekly:
+        // Calcular el último día de la semana (domingo)
+        final daysUntilSunday = DateTime.sunday - now.weekday;
+        endDate = now.add(
+          Duration(
+            days: daysUntilSunday >= 0 ? daysUntilSunday : daysUntilSunday + 7,
+          ),
+        );
+        endDate = DateTime(
+          endDate.year,
+          endDate.month,
+          endDate.day,
+          23,
+          59,
+          59,
+        );
+        break;
+      case BudgetPeriod.monthly:
+        // Último día del mes
+        endDate = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+        break;
+      case BudgetPeriod.custom:
+        // Para custom, asumimos fin de mes por defecto
+        endDate = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+        break;
+    }
+
+    final difference = endDate.difference(now);
+    return difference.inDays + 1; // +1 para incluir el día actual
+  }
 
   @override
   void initState() {
@@ -53,7 +89,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             }
 
             final remainingPercentage = 100 - budgetProvider.budgetPercentage;
-            final daysLeft = 12;
+            final daysLeft = _calculateRemainingDays(activeBudget);
 
             return Column(
               children: [
@@ -81,7 +117,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                l10n.dashboardGreeting(household.name),
+                                l10n.dashboardGreeting(
+                                  budgetProvider.currentUser?.name ??
+                                      household.name,
+                                ),
                                 style: theme.textTheme.displayMedium?.copyWith(
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
@@ -282,14 +321,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder:
-                                              (context) =>
-                                                  const BudgetSettingsScreen(),
-                                        ),
-                                      );
+                                      // Verificar permisos: personal o admin de compartido
+                                      final canEdit =
+                                          activeBudget.type ==
+                                              BudgetType.personal ||
+                                          (activeBudget.type ==
+                                                  BudgetType.shared &&
+                                              activeBudget.ownerId ==
+                                                  budgetProvider
+                                                      .currentUser
+                                                      ?.id);
+
+                                      if (canEdit) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => BudgetFormScreen(
+                                                  budget: activeBudget,
+                                                ),
+                                          ),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              l10n.noEditPermission,
+                                            ),
+                                            backgroundColor: AppColors.errorRed,
+                                            duration: const Duration(
+                                              seconds: 2,
+                                            ),
+                                          ),
+                                        );
+                                      }
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.all(8),
@@ -418,7 +485,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                                 title: l10n.total,
                                 value:
-                                    '\$${household.budgetAmount.toStringAsFixed(0)}',
+                                    '\$${activeBudget.budgetAmount.toStringAsFixed(0)}',
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -538,12 +605,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   label: l10n.budget,
                   isSelected: _selectedIndex == 1,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const BudgetSettingsScreen(),
-                      ),
-                    );
+                    final budgetProvider = context.read<BudgetProvider>();
+                    final activeBudget = budgetProvider.activeBudget;
+
+                    if (activeBudget != null) {
+                      // Verificar permisos: personal o admin de compartido
+                      final canEdit =
+                          activeBudget.type == BudgetType.personal ||
+                          (activeBudget.type == BudgetType.shared &&
+                              activeBudget.ownerId ==
+                                  budgetProvider.currentUser?.id);
+
+                      if (canEdit) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    BudgetFormScreen(budget: activeBudget),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(l10n.noEditPermission),
+                            backgroundColor: AppColors.errorRed,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    }
                   },
                 ),
                 const SizedBox(width: 60),
@@ -561,8 +652,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   },
                 ),
                 _NavItem(
-                  icon: Icons.people_outline_rounded,
-                  label: l10n.family,
+                  icon: Icons.share_outlined,
+                  label: l10n.share,
                   isSelected: _selectedIndex == 3,
                   onTap: () {
                     Navigator.push(

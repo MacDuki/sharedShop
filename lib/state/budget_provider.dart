@@ -6,6 +6,9 @@ class BudgetProvider extends ChangeNotifier {
   // Legacy support
   HouseholdModel? _household;
 
+  // Current user
+  UserModel? _currentUser;
+
   // New multi-budget support
   List<BudgetModel> _budgets = [];
   BudgetModel? _activeBudget;
@@ -19,6 +22,7 @@ class BudgetProvider extends ChangeNotifier {
   HouseholdModel? get household => _household;
 
   // Getters - New
+  UserModel? get currentUser => _currentUser;
   List<BudgetModel> get budgets => List.unmodifiable(_budgets);
   BudgetModel? get activeBudget => _activeBudget;
 
@@ -45,7 +49,21 @@ class BudgetProvider extends ChangeNotifier {
   }
 
   List<UserModel> get householdMembers => List.unmodifiable(_householdMembers);
-  List<NotificationModel> get notifications =>
+
+  // Notificaciones filtradas por presupuesto activo (para dashboard)
+  List<NotificationModel> get notifications {
+    if (_activeBudget != null) {
+      return List.unmodifiable(
+        _notifications.where(
+          (notification) => notification.budgetId == _activeBudget!.id,
+        ),
+      );
+    }
+    return List.unmodifiable(_notifications);
+  }
+
+  // Todas las notificaciones sin filtrar (para pantalla see all)
+  List<NotificationModel> get allNotifications =>
       List.unmodifiable(_notifications);
 
   // Budget calculations based on active budget
@@ -167,6 +185,59 @@ class BudgetProvider extends ChangeNotifier {
   void updateBudgetData(BudgetModel updatedBudget) {
     final index = _budgets.indexWhere((b) => b.id == updatedBudget.id);
     if (index != -1) {
+      final oldBudget = _budgets[index];
+
+      // Detectar cambios y generar notificaciones
+      if (oldBudget.name != updatedBudget.name) {
+        _addNotification(
+          type: NotificationType.budgetUpdated,
+          title: 'Budget name updated',
+          description: 'From "${oldBudget.name}" to "${updatedBudget.name}"',
+        );
+      }
+
+      if (oldBudget.budgetAmount != updatedBudget.budgetAmount) {
+        _addNotification(
+          type: NotificationType.budgetUpdated,
+          title: 'Budget amount updated',
+          description:
+              'From \$${oldBudget.budgetAmount.toStringAsFixed(2)} to \$${updatedBudget.budgetAmount.toStringAsFixed(2)}',
+        );
+      }
+
+      if (oldBudget.iconName != updatedBudget.iconName) {
+        _addNotification(
+          type: NotificationType.budgetUpdated,
+          title: 'Budget icon updated',
+          description: 'Icon changed for "${updatedBudget.name}"',
+        );
+      }
+
+      if (oldBudget.colorHex != updatedBudget.colorHex) {
+        _addNotification(
+          type: NotificationType.budgetUpdated,
+          title: 'Budget color updated',
+          description: 'Color changed for "${updatedBudget.name}"',
+        );
+      }
+
+      if (oldBudget.budgetPeriod != updatedBudget.budgetPeriod) {
+        _addNotification(
+          type: NotificationType.budgetUpdated,
+          title: 'Budget period updated',
+          description: 'Period changed for "${updatedBudget.name}"',
+        );
+      }
+
+      if (oldBudget.type != updatedBudget.type) {
+        _addNotification(
+          type: NotificationType.budgetUpdated,
+          title: 'Budget type updated',
+          description:
+              'Changed from ${oldBudget.type.name} to ${updatedBudget.type.name}',
+        );
+      }
+
       _budgets[index] = updatedBudget;
       // Update active budget if it's the one being edited
       if (_activeBudget?.id == updatedBudget.id) {
@@ -356,15 +427,18 @@ class BudgetProvider extends ChangeNotifier {
   }
 
   void _initializeMembers() {
+    // Usuario actual
+    _currentUser = UserModel(
+      id: 'user1',
+      name: 'Main User',
+      email: 'user@example.com',
+      householdId: '1',
+      budgetIds: ['budget_1', 'budget_2'],
+      activeBudgetId: 'budget_1',
+    );
+
     _householdMembers = [
-      UserModel(
-        id: 'user1',
-        name: 'Main User',
-        email: 'user@example.com',
-        householdId: '1',
-        budgetIds: ['budget_1', 'budget_2'],
-        activeBudgetId: 'budget_1',
-      ),
+      _currentUser!,
       UserModel(
         id: 'user2',
         name: 'Maria Garcia',
@@ -385,6 +459,7 @@ class BudgetProvider extends ChangeNotifier {
     final notification = NotificationModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       householdId: _household?.id ?? '1',
+      budgetId: _activeBudget?.id, // Anclar notificación al presupuesto activo
       type: type,
       title: title,
       description: description,
@@ -407,7 +482,14 @@ class BudgetProvider extends ChangeNotifier {
   }
 
   void clearAllNotifications() {
-    _notifications.clear();
+    // Solo eliminar notificaciones del presupuesto activo
+    if (_activeBudget != null) {
+      _notifications.removeWhere(
+        (notification) => notification.budgetId == _activeBudget!.id,
+      );
+    } else {
+      _notifications.clear();
+    }
     notifyListeners();
   }
 }
