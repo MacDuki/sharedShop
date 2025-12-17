@@ -1,0 +1,62 @@
+import 'package:appfast/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+// Screens
+import 'screens/screens.dart';
+// Services
+import 'services/services.dart';
+// State
+import 'state/state.dart';
+// Utils
+import 'utils/app_theme.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await initServices();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AppProvider()),
+        ChangeNotifierProvider(create: (context) => BudgetProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AppProvider>(
+      builder: (context, appProvider, child) {
+        return MaterialApp(
+          title: 'Shared Grocery Budget',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: appProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          home: const DashboardScreen(),
+          debugShowCheckedModeBanner: false,
+        );
+      },
+    );
+  }
+}
+
+Future<void> initServices() async {
+  // Configurar Firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Configurar Superwall
+  final superwallService = SuperwallService();
+  superwallService.configure();
+
+  // Configurar AppsFlyer
+  final appsflyerService = AppsFlyerService();
+  await appsflyerService.initAppsFlyer();
+}
