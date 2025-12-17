@@ -2,13 +2,17 @@ class UserModel {
   final String id;
   final String name;
   final String email;
-  final String? householdId;
+  final String? householdId; // Legacy support
+  final List<String> budgetIds;
+  final String? activeBudgetId;
 
   UserModel({
     required this.id,
     required this.name,
     required this.email,
     this.householdId,
+    this.budgetIds = const [],
+    this.activeBudgetId,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -17,11 +21,24 @@ class UserModel {
       name: json['name'] as String,
       email: json['email'] as String,
       householdId: json['householdId'] as String?,
+      budgetIds:
+          (json['budgetIds'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+      activeBudgetId: json['activeBudgetId'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name, 'email': email, 'householdId': householdId};
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'householdId': householdId,
+      'budgetIds': budgetIds,
+      'activeBudgetId': activeBudgetId,
+    };
   }
 
   UserModel copyWith({
@@ -29,12 +46,16 @@ class UserModel {
     String? name,
     String? email,
     String? householdId,
+    List<String>? budgetIds,
+    String? activeBudgetId,
   }) {
     return UserModel(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
       householdId: householdId ?? this.householdId,
+      budgetIds: budgetIds ?? this.budgetIds,
+      activeBudgetId: activeBudgetId ?? this.activeBudgetId,
     );
   }
 }

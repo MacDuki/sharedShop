@@ -1,6 +1,7 @@
 class ShoppingItemModel {
   final String id;
-  final String householdId;
+  final String householdId; // Legacy support
+  final String budgetId;
   final String name;
   final double estimatedPrice;
   final String? category;
@@ -10,19 +11,22 @@ class ShoppingItemModel {
 
   ShoppingItemModel({
     required this.id,
-    required this.householdId,
+    String? householdId,
+    String? budgetId,
     required this.name,
     required this.estimatedPrice,
     this.category,
     required this.createdBy,
     required this.createdAt,
     this.isPurchased = false,
-  });
+  }) : householdId = householdId ?? budgetId ?? '',
+       budgetId = budgetId ?? householdId ?? '';
 
   factory ShoppingItemModel.fromJson(Map<String, dynamic> json) {
     return ShoppingItemModel(
       id: json['id'] as String,
-      householdId: json['householdId'] as String,
+      householdId: json['householdId'] as String?,
+      budgetId: json['budgetId'] as String?,
       name: json['name'] as String,
       estimatedPrice: (json['estimatedPrice'] as num).toDouble(),
       category: json['category'] as String?,
@@ -36,6 +40,7 @@ class ShoppingItemModel {
     return {
       'id': id,
       'householdId': householdId,
+      'budgetId': budgetId,
       'name': name,
       'estimatedPrice': estimatedPrice,
       'category': category,
@@ -48,6 +53,7 @@ class ShoppingItemModel {
   ShoppingItemModel copyWith({
     String? id,
     String? householdId,
+    String? budgetId,
     String? name,
     double? estimatedPrice,
     String? category,
@@ -58,6 +64,7 @@ class ShoppingItemModel {
     return ShoppingItemModel(
       id: id ?? this.id,
       householdId: householdId ?? this.householdId,
+      budgetId: budgetId ?? this.budgetId,
       name: name ?? this.name,
       estimatedPrice: estimatedPrice ?? this.estimatedPrice,
       category: category ?? this.category,

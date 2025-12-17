@@ -373,5 +373,79 @@
   "edit": "Editar",
   "delete": "Eliminar",
   "confirm": "Confirmar",
-  "discard": "Descartar"
+  "discard": "Descartar",
+  
+  "myBudgets": "Mis Presupuestos",
+  "noBudgetsYet": "Aún no hay presupuestos",
+  "noBudgetsDescription": "Crea tu primer presupuesto para comenzar",
+  "personalBudgets": "Presupuestos Personales",
+  "sharedBudgets": "Presupuestos Compartidos",
+  "newBudget": "Nuevo Presupuesto",
+  "createBudget": "Crear Presupuesto",
+  "editBudget": "Editar Presupuesto",
+  "budgetDetails": "Detalles del Presupuesto",
+  "switchedToBudget": "Cambiado a \"{name}\"",
+  "@switchedToBudget": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activeBudget": "Activo",
+  "personal": "Personal",
+  "shared": "Compartido",
+  "budgetName": "Nombre del Presupuesto",
+  "budgetNameHint": "Ej: Compras, Vacaciones",
+  "budgetNameRequired": "Por favor ingresa un nombre de presupuesto",
+  "description": "Descripción",
+  "descriptionOptional": "Descripción (Opcional)",
+  "descriptionHint": "Agrega una descripción...",
+  "budgetType": "Tipo de Presupuesto",
+  "personalBudget": "Personal",
+  "personalBudgetDescription": "Solo para ti",
+  "sharedBudget": "Compartido",
+  "sharedBudgetDescription": "Con otros",
+  "iconOptional": "Ícono (Opcional)",
+  "colorOptional": "Color (Opcional)",
+  "budgetCreatedSuccess": "Presupuesto creado exitosamente",
+  "budgetDeletedSuccess": "Presupuesto eliminado",
+  "deleteBudgetTitle": "Eliminar Presupuesto",
+  "deleteBudgetConfirm": "¿Estás seguro de que quieres eliminar este presupuesto? Esta acción no se puede deshacer.",
+  "budgetOverview": "Resumen del Presupuesto",
+  "totalBudget": "Presupuesto Total",
+  "period": "Período",
+  "duration": "Duración",
+  "from": "Desde",
+  "to": "Hasta",
+  "invite": "Invitar",
+  "membersCount": "{count} miembros",
+  "@membersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentItems": "Ítems Recientes",
+  "noItemsYet": "Aún no hay ítems",
+  "selectStartEndDates": "Por favor selecciona fechas de inicio y fin",
+  "enterBudgetName": "Por favor ingresa un nombre de presupuesto",
+  "addDescription": "Agrega una descripción...",
+  "onlyForYou": "Solo para ti",
+  "withOthers": "Con otros",
+  "enterBudgetAmount": "Por favor ingresa un monto de presupuesto",
+  "enterValidAmount": "Por favor ingresa un monto válido",
+  "budgetPeriod": "Período del Presupuesto",
+  "custom": "Personalizado",
+  "budgetDeleted": "Presupuesto eliminado",
+  "deleteBudget": "Eliminar Presupuesto",
+  "deleteBudgetConfirmation": "¿Estás seguro de que quieres eliminar este presupuesto? Esta acción no se puede deshacer.",
+  "spent": "Gastado",
+  "remaining": "Restante",
+  "members": "Miembros",
+  
+  "noBudgetSelected": "No hay presupuesto seleccionado",
+  "pleaseSelectStartEndDates": "Por favor selecciona las fechas de inicio y fin",
+  "budgetAmountGreaterThanZero": "Por favor ingresa un monto válido"
 }

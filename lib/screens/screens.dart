@@ -1,4 +1,7 @@
 export 'add_item/add_item_screen.dart';
+export 'budget_details/budget_details_screen.dart';
+export 'budget_form/budget_form_screen.dart';
+export 'budget_list/budget_list_screen.dart';
 export 'budget_settings/budget_settings_screen.dart';
 export 'dashboard/dashboard_screen.dart';
 export 'group_settings/group_settings_screen.dart';

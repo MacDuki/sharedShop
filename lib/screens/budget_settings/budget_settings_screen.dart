@@ -32,7 +32,7 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
 
     if (household != null) {
       _budgetController.text = household.budgetAmount.toStringAsFixed(2);
-      _selectedPeriod = household.budgetPeriod;
+      _selectedPeriod = household.budgetPeriod as BudgetPeriod?;
       _customStartDate = household.customPeriodStart;
       _customEndDate = household.customPeriodEnd;
     }

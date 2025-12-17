@@ -373,5 +373,79 @@
   "edit": "Edit",
   "delete": "Delete",
   "confirm": "Confirm",
-  "discard": "Discard"
+  "discard": "Discard",
+  
+  "myBudgets": "My Budgets",
+  "noBudgetsYet": "No budgets yet",
+  "noBudgetsDescription": "Create your first budget to get started",
+  "personalBudgets": "Personal Budgets",
+  "sharedBudgets": "Shared Budgets",
+  "newBudget": "New Budget",
+  "createBudget": "Create Budget",
+  "editBudget": "Edit Budget",
+  "budgetDetails": "Budget Details",
+  "switchedToBudget": "Switched to \"{name}\"",
+  "@switchedToBudget": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activeBudget": "Active",
+  "personal": "Personal",
+  "shared": "Shared",
+  "budgetName": "Budget Name",
+  "budgetNameHint": "e.g., Groceries, Vacation",
+  "budgetNameRequired": "Please enter a budget name",
+  "description": "Description",
+  "descriptionOptional": "Description (Optional)",
+  "descriptionHint": "Add a description...",
+  "budgetType": "Budget Type",
+  "personalBudget": "Personal",
+  "personalBudgetDescription": "Only for you",
+  "sharedBudget": "Shared",
+  "sharedBudgetDescription": "With others",
+  "iconOptional": "Icon (Optional)",
+  "colorOptional": "Color (Optional)",
+  "budgetCreatedSuccess": "Budget created successfully",
+  "budgetDeletedSuccess": "Budget deleted",
+  "deleteBudgetTitle": "Delete Budget",
+  "deleteBudgetConfirm": "Are you sure you want to delete this budget? This action cannot be undone.",
+  "budgetOverview": "Budget Overview",
+  "totalBudget": "Total Budget",
+  "period": "Period",
+  "duration": "Duration",
+  "from": "From",
+  "to": "To",
+  "invite": "Invite",
+  "membersCount": "{count} members",
+  "@membersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentItems": "Recent Items",
+  "noItemsYet": "No items yet",
+  "selectStartEndDates": "Please select start and end dates",
+  "enterBudgetName": "Please enter a budget name",
+  "addDescription": "Add a description...",
+  "onlyForYou": "Only for you",
+  "withOthers": "With others",
+  "enterBudgetAmount": "Please enter a budget amount",
+  "enterValidAmount": "Please enter a valid amount",
+  "budgetPeriod": "Budget Period",
+  "custom": "Custom",
+  "budgetDeleted": "Budget deleted",
+  "deleteBudget": "Delete Budget",
+  "deleteBudgetConfirmation": "Are you sure you want to delete this budget? This action cannot be undone.",
+  "spent": "Spent",
+  "remaining": "Remaining",
+  "members": "Members",
+  
+  "noBudgetSelected": "No budget selected",
+  "pleaseSelectStartEndDates": "Please select start and end dates",
+  "budgetAmountGreaterThanZero": "Please enter a valid amount"
 }

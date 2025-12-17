@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/models.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
+import '../budget_list/budget_list_screen.dart';
 import '../budget_settings/budget_settings_screen.dart';
 import '../history/history_screen.dart';
 import '../invite_members/invite_members_screen.dart';
@@ -43,8 +44,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Consumer<BudgetProvider>(
           builder: (context, budgetProvider, child) {
             final household = budgetProvider.household;
+            final activeBudget = budgetProvider.activeBudget;
 
-            if (household == null) {
+            if (household == null || activeBudget == null) {
               return const Center(
                 child: CircularProgressIndicator(color: AppColors.primaryBlue),
               );
@@ -55,73 +57,174 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             return Column(
               children: [
-                // Custom Header
+                // Custom Header with Budget Selector
                 Container(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
                   decoration: BoxDecoration(
                     color: theme.scaffoldBackgroundColor,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            l10n.dashboard,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1.2,
-                            ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.dashboard,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                l10n.dashboardGreeting(household.name),
+                                style: theme.textTheme.displayMedium?.copyWith(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.dashboardGreeting(household.name),
-                            style: theme.textTheme.displayMedium?.copyWith(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: theme.cardTheme.color,
+                              borderRadius: BorderRadius.circular(12),
+                              border:
+                                  isDark
+                                      ? null
+                                      : Border.all(
+                                        color: Colors.grey.withOpacity(0.15),
+                                        width: 1,
+                                      ),
+                              boxShadow:
+                                  isDark
+                                      ? null
+                                      : [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.04),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 1),
+                                        ),
+                                      ],
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => const UserSettingsScreen(),
+                                  ),
+                                );
+                              },
+                              child: Icon(
+                                Icons.settings_outlined,
+                                color: theme.iconTheme.color,
+                                size: 24,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: theme.cardTheme.color,
-                          borderRadius: BorderRadius.circular(12),
-                          border:
-                              isDark
-                                  ? null
-                                  : Border.all(
-                                    color: Colors.grey.withOpacity(0.15),
-                                    width: 1,
-                                  ),
-                          boxShadow:
-                              isDark
-                                  ? null
-                                  : [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.04),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 1),
+                      const SizedBox(height: 16),
+                      // Budget Selector
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const BudgetListScreen(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: theme.cardTheme.color,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: AppColors.primaryGreen.withOpacity(0.3),
+                              width: 2,
+                            ),
+                            boxShadow:
+                                isDark
+                                    ? null
+                                    : [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.04),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: _getBudgetColor(
+                                    activeBudget,
+                                  ).withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  _getBudgetIcon(activeBudget),
+                                  color: _getBudgetColor(activeBudget),
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      activeBudget.name,
+                                      style: theme.textTheme.titleLarge
+                                          ?.copyWith(
+                                            color: AppColors.textWhite,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          activeBudget.type ==
+                                                  BudgetType.personal
+                                              ? Icons.person_outline
+                                              : Icons.people_outline,
+                                          size: 12,
+                                          color: AppColors.textGrayLight,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          activeBudget.type ==
+                                                  BudgetType.personal
+                                              ? 'Personal'
+                                              : 'Shared',
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: AppColors.textGrayLight,
+                                              ),
+                                        ),
+                                      ],
                                     ),
                                   ],
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) => const UserSettingsScreen(),
+                                ),
                               ),
-                            );
-                          },
-                          child: Icon(
-                            Icons.settings_outlined,
-                            color: theme.iconTheme.color,
-                            size: 24,
+                              const Icon(
+                                Icons.arrow_forward_ios,
+                                size: 16,
+                                color: AppColors.textGray,
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -488,6 +591,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
+  }
+
+  Color _getBudgetColor(BudgetModel budget) {
+    if (budget.colorHex != null) {
+      try {
+        return Color(int.parse(budget.colorHex!.replaceFirst('#', '0xFF')));
+      } catch (e) {
+        // Fallback color
+      }
+    }
+    return budget.type == BudgetType.personal
+        ? AppColors.primaryBlue
+        : AppColors.primaryPurple;
+  }
+
+  IconData _getBudgetIcon(BudgetModel budget) {
+    if (budget.iconName != null) {
+      switch (budget.iconName) {
+        case 'shopping_cart':
+          return Icons.shopping_cart_outlined;
+        case 'home':
+          return Icons.home_outlined;
+        case 'restaurant':
+          return Icons.restaurant_outlined;
+        case 'local_grocery_store':
+          return Icons.local_grocery_store_outlined;
+        case 'flight':
+          return Icons.flight_outlined;
+        default:
+          break;
+      }
+    }
+    return budget.type == BudgetType.personal
+        ? Icons.account_balance_wallet_outlined
+        : Icons.people_outline;
   }
 }
 

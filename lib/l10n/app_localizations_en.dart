@@ -755,4 +755,169 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get discard => 'Discard';
+
+  @override
+  String get myBudgets => 'My Budgets';
+
+  @override
+  String get noBudgetsYet => 'No budgets yet';
+
+  @override
+  String get noBudgetsDescription => 'Create your first budget to get started';
+
+  @override
+  String get personalBudgets => 'Personal Budgets';
+
+  @override
+  String get sharedBudgets => 'Shared Budgets';
+
+  @override
+  String get newBudget => 'New Budget';
+
+  @override
+  String get createBudget => 'Create Budget';
+
+  @override
+  String get editBudget => 'Edit Budget';
+
+  @override
+  String get budgetDetails => 'Budget Details';
+
+  @override
+  String switchedToBudget(String name) {
+    return 'Switched to \"$name\"';
+  }
+
+  @override
+  String get activeBudget => 'Active';
+
+  @override
+  String get personal => 'Personal';
+
+  @override
+  String get shared => 'Shared';
+
+  @override
+  String get budgetName => 'Budget Name';
+
+  @override
+  String get budgetNameHint => 'e.g., Groceries, Vacation';
+
+  @override
+  String get budgetNameRequired => 'Please enter a budget name';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get descriptionOptional => 'Description (Optional)';
+
+  @override
+  String get descriptionHint => 'Add a description...';
+
+  @override
+  String get budgetType => 'Budget Type';
+
+  @override
+  String get personalBudget => 'Personal';
+
+  @override
+  String get personalBudgetDescription => 'Only for you';
+
+  @override
+  String get sharedBudget => 'Shared';
+
+  @override
+  String get sharedBudgetDescription => 'With others';
+
+  @override
+  String get iconOptional => 'Icon (Optional)';
+
+  @override
+  String get colorOptional => 'Color (Optional)';
+
+  @override
+  String get budgetCreatedSuccess => 'Budget created successfully';
+
+  @override
+  String get budgetDeletedSuccess => 'Budget deleted';
+
+  @override
+  String get deleteBudgetTitle => 'Delete Budget';
+
+  @override
+  String get deleteBudgetConfirm =>
+      'Are you sure you want to delete this budget? This action cannot be undone.';
+
+  @override
+  String get budgetOverview => 'Budget Overview';
+
+  @override
+  String get totalBudget => 'Total Budget';
+
+  @override
+  String get period => 'Period';
+
+  @override
+  String get duration => 'Duration';
+
+  @override
+  String get from => 'From';
+
+  @override
+  String get to => 'To';
+
+  @override
+  String get invite => 'Invite';
+
+  @override
+  String membersCount(int count) {
+    return '$count members';
+  }
+
+  @override
+  String get recentItems => 'Recent Items';
+
+  @override
+  String get noItemsYet => 'No items yet';
+
+  @override
+  String get selectStartEndDates => 'Please select start and end dates';
+
+  @override
+  String get enterBudgetName => 'Please enter a budget name';
+
+  @override
+  String get addDescription => 'Add a description...';
+
+  @override
+  String get onlyForYou => 'Only for you';
+
+  @override
+  String get withOthers => 'With others';
+
+  @override
+  String get enterBudgetAmount => 'Please enter a budget amount';
+
+  @override
+  String get enterValidAmount => 'Please enter a valid amount';
+
+  @override
+  String get budgetDeleted => 'Budget deleted';
+
+  @override
+  String get deleteBudget => 'Delete Budget';
+
+  @override
+  String get deleteBudgetConfirmation =>
+      'Are you sure you want to delete this budget? This action cannot be undone.';
+
+  @override
+  String get noBudgetSelected => 'No budget selected';
+
+  @override
+  String get pleaseSelectStartEndDates => 'Please select start and end dates';
+
+  @override
+  String get budgetAmountGreaterThanZero => 'Please enter a valid amount';
 }

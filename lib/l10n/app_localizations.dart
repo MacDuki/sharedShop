@@ -1507,6 +1507,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Discard'**
   String get discard;
+
+  /// No description provided for @myBudgets.
+  ///
+  /// In en, this message translates to:
+  /// **'My Budgets'**
+  String get myBudgets;
+
+  /// No description provided for @noBudgetsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No budgets yet'**
+  String get noBudgetsYet;
+
+  /// No description provided for @noBudgetsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first budget to get started'**
+  String get noBudgetsDescription;
+
+  /// No description provided for @personalBudgets.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Budgets'**
+  String get personalBudgets;
+
+  /// No description provided for @sharedBudgets.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared Budgets'**
+  String get sharedBudgets;
+
+  /// No description provided for @newBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'New Budget'**
+  String get newBudget;
+
+  /// No description provided for @createBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Budget'**
+  String get createBudget;
+
+  /// No description provided for @editBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Budget'**
+  String get editBudget;
+
+  /// No description provided for @budgetDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget Details'**
+  String get budgetDetails;
+
+  /// No description provided for @switchedToBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Switched to \"{name}\"'**
+  String switchedToBudget(String name);
+
+  /// No description provided for @activeBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeBudget;
+
+  /// No description provided for @personal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get personal;
+
+  /// No description provided for @shared.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared'**
+  String get shared;
+
+  /// No description provided for @budgetName.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget Name'**
+  String get budgetName;
+
+  /// No description provided for @budgetNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Groceries, Vacation'**
+  String get budgetNameHint;
+
+  /// No description provided for @budgetNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a budget name'**
+  String get budgetNameRequired;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @descriptionOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (Optional)'**
+  String get descriptionOptional;
+
+  /// No description provided for @descriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a description...'**
+  String get descriptionHint;
+
+  /// No description provided for @budgetType.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget Type'**
+  String get budgetType;
+
+  /// No description provided for @personalBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get personalBudget;
+
+  /// No description provided for @personalBudgetDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Only for you'**
+  String get personalBudgetDescription;
+
+  /// No description provided for @sharedBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared'**
+  String get sharedBudget;
+
+  /// No description provided for @sharedBudgetDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'With others'**
+  String get sharedBudgetDescription;
+
+  /// No description provided for @iconOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon (Optional)'**
+  String get iconOptional;
+
+  /// No description provided for @colorOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Color (Optional)'**
+  String get colorOptional;
+
+  /// No description provided for @budgetCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget created successfully'**
+  String get budgetCreatedSuccess;
+
+  /// No description provided for @budgetDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget deleted'**
+  String get budgetDeletedSuccess;
+
+  /// No description provided for @deleteBudgetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Budget'**
+  String get deleteBudgetTitle;
+
+  /// No description provided for @deleteBudgetConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this budget? This action cannot be undone.'**
+  String get deleteBudgetConfirm;
+
+  /// No description provided for @budgetOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget Overview'**
+  String get budgetOverview;
+
+  /// No description provided for @totalBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Budget'**
+  String get totalBudget;
+
+  /// No description provided for @period.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get period;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @from.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get from;
+
+  /// No description provided for @to.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get to;
+
+  /// No description provided for @invite.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get invite;
+
+  /// No description provided for @membersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} members'**
+  String membersCount(int count);
+
+  /// No description provided for @recentItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Items'**
+  String get recentItems;
+
+  /// No description provided for @noItemsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No items yet'**
+  String get noItemsYet;
+
+  /// No description provided for @selectStartEndDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select start and end dates'**
+  String get selectStartEndDates;
+
+  /// No description provided for @enterBudgetName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a budget name'**
+  String get enterBudgetName;
+
+  /// No description provided for @addDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a description...'**
+  String get addDescription;
+
+  /// No description provided for @onlyForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Only for you'**
+  String get onlyForYou;
+
+  /// No description provided for @withOthers.
+  ///
+  /// In en, this message translates to:
+  /// **'With others'**
+  String get withOthers;
+
+  /// No description provided for @enterBudgetAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a budget amount'**
+  String get enterBudgetAmount;
+
+  /// No description provided for @enterValidAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid amount'**
+  String get enterValidAmount;
+
+  /// No description provided for @budgetDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget deleted'**
+  String get budgetDeleted;
+
+  /// No description provided for @deleteBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Budget'**
+  String get deleteBudget;
+
+  /// No description provided for @deleteBudgetConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this budget? This action cannot be undone.'**
+  String get deleteBudgetConfirmation;
+
+  /// No description provided for @noBudgetSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No budget selected'**
+  String get noBudgetSelected;
+
+  /// No description provided for @pleaseSelectStartEndDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select start and end dates'**
+  String get pleaseSelectStartEndDates;
+
+  /// No description provided for @budgetAmountGreaterThanZero.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid amount'**
+  String get budgetAmountGreaterThanZero;
 }
 
 class _AppLocalizationsDelegate

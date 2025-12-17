@@ -68,7 +68,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get custom => 'Personalizado';
 
   @override
-  String get budgetPeriod => 'Período del presupuesto';
+  String get budgetPeriod => 'Período del Presupuesto';
 
   @override
   String spentThisMonth(String period) {
@@ -758,4 +758,171 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get discard => 'Descartar';
+
+  @override
+  String get myBudgets => 'Mis Presupuestos';
+
+  @override
+  String get noBudgetsYet => 'Aún no hay presupuestos';
+
+  @override
+  String get noBudgetsDescription => 'Crea tu primer presupuesto para comenzar';
+
+  @override
+  String get personalBudgets => 'Presupuestos Personales';
+
+  @override
+  String get sharedBudgets => 'Presupuestos Compartidos';
+
+  @override
+  String get newBudget => 'Nuevo Presupuesto';
+
+  @override
+  String get createBudget => 'Crear Presupuesto';
+
+  @override
+  String get editBudget => 'Editar Presupuesto';
+
+  @override
+  String get budgetDetails => 'Detalles del Presupuesto';
+
+  @override
+  String switchedToBudget(String name) {
+    return 'Cambiado a \"$name\"';
+  }
+
+  @override
+  String get activeBudget => 'Activo';
+
+  @override
+  String get personal => 'Personal';
+
+  @override
+  String get shared => 'Compartido';
+
+  @override
+  String get budgetName => 'Nombre del Presupuesto';
+
+  @override
+  String get budgetNameHint => 'Ej: Compras, Vacaciones';
+
+  @override
+  String get budgetNameRequired => 'Por favor ingresa un nombre de presupuesto';
+
+  @override
+  String get description => 'Descripción';
+
+  @override
+  String get descriptionOptional => 'Descripción (Opcional)';
+
+  @override
+  String get descriptionHint => 'Agrega una descripción...';
+
+  @override
+  String get budgetType => 'Tipo de Presupuesto';
+
+  @override
+  String get personalBudget => 'Personal';
+
+  @override
+  String get personalBudgetDescription => 'Solo para ti';
+
+  @override
+  String get sharedBudget => 'Compartido';
+
+  @override
+  String get sharedBudgetDescription => 'Con otros';
+
+  @override
+  String get iconOptional => 'Ícono (Opcional)';
+
+  @override
+  String get colorOptional => 'Color (Opcional)';
+
+  @override
+  String get budgetCreatedSuccess => 'Presupuesto creado exitosamente';
+
+  @override
+  String get budgetDeletedSuccess => 'Presupuesto eliminado';
+
+  @override
+  String get deleteBudgetTitle => 'Eliminar Presupuesto';
+
+  @override
+  String get deleteBudgetConfirm =>
+      '¿Estás seguro de que quieres eliminar este presupuesto? Esta acción no se puede deshacer.';
+
+  @override
+  String get budgetOverview => 'Resumen del Presupuesto';
+
+  @override
+  String get totalBudget => 'Presupuesto Total';
+
+  @override
+  String get period => 'Período';
+
+  @override
+  String get duration => 'Duración';
+
+  @override
+  String get from => 'Desde';
+
+  @override
+  String get to => 'Hasta';
+
+  @override
+  String get invite => 'Invitar';
+
+  @override
+  String membersCount(int count) {
+    return '$count miembros';
+  }
+
+  @override
+  String get recentItems => 'Ítems Recientes';
+
+  @override
+  String get noItemsYet => 'Aún no hay ítems';
+
+  @override
+  String get selectStartEndDates =>
+      'Por favor selecciona fechas de inicio y fin';
+
+  @override
+  String get enterBudgetName => 'Por favor ingresa un nombre de presupuesto';
+
+  @override
+  String get addDescription => 'Agrega una descripción...';
+
+  @override
+  String get onlyForYou => 'Solo para ti';
+
+  @override
+  String get withOthers => 'Con otros';
+
+  @override
+  String get enterBudgetAmount => 'Por favor ingresa un monto de presupuesto';
+
+  @override
+  String get enterValidAmount => 'Por favor ingresa un monto válido';
+
+  @override
+  String get budgetDeleted => 'Presupuesto eliminado';
+
+  @override
+  String get deleteBudget => 'Eliminar Presupuesto';
+
+  @override
+  String get deleteBudgetConfirmation =>
+      '¿Estás seguro de que quieres eliminar este presupuesto? Esta acción no se puede deshacer.';
+
+  @override
+  String get noBudgetSelected => 'No hay presupuesto seleccionado';
+
+  @override
+  String get pleaseSelectStartEndDates =>
+      'Por favor selecciona las fechas de inicio y fin';
+
+  @override
+  String get budgetAmountGreaterThanZero => 'Por favor ingresa un monto válido';
 }

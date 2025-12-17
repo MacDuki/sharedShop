@@ -39,28 +39,41 @@ class _AddItemScreenState extends State<AddItemScreen> {
     setState(() => _isLoading = true);
 
     final budgetProvider = context.read<BudgetProvider>();
+    final activeBudget = budgetProvider.activeBudget;
+
+    if (activeBudget == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No budget selected'),
+          backgroundColor: AppColors.errorRed,
+        ),
+      );
+      setState(() => _isLoading = false);
+      return;
+    }
+
     final price = double.parse(_priceController.text.trim());
 
-    // Mostrar feedback del impacto
+    // Show feedback of the impact
     final newTotal = budgetProvider.totalSpent + price;
-    final newRemaining = budgetProvider.household!.budgetAmount - newTotal;
+    final newRemaining = activeBudget.budgetAmount - newTotal;
 
     final item = ShoppingItemModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      householdId: budgetProvider.household!.id,
+      budgetId: activeBudget.id,
       name: _nameController.text.trim(),
       estimatedPrice: price,
       category:
           _categoryController.text.trim().isEmpty
               ? null
               : _categoryController.text.trim(),
-      createdBy: 'currentUser', // TODO: Obtener del auth
+      createdBy: 'currentUser', // TODO: Get from auth
       createdAt: DateTime.now(),
     );
 
     budgetProvider.addItem(item);
 
-    // Mostrar feedback
+    // Show feedback
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -69,7 +82,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         backgroundColor:
             newRemaining < 0
                 ? AppColors.errorRed
-                : newRemaining < budgetProvider.household!.budgetAmount * 0.3
+                : newRemaining < activeBudget.budgetAmount * 0.3
                 ? AppColors.warningAmber
                 : AppColors.success,
         duration: const Duration(seconds: 3),

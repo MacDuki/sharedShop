@@ -3,39 +3,69 @@ import 'package:flutter/foundation.dart';
 import '../models/models.dart';
 
 class BudgetProvider extends ChangeNotifier {
-  // Estado actual
+  // Legacy support
   HouseholdModel? _household;
+
+  // New multi-budget support
+  List<BudgetModel> _budgets = [];
+  BudgetModel? _activeBudget;
+
   List<ShoppingItemModel> _shoppingItems = [];
   List<BudgetHistoryModel> _budgetHistory = [];
   List<UserModel> _householdMembers = [];
   List<NotificationModel> _notifications = [];
 
-  // Getters
+  // Getters - Legacy
   HouseholdModel? get household => _household;
-  List<ShoppingItemModel> get shoppingItems =>
-      List.unmodifiable(_shoppingItems);
-  List<BudgetHistoryModel> get budgetHistory =>
-      List.unmodifiable(_budgetHistory);
+
+  // Getters - New
+  List<BudgetModel> get budgets => List.unmodifiable(_budgets);
+  BudgetModel? get activeBudget => _activeBudget;
+
+  List<ShoppingItemModel> get shoppingItems {
+    // Filter items by active budget
+    if (_activeBudget != null) {
+      return List.unmodifiable(
+        _shoppingItems.where((item) => item.budgetId == _activeBudget!.id),
+      );
+    }
+    return List.unmodifiable(_shoppingItems);
+  }
+
+  List<BudgetHistoryModel> get budgetHistory {
+    // Filter history by active budget
+    if (_activeBudget != null) {
+      return List.unmodifiable(
+        _budgetHistory.where(
+          (history) => history.budgetId == _activeBudget!.id,
+        ),
+      );
+    }
+    return List.unmodifiable(_budgetHistory);
+  }
+
   List<UserModel> get householdMembers => List.unmodifiable(_householdMembers);
   List<NotificationModel> get notifications =>
       List.unmodifiable(_notifications);
 
-  // Cálculos del presupuesto
+  // Budget calculations based on active budget
   double get totalSpent {
-    return _shoppingItems.fold(0.0, (sum, item) => sum + item.estimatedPrice);
+    if (_activeBudget == null) return 0.0;
+    return _shoppingItems
+        .where((item) => item.budgetId == _activeBudget!.id)
+        .fold(0.0, (sum, item) => sum + item.estimatedPrice);
   }
 
   double get remainingBudget {
-    if (_household == null) return 0.0;
-    return _household!.budgetAmount - totalSpent;
+    if (_activeBudget == null) return 0.0;
+    return _activeBudget!.budgetAmount - totalSpent;
   }
 
   double get budgetPercentage {
-    if (_household == null || _household!.budgetAmount == 0) return 0.0;
-    return (totalSpent / _household!.budgetAmount) * 100;
+    if (_activeBudget == null || _activeBudget!.budgetAmount == 0) return 0.0;
+    return (totalSpent / _activeBudget!.budgetAmount) * 100;
   }
 
-  // Estado visual del presupuesto
   BudgetState get budgetState {
     final percentage = budgetPercentage;
     if (percentage > 100) return BudgetState.exceeded;
@@ -43,42 +73,76 @@ class BudgetProvider extends ChangeNotifier {
     return BudgetState.normal;
   }
 
-  // Inicializar household (datos de ejemplo para MVP)
+  // Initialize with sample data
   void initializeHousehold() {
+    // Legacy household for compatibility
     _household = HouseholdModel(
       id: '1',
       name: 'Mi Familia',
       budgetAmount: 500.0,
-      budgetPeriod: BudgetPeriod.weekly,
+      budgetPeriod: BudgetPeriod.weekly as dynamic,
       createdAt: DateTime.now(),
     );
 
-    // Datos de ejemplo
+    // Initialize with sample budgets
+    _budgets = [
+      BudgetModel(
+        id: 'budget_1',
+        name: 'Groceries',
+        description: 'Weekly grocery shopping',
+        ownerId: 'user1',
+        type: BudgetType.personal,
+        budgetAmount: 500.0,
+        budgetPeriod: BudgetPeriod.weekly,
+        createdAt: DateTime.now(),
+        iconName: 'local_grocery_store',
+        colorHex: '#10B981',
+        memberIds: ['user1'],
+      ),
+      BudgetModel(
+        id: 'budget_2',
+        name: 'Family Budget',
+        description: 'Shared family expenses',
+        ownerId: 'user1',
+        type: BudgetType.shared,
+        budgetAmount: 2000.0,
+        budgetPeriod: BudgetPeriod.monthly,
+        createdAt: DateTime.now(),
+        iconName: 'home',
+        colorHex: '#8B5CF6',
+        memberIds: ['user1', 'user2'],
+      ),
+    ];
+
+    // Set first budget as active
+    _activeBudget = _budgets.first;
+
+    // Sample shopping items
     _shoppingItems = [
       ShoppingItemModel(
         id: '1',
-        householdId: '1',
-        name: 'Leche',
+        budgetId: 'budget_1',
+        name: 'Milk',
         estimatedPrice: 2.50,
-        category: 'Lácteos',
+        category: 'Dairy',
         createdBy: 'user1',
         createdAt: DateTime.now(),
       ),
       ShoppingItemModel(
         id: '2',
-        householdId: '1',
-        name: 'Pan',
+        budgetId: 'budget_1',
+        name: 'Bread',
         estimatedPrice: 1.50,
-        category: 'Panadería',
+        category: 'Bakery',
         createdBy: 'user1',
         createdAt: DateTime.now(),
       ),
       ShoppingItemModel(
         id: '3',
-        householdId: '1',
-        name: 'Huevos',
+        budgetId: 'budget_2',
+        name: 'Eggs',
         estimatedPrice: 3.20,
-        category: 'Lácteos',
+        category: 'Dairy',
         createdBy: 'user1',
         createdAt: DateTime.now(),
       ),
@@ -90,14 +154,61 @@ class BudgetProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Agregar item
+  // Budget Management
+  void addBudget(BudgetModel budget) {
+    _budgets.add(budget);
+    // Set as active if it's the first budget
+    if (_budgets.length == 1) {
+      _activeBudget = budget;
+    }
+    notifyListeners();
+  }
+
+  void updateBudgetData(BudgetModel updatedBudget) {
+    final index = _budgets.indexWhere((b) => b.id == updatedBudget.id);
+    if (index != -1) {
+      _budgets[index] = updatedBudget;
+      // Update active budget if it's the one being edited
+      if (_activeBudget?.id == updatedBudget.id) {
+        _activeBudget = updatedBudget;
+      }
+      notifyListeners();
+    }
+  }
+
+  void deleteBudget(String budgetId) {
+    _budgets.removeWhere((b) => b.id == budgetId);
+    // If active budget was deleted, set another as active
+    if (_activeBudget?.id == budgetId) {
+      _activeBudget = _budgets.isNotEmpty ? _budgets.first : null;
+    }
+    // Remove associated items
+    _shoppingItems.removeWhere((item) => item.budgetId == budgetId);
+    _budgetHistory.removeWhere((history) => history.budgetId == budgetId);
+    notifyListeners();
+  }
+
+  void setActiveBudget(String budgetId) {
+    final budget = _budgets.firstWhere(
+      (b) => b.id == budgetId,
+      orElse: () => _budgets.first,
+    );
+    _activeBudget = budget;
+    notifyListeners();
+  }
+
+  // Get items for a specific budget
+  List<ShoppingItemModel> getItemsForBudget(String budgetId) {
+    return _shoppingItems.where((item) => item.budgetId == budgetId).toList();
+  }
+
+  // Shopping Item Management
   void addItem(ShoppingItemModel item) {
     _shoppingItems.add(item);
 
-    // Crear notificación
     _addNotification(
       type: NotificationType.itemAdded,
-      title: 'Nuevo item agregado',
+      title: 'New item added',
       description: '${item.name} - \$${item.estimatedPrice.toStringAsFixed(2)}',
       metadata: {'itemId': item.id, 'itemName': item.name},
     );
@@ -105,16 +216,14 @@ class BudgetProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Editar item
   void updateItem(String itemId, ShoppingItemModel updatedItem) {
     final index = _shoppingItems.indexWhere((item) => item.id == itemId);
     if (index != -1) {
       _shoppingItems[index] = updatedItem;
 
-      // Crear notificación
       _addNotification(
         type: NotificationType.itemAdded,
-        title: 'Item actualizado',
+        title: 'Item updated',
         description:
             '${updatedItem.name} - \$${updatedItem.estimatedPrice.toStringAsFixed(2)}',
         metadata: {'itemId': updatedItem.id, 'itemName': updatedItem.name},
@@ -124,23 +233,20 @@ class BudgetProvider extends ChangeNotifier {
     }
   }
 
-  // Eliminar item
   void deleteItem(String itemId) {
     final item = _shoppingItems.firstWhere((item) => item.id == itemId);
     _shoppingItems.removeWhere((item) => item.id == itemId);
 
-    // Crear notificación
     _addNotification(
       type: NotificationType.itemDeleted,
-      title: 'Item eliminado',
-      description: '${item.name} fue eliminado de la lista',
+      title: 'Item deleted',
+      description: '${item.name} was removed from the list',
       metadata: {'itemId': item.id, 'itemName': item.name},
     );
 
     notifyListeners();
   }
 
-  // Marcar item como comprado
   void toggleItemPurchased(String itemId) {
     final index = _shoppingItems.indexWhere((item) => item.id == itemId);
     if (index != -1) {
@@ -149,13 +255,12 @@ class BudgetProvider extends ChangeNotifier {
 
       _shoppingItems[index] = item.copyWith(isPurchased: newStatus);
 
-      // Crear notificación
       if (newStatus) {
         _addNotification(
           type: NotificationType.itemAdded,
-          title: 'Compra realizada',
+          title: 'Purchase completed',
           description:
-              '${item.name} marcado como comprado - \$${item.estimatedPrice.toStringAsFixed(2)}',
+              '${item.name} marked as purchased - \$${item.estimatedPrice.toStringAsFixed(2)}',
           metadata: {
             'itemId': item.id,
             'itemName': item.name,
@@ -168,7 +273,7 @@ class BudgetProvider extends ChangeNotifier {
     }
   }
 
-  // Actualizar presupuesto
+  // Legacy budget update (for compatibility)
   void updateBudget({
     required double budgetAmount,
     required BudgetPeriod budgetPeriod,
@@ -179,17 +284,27 @@ class BudgetProvider extends ChangeNotifier {
       final oldAmount = _household!.budgetAmount;
       _household = _household!.copyWith(
         budgetAmount: budgetAmount,
-        budgetPeriod: budgetPeriod,
+        budgetPeriod: budgetPeriod as dynamic,
         customPeriodStart: customPeriodStart,
         customPeriodEnd: customPeriodEnd,
       );
 
-      // Crear notificación
+      // Also update active budget if exists
+      if (_activeBudget != null) {
+        final updatedBudget = _activeBudget!.copyWith(
+          budgetAmount: budgetAmount,
+          budgetPeriod: budgetPeriod,
+          customPeriodStart: customPeriodStart,
+          customPeriodEnd: customPeriodEnd,
+        );
+        updateBudgetData(updatedBudget);
+      }
+
       _addNotification(
         type: NotificationType.budgetUpdated,
-        title: 'Presupuesto actualizado',
+        title: 'Budget updated',
         description:
-            'De \$${oldAmount.toStringAsFixed(2)} a \$${budgetAmount.toStringAsFixed(2)}',
+            'From \$${oldAmount.toStringAsFixed(2)} to \$${budgetAmount.toStringAsFixed(2)}',
         metadata: {
           'oldAmount': oldAmount,
           'newAmount': budgetAmount,
@@ -201,7 +316,6 @@ class BudgetProvider extends ChangeNotifier {
     }
   }
 
-  // Actualizar nombre del household
   void updateHouseholdName(String newName) {
     if (_household != null) {
       _household = _household!.copyWith(name: newName);
@@ -209,33 +323,31 @@ class BudgetProvider extends ChangeNotifier {
     }
   }
 
-  // Eliminar período del historial
   void deleteBudgetHistory(String historyId) {
     _budgetHistory.removeWhere((history) => history.id == historyId);
     notifyListeners();
   }
 
-  // Agregar historial (datos de ejemplo para MVP)
   void _initializeHistory() {
     final now = DateTime.now();
     _budgetHistory = [
       BudgetHistoryModel(
         id: '1',
-        householdId: '1',
+        budgetId: 'budget_1',
         periodStart: DateTime(now.year, now.month - 2, 1),
         periodEnd: DateTime(now.year, now.month - 2, 7),
         totalSpent: 245.80,
       ),
       BudgetHistoryModel(
         id: '2',
-        householdId: '1',
+        budgetId: 'budget_1',
         periodStart: DateTime(now.year, now.month - 1, 8),
         periodEnd: DateTime(now.year, now.month - 1, 14),
         totalSpent: 312.50,
       ),
       BudgetHistoryModel(
         id: '3',
-        householdId: '1',
+        budgetId: 'budget_2',
         periodStart: DateTime(now.year, now.month - 1, 15),
         periodEnd: DateTime(now.year, now.month - 1, 21),
         totalSpent: 487.20,
@@ -243,25 +355,27 @@ class BudgetProvider extends ChangeNotifier {
     ];
   }
 
-  // Inicializar miembros (datos de ejemplo para MVP)
   void _initializeMembers() {
     _householdMembers = [
       UserModel(
         id: 'user1',
-        name: 'Usuario Principal',
-        email: 'usuario@ejemplo.com',
+        name: 'Main User',
+        email: 'user@example.com',
         householdId: '1',
+        budgetIds: ['budget_1', 'budget_2'],
+        activeBudgetId: 'budget_1',
       ),
       UserModel(
         id: 'user2',
-        name: 'María García',
-        email: 'maria@ejemplo.com',
+        name: 'Maria Garcia',
+        email: 'maria@example.com',
         householdId: '1',
+        budgetIds: ['budget_2'],
+        activeBudgetId: 'budget_2',
       ),
     ];
   }
 
-  // Método helper para crear notificaciones
   void _addNotification({
     required NotificationType type,
     required String title,
@@ -280,13 +394,11 @@ class BudgetProvider extends ChangeNotifier {
 
     _notifications.insert(0, notification);
 
-    // Mantener solo las últimas 50 notificaciones
     if (_notifications.length > 50) {
       _notifications = _notifications.sublist(0, 50);
     }
   }
 
-  // Eliminar una notificación
   void deleteNotification(String notificationId) {
     _notifications.removeWhere(
       (notification) => notification.id == notificationId,
@@ -294,7 +406,6 @@ class BudgetProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Eliminar todas las notificaciones
   void clearAllNotifications() {
     _notifications.clear();
     notifyListeners();
