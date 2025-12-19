@@ -12,7 +12,12 @@
           "package_name": "com.example.appfast"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "985965957576-de29dt28nu3u1thln1qj8fghu0r0gskv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAPOEXpGGdDqZQ6XxEmvRT2Od5-kXIWw6Q"
@@ -20,7 +25,49 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "985965957576-de29dt28nu3u1thln1qj8fghu0r0gskv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:985965957576:android:ac5846d028b2e525ae30fd",
+        "android_client_info": {
+          "package_name": "com.orugario.sharedbudget"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "985965957576-6f499p1dcffivgch0mvbjbs3hhqejvb9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.orugario.sharedbudget",
+            "certificate_hash": "ea3c13b09e21727ca8d4a63470939c0be428ef2d"
+          }
+        },
+        {
+          "client_id": "985965957576-de29dt28nu3u1thln1qj8fghu0r0gskv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPOEXpGGdDqZQ6XxEmvRT2Od5-kXIWw6Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "985965957576-de29dt28nu3u1thln1qj8fghu0r0gskv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

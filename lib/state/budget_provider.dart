@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/models.dart';
@@ -427,15 +428,29 @@ class BudgetProvider extends ChangeNotifier {
   }
 
   void _initializeMembers() {
-    // Usuario actual
-    _currentUser = UserModel(
-      id: 'user1',
-      name: 'Main User',
-      email: 'user@example.com',
-      householdId: '1',
-      budgetIds: ['budget_1', 'budget_2'],
-      activeBudgetId: 'budget_1',
-    );
+    // Obtener usuario actual de Firebase Auth
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+
+    if (firebaseUser != null) {
+      _currentUser = UserModel(
+        id: firebaseUser.uid,
+        name: firebaseUser.displayName ?? 'Usuario',
+        email: firebaseUser.email ?? 'email@ejemplo.com',
+        householdId: '1',
+        budgetIds: ['budget_1', 'budget_2'],
+        activeBudgetId: 'budget_1',
+      );
+    } else {
+      // Fallback si no hay usuario autenticado
+      _currentUser = UserModel(
+        id: 'user1',
+        name: 'Main User',
+        email: 'user@example.com',
+        householdId: '1',
+        budgetIds: ['budget_1', 'budget_2'],
+        activeBudgetId: 'budget_1',
+      );
+    }
 
     _householdMembers = [
       _currentUser!,

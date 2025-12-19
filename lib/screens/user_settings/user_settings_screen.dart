@@ -48,7 +48,10 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
   }
 
   void _showEditNameDialog() {
-    final nameController = TextEditingController(text: 'Usuario Principal');
+    final budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
+    final nameController = TextEditingController(
+      text: budgetProvider.currentUser?.name ?? 'Usuario',
+    );
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
@@ -99,7 +102,10 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
   }
 
   void _showEditEmailDialog() {
-    final emailController = TextEditingController(text: 'usuario@ejemplo.com');
+    final budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
+    final emailController = TextEditingController(
+      text: budgetProvider.currentUser?.email ?? 'email@ejemplo.com',
+    );
     final theme = Theme.of(context);
 
     showDialog(
@@ -276,18 +282,31 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
               ),
               const SizedBox(height: 16),
 
-              _SettingItem(
-                icon: Icons.person_outline,
-                title: l10n.name,
-                value: 'Usuario Principal',
-                onTap: _showEditNameDialog,
-              ),
-              const SizedBox(height: 12),
-              _SettingItem(
-                icon: Icons.email_outlined,
-                title: l10n.email,
-                value: 'usuario@ejemplo.com',
-                onTap: _showEditEmailDialog,
+              Consumer<BudgetProvider>(
+                builder: (context, budgetProvider, child) {
+                  final userName =
+                      budgetProvider.currentUser?.name ?? 'Usuario';
+                  final userEmail =
+                      budgetProvider.currentUser?.email ?? 'email@ejemplo.com';
+
+                  return Column(
+                    children: [
+                      _SettingItem(
+                        icon: Icons.person_outline,
+                        title: l10n.name,
+                        value: userName,
+                        onTap: _showEditNameDialog,
+                      ),
+                      const SizedBox(height: 12),
+                      _SettingItem(
+                        icon: Icons.email_outlined,
+                        title: l10n.email,
+                        value: userEmail,
+                        onTap: _showEditEmailDialog,
+                      ),
+                    ],
+                  );
+                },
               ),
 
               const SizedBox(height: 32),

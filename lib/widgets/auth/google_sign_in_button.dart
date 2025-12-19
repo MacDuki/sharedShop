@@ -1,14 +1,11 @@
+import 'package:appfast/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:appfast/utils/utils.dart';
 
 class GoogleSignInButton extends StatelessWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
-  const GoogleSignInButton({
-    super.key,
-    required this.onPressed,
-  });
+  const GoogleSignInButton({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -21,20 +18,12 @@ class GoogleSignInButton extends StatelessWidget {
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
           elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        icon: SvgPicture.asset(
-          Assets.googleLogoSvg,
-          height: 24,
-        ),
+        icon: SvgPicture.asset(Assets.googleLogoSvg, height: 24),
         label: const Text(
           'Iniciar sesión con Google',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ),
     );

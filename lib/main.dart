@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
             Locale('en'), // English
             Locale('es'), // Spanish
           ],
-          home: const DashboardScreen(),
+          home: const AuthWrapper(),
           debugShowCheckedModeBanner: false,
         );
       },

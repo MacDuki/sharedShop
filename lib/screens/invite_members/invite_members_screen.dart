@@ -159,7 +159,6 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
       body: SafeArea(
         child: Consumer<BudgetProvider>(
           builder: (context, budgetProvider, child) {
-            final household = budgetProvider.household;
             final members = budgetProvider.householdMembers;
 
             return SingleChildScrollView(

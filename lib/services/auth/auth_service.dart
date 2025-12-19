@@ -2,53 +2,52 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-    Future<bool> signInWithGoogle() async {
+  Future<void> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? result = await GoogleSignIn().signIn();
 
-      final GoogleSignInAuthentication? auth = await result?.authentication;
+      // Si el usuario cancela el modal
+      if (result == null) {
+        throw Exception('Inicio de sesión cancelado');
+      }
+
+      final GoogleSignInAuthentication? auth = await result.authentication;
+
+      if (auth?.accessToken == null || auth?.idToken == null) {
+        throw Exception('Error al obtener credenciales de Google');
+      }
 
       final credential = GoogleAuthProvider.credential(
-        accessToken: auth?.accessToken,
-        idToken: auth?.idToken,
+        accessToken: auth!.accessToken,
+        idToken: auth.idToken,
       );
 
-      final UserCredential userCredential =
-          await _firebaseAuth.signInWithCredential(credential);
-
-      return userCredential.user != null;
+      await _firebaseAuth.signInWithCredential(credential);
     } catch (e) {
-      return false;
+      throw Exception('Error al iniciar sesión con Google: ${e.toString()}');
     }
   }
 
-  Future<bool> signInWithApple() async {
+  Future<void> signInWithApple() async {
     try {
-      final credential = await SignInWithApple.getAppleIDCredential(scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ]);
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
 
-      final UserCredential userCredential =
-          await _firebaseAuth.signInWithCredential(
+      await _firebaseAuth.signInWithCredential(
         OAuthProvider('apple.com').credential(
           idToken: credential.identityToken,
           accessToken: credential.authorizationCode,
         ),
       );
-
-      if (userCredential.user == null) {
-        return false;
-      }
-
-      return true;
     } catch (e) {
-      return false;
+      throw Exception('Error al iniciar sesión con Apple: ${e.toString()}');
     }
   }
-
 }
