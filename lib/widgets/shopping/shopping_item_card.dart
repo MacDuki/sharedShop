@@ -136,7 +136,7 @@ class _ShoppingItemCardState extends State<ShoppingItemCard>
                   children: [
                     // Foto del creador
                     _buildCreatorAvatar(creator),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
 
                     // Checkbox
                     Checkbox(
@@ -146,16 +146,21 @@ class _ShoppingItemCardState extends State<ShoppingItemCard>
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                       ),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
 
                     // Información del item
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             widget.item.name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -170,9 +175,11 @@ class _ShoppingItemCardState extends State<ShoppingItemCard>
                             ),
                           ),
                           if (widget.item.category != null) ...[
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 2),
                             Text(
                               widget.item.category!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: AppColors.textSecondary,
@@ -180,8 +187,9 @@ class _ShoppingItemCardState extends State<ShoppingItemCard>
                             ),
                           ],
                           if (widget.item.isPurchased) ...[
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 2),
                             Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
                                   Icons.check_circle,
@@ -189,12 +197,14 @@ class _ShoppingItemCardState extends State<ShoppingItemCard>
                                   color: AppColors.primaryGreen,
                                 ),
                                 const SizedBox(width: 4),
-                                Text(
-                                  'Completed',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.primaryGreen,
+                                Flexible(
+                                  child: Text(
+                                    'Completed',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.primaryGreen,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -204,11 +214,13 @@ class _ShoppingItemCardState extends State<ShoppingItemCard>
                       ),
                     ),
 
+                    const SizedBox(width: 8),
+
                     // Precio
                     Text(
                       '\$${widget.item.estimatedPrice.toStringAsFixed(2)}',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color:
                             widget.item.isPurchased
@@ -222,30 +234,36 @@ class _ShoppingItemCardState extends State<ShoppingItemCard>
                     ),
 
                     // Botón expandir
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 4),
                     IconButton(
                       icon: RotationTransition(
                         turns: Tween(
                           begin: 0.0,
                           end: 0.5,
                         ).animate(_expandAnimation),
-                        child: const Icon(Icons.keyboard_arrow_down),
+                        child: const Icon(Icons.keyboard_arrow_down, size: 20),
                       ),
                       color: AppColors.textSecondary,
                       onPressed: _toggleExpanded,
                       padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
                     ),
 
                     // Botón eliminar
                     if (widget.onDelete != null) ...[
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 4),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline),
+                        icon: const Icon(Icons.delete_outline, size: 20),
                         color: AppColors.errorRed,
                         onPressed: widget.onDelete,
                         padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
                       ),
                     ],
                   ],

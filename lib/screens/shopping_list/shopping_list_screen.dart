@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/models.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
+import '../../widgets/shopping/shopping_item_card.dart';
 import '../add_item/add_item_screen.dart';
 
 enum SortOption { name, price, status }
@@ -92,17 +93,6 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          l10n.filterAndSort,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textWhite,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Filtro por categoría
                         Text(
                           l10n.filterAndSort,
                           style: const TextStyle(
@@ -635,7 +625,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                 (context, index) => const SizedBox(height: 12),
                             itemBuilder: (context, index) {
                               final item = items[index];
-                              return _ItemCard(
+                              return ShoppingItemCard(
                                 item: item,
                                 onTap: () {
                                   _showEditItemDialog(
@@ -644,7 +634,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                     budgetProvider,
                                   );
                                 },
-                                onTogglePurchased: () {
+                                onTogglePurchased: (value) {
                                   budgetProvider.toggleItemPurchased(item.id);
                                 },
                                 onDelete: () {
@@ -840,165 +830,6 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
               ),
             ],
           ),
-    );
-  }
-}
-
-class _ItemCard extends StatelessWidget {
-  final ShoppingItemModel item;
-  final VoidCallback onTap;
-  final VoidCallback onTogglePurchased;
-  final VoidCallback onDelete;
-
-  const _ItemCard({
-    required this.item,
-    required this.onTap,
-    required this.onTogglePurchased,
-    required this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.darkCard,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color:
-              item.isPurchased
-                  ? AppColors.primaryGreen.withValues(alpha: 0.3)
-                  : Colors.transparent,
-          width: 1,
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                // Checkbox
-                InkWell(
-                  onTap: onTogglePurchased,
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color:
-                            item.isPurchased
-                                ? AppColors.primaryGreen
-                                : AppColors.textGray,
-                        width: 2,
-                      ),
-                      color:
-                          item.isPurchased
-                              ? AppColors.primaryGreen
-                              : Colors.transparent,
-                    ),
-                    child:
-                        item.isPurchased
-                            ? const Icon(
-                              Icons.check,
-                              size: 16,
-                              color: AppColors.textWhite,
-                            )
-                            : null,
-                  ),
-                ),
-                const SizedBox(width: 16),
-
-                // Item info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.name,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color:
-                              item.isPurchased
-                                  ? AppColors.textGray
-                                  : AppColors.textWhite,
-                          decoration:
-                              item.isPurchased
-                                  ? TextDecoration.lineThrough
-                                  : null,
-                        ),
-                      ),
-                      if (item.category != null) ...[
-                        const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.darkBackground,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            item.category!,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: AppColors.textGray,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-
-                // Price
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '\$${item.estimatedPrice.toStringAsFixed(2)}',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color:
-                            item.isPurchased
-                                ? AppColors.textGray
-                                : AppColors.primaryBlue,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(width: 8),
-
-                // Delete button
-                InkWell(
-                  onTap: onDelete,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.errorRed.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(
-                      Icons.delete_outline,
-                      size: 20,
-                      color: AppColors.errorRed,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

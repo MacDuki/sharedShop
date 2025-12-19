@@ -159,7 +159,17 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
       body: SafeArea(
         child: Consumer<BudgetProvider>(
           builder: (context, budgetProvider, child) {
-            final members = budgetProvider.householdMembers;
+            final activeBudget = budgetProvider.activeBudget;
+            // Filtrar solo los miembros que pertenecen al presupuesto activo
+            final members =
+                activeBudget != null
+                    ? budgetProvider.householdMembers
+                        .where(
+                          (member) =>
+                              activeBudget.memberIds.contains(member.id),
+                        )
+                        .toList()
+                    : <UserModel>[];
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(24),

@@ -38,9 +38,10 @@ class ShoppingItemModel {
       createdAt: DateTime.parse(json['createdAt'] as String),
       isPurchased: json['isPurchased'] as bool? ?? false,
       purchasedBy: json['purchasedBy'] as String?,
-      purchasedAt: json['purchasedAt'] != null
-          ? DateTime.parse(json['purchasedAt'] as String)
-          : null,
+      purchasedAt:
+          json['purchasedAt'] != null
+              ? DateTime.parse(json['purchasedAt'] as String)
+              : null,
     );
   }
 
