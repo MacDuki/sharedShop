@@ -1957,6 +1957,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter a valid amount'**
   String get budgetAmountGreaterThanZero;
+
+  /// No description provided for @expensesByMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses by Member'**
+  String get expensesByMember;
+
+  /// No description provided for @viewExpensesByMember.
+  ///
+  /// In en, this message translates to:
+  /// **'View Expenses by Member'**
+  String get viewExpensesByMember;
+
+  /// No description provided for @memberExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Member Expenses'**
+  String get memberExpenses;
+
+  /// No description provided for @completedItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed items'**
+  String get completedItems;
+
+  /// No description provided for @totalCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Total completed'**
+  String get totalCompleted;
+
+  /// No description provided for @itemsPurchased.
+  ///
+  /// In en, this message translates to:
+  /// **'Items purchased'**
+  String get itemsPurchased;
+
+  /// No description provided for @totalPurchased.
+  ///
+  /// In en, this message translates to:
+  /// **'Total purchased'**
+  String get totalPurchased;
+
+  /// No description provided for @noCompletedItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed items'**
+  String get noCompletedItems;
+
+  /// No description provided for @noPurchasedItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No items purchased'**
+  String get noPurchasedItems;
+
+  /// No description provided for @noCompletedItemsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This member hasn\'t completed any items yet'**
+  String get noCompletedItemsDescription;
+
+  /// No description provided for @viewItemDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get viewItemDetails;
+
+  /// No description provided for @itemDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Details'**
+  String get itemDetails;
+
+  /// No description provided for @completedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed by {name}'**
+  String completedBy(String name);
+
+  /// No description provided for @completedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed on {date}'**
+  String completedOn(String date);
+
+  /// No description provided for @itemsCompletedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items'**
+  String itemsCompletedCount(int count);
+
+  /// No description provided for @contributionPercentage.
+  ///
+  /// In en, this message translates to:
+  /// **'{percentage}% of total'**
+  String contributionPercentage(String percentage);
+
+  /// No description provided for @noMemberExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses recorded'**
+  String get noMemberExpenses;
+
+  /// No description provided for @noMemberExpensesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Members haven\'t completed any items in this budget yet'**
+  String get noMemberExpensesDescription;
 }
 
 class _AppLocalizationsDelegate

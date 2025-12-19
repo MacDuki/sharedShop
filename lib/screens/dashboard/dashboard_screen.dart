@@ -386,43 +386,94 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                               const SizedBox(height: 16),
 
-                              // On Track Badge
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primaryGreen.withOpacity(
-                                    0.15,
-                                  ),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: AppColors.primaryGreen.withOpacity(
-                                      0.3,
-                                    ),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.trending_up,
-                                      color: AppColors.primaryGreen,
-                                      size: 16,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      l10n.onTrack,
-                                      style: TextStyle(
-                                        color: AppColors.primaryGreen,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
+                              // Items comprados/pendientes Badge (clickeable)
+                              Builder(
+                                builder: (context) {
+                                  final allItems = budgetProvider.shoppingItems;
+                                  final purchasedItems =
+                                      allItems
+                                          .where((item) => item.isPurchased)
+                                          .length;
+                                  final pendingItems =
+                                      allItems.length - purchasedItems;
+                                  final totalItems = allItems.length;
+
+                                  // Calcular color basado en la proporción
+                                  Color badgeColor;
+                                  if (totalItems == 0) {
+                                    badgeColor = AppColors.textGray;
+                                  } else if (pendingItems == 0) {
+                                    badgeColor = AppColors.success;
+                                  } else if (pendingItems <= totalItems * 0.3) {
+                                    badgeColor = AppColors.primaryGreen;
+                                  } else if (pendingItems <= totalItems * 0.5) {
+                                    badgeColor = AppColors.warningAmber;
+                                  } else {
+                                    badgeColor = AppColors.errorRed;
+                                  }
+
+                                  return InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) =>
+                                                  const ShoppingListScreen(),
+                                        ),
+                                      );
+                                    },
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: badgeColor.withOpacity(0.12),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: badgeColor.withOpacity(0.25),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.check_circle,
+                                            color: badgeColor,
+                                            size: 14,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '$purchasedItems',
+                                            style: TextStyle(
+                                              color: badgeColor,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Icon(
+                                            Icons.warning_amber_rounded,
+                                            color: badgeColor,
+                                            size: 14,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '$pendingItems',
+                                            style: TextStyle(
+                                              color: badgeColor,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  );
+                                },
                               ),
 
                               const SizedBox(height: 32),
@@ -462,10 +513,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       theme.brightness == Brightness.dark
                                           ? AppColors.darkCardSecondary
                                           : Colors.grey.shade300,
-                                  valueColor:
-                                      const AlwaysStoppedAnimation<Color>(
-                                        AppColors.primaryBlue,
-                                      ),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    _getProgressBarColor(
+                                      budgetProvider.budgetPercentage,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
@@ -701,6 +753,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return budget.type == BudgetType.personal
         ? Icons.account_balance_wallet_outlined
         : Icons.people_outline;
+  }
+
+  Color _getProgressBarColor(double percentage) {
+    if (percentage >= 90) {
+      return AppColors.errorRed;
+    } else if (percentage >= 70) {
+      return AppColors.warningAmber;
+    } else if (percentage >= 50) {
+      return AppColors.primaryBlue;
+    } else {
+      return AppColors.success;
+    }
   }
 }
 

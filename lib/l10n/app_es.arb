@@ -473,5 +473,52 @@
   
   "noBudgetSelected": "No hay presupuesto seleccionado",
   "pleaseSelectStartEndDates": "Por favor selecciona las fechas de inicio y fin",
-  "budgetAmountGreaterThanZero": "Por favor ingresa un monto válido"
+  "budgetAmountGreaterThanZero": "Por favor ingresa un monto válido",
+  
+  "expensesByMember": "Gastos por Miembro",
+  "viewExpensesByMember": "Ver Gastos por Miembro",
+  "memberExpenses": "Gastos de Miembros",
+  "completedItems": "Ítems completados",
+  "totalCompleted": "Total completado",
+  "itemsPurchased": "Ítems comprados",
+  "totalPurchased": "Total comprado",
+  "noCompletedItems": "Sin ítems completados",
+  "noPurchasedItems": "Sin ítems comprados",
+  "noCompletedItemsDescription": "Este miembro aún no ha completado ningún ítem",
+  "viewItemDetails": "Ver Detalles",
+  "itemDetails": "Detalles de Ítems",
+  "completedBy": "Completado por {name}",
+  "@completedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "completedOn": "Completado el {date}",
+  "@completedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "itemsCompletedCount": "{count} ítems",
+  "@itemsCompletedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contributionPercentage": "{percentage}% del total",
+  "@contributionPercentage": {
+    "placeholders": {
+      "percentage": {
+        "type": "String"
+      }
+    }
+  },
+  "noMemberExpenses": "Sin gastos registrados",
+  "noMemberExpensesDescription": "Los miembros aún no han completado ítems en este presupuesto"
 }

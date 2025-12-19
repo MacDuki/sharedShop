@@ -242,7 +242,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                             setState(() => _ascending = value);
                             setModalState(() {});
                           },
-                          activeColor: AppColors.primaryBlue,
+                          activeThumbColor: AppColors.primaryBlue,
                         ),
 
                         const SizedBox(height: 16),

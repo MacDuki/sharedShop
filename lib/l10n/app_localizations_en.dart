@@ -990,4 +990,68 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get budgetAmountGreaterThanZero => 'Please enter a valid amount';
+
+  @override
+  String get expensesByMember => 'Expenses by Member';
+
+  @override
+  String get viewExpensesByMember => 'View Expenses by Member';
+
+  @override
+  String get memberExpenses => 'Member Expenses';
+
+  @override
+  String get completedItems => 'Completed items';
+
+  @override
+  String get totalCompleted => 'Total completed';
+
+  @override
+  String get itemsPurchased => 'Items purchased';
+
+  @override
+  String get totalPurchased => 'Total purchased';
+
+  @override
+  String get noCompletedItems => 'No completed items';
+
+  @override
+  String get noPurchasedItems => 'No items purchased';
+
+  @override
+  String get noCompletedItemsDescription =>
+      'This member hasn\'t completed any items yet';
+
+  @override
+  String get viewItemDetails => 'View Details';
+
+  @override
+  String get itemDetails => 'Item Details';
+
+  @override
+  String completedBy(String name) {
+    return 'Completed by $name';
+  }
+
+  @override
+  String completedOn(String date) {
+    return 'Completed on $date';
+  }
+
+  @override
+  String itemsCompletedCount(int count) {
+    return '$count items';
+  }
+
+  @override
+  String contributionPercentage(String percentage) {
+    return '$percentage% of total';
+  }
+
+  @override
+  String get noMemberExpenses => 'No expenses recorded';
+
+  @override
+  String get noMemberExpensesDescription =>
+      'Members haven\'t completed any items in this budget yet';
 }

@@ -757,7 +757,6 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
               surface: AppColors.darkCard,
               onSurface: AppColors.textWhite,
             ),
-            dialogBackgroundColor: AppColors.darkCard,
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.primaryBlue,
@@ -798,6 +797,7 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                 AppColors.primaryBlue.withOpacity(0.2),
               ),
             ),
+            dialogTheme: DialogThemeData(backgroundColor: AppColors.darkCard),
           ),
           child: child!,
         );

@@ -995,4 +995,68 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get budgetAmountGreaterThanZero => 'Por favor ingresa un monto válido';
+
+  @override
+  String get expensesByMember => 'Gastos por Miembro';
+
+  @override
+  String get viewExpensesByMember => 'Ver Gastos por Miembro';
+
+  @override
+  String get memberExpenses => 'Gastos de Miembros';
+
+  @override
+  String get completedItems => 'Ítems completados';
+
+  @override
+  String get totalCompleted => 'Total completado';
+
+  @override
+  String get itemsPurchased => 'Ítems comprados';
+
+  @override
+  String get totalPurchased => 'Total comprado';
+
+  @override
+  String get noCompletedItems => 'Sin ítems completados';
+
+  @override
+  String get noPurchasedItems => 'Sin ítems comprados';
+
+  @override
+  String get noCompletedItemsDescription =>
+      'Este miembro aún no ha completado ningún ítem';
+
+  @override
+  String get viewItemDetails => 'Ver Detalles';
+
+  @override
+  String get itemDetails => 'Detalles de Ítems';
+
+  @override
+  String completedBy(String name) {
+    return 'Completado por $name';
+  }
+
+  @override
+  String completedOn(String date) {
+    return 'Completado el $date';
+  }
+
+  @override
+  String itemsCompletedCount(int count) {
+    return '$count ítems';
+  }
+
+  @override
+  String contributionPercentage(String percentage) {
+    return '$percentage% del total';
+  }
+
+  @override
+  String get noMemberExpenses => 'Sin gastos registrados';
+
+  @override
+  String get noMemberExpensesDescription =>
+      'Los miembros aún no han completado ítems en este presupuesto';
 }

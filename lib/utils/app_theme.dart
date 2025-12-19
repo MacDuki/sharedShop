@@ -11,7 +11,6 @@ class AppTheme {
       primary: AppColors.primaryGreen,
       secondary: AppColors.primaryBlue,
       surface: AppColors.darkCard,
-      background: AppColors.darkBackground,
       error: AppColors.errorRed,
     ),
     scaffoldBackgroundColor: AppColors.darkBackground,

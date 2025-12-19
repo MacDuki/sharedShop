@@ -9,4 +9,6 @@ export 'group_settings/group_settings_screen.dart';
 export 'history/history_screen.dart';
 export 'invite_members/invite_members_screen.dart';
 export 'login/login_screen.dart';
+export 'member_expenses/member_expenses_screen.dart';
+export 'member_expenses/member_items_detail_screen.dart';
 export 'shopping_list/shopping_list_screen.dart';

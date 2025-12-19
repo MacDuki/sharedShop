@@ -17,8 +17,8 @@ import 'utils/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   await initServices();
+  FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   runApp(
     MultiProvider(
       providers: [

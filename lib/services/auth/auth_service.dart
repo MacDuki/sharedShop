@@ -14,7 +14,7 @@ class AuthService {
         throw Exception('Inicio de sesión cancelado');
       }
 
-      final GoogleSignInAuthentication? auth = await result.authentication;
+      final GoogleSignInAuthentication auth = await result.authentication;
 
       if (auth?.accessToken == null || auth?.idToken == null) {
         throw Exception('Error al obtener credenciales de Google');

@@ -7,6 +7,7 @@ import '../../state/state.dart';
 import '../../utils/app_colors.dart';
 import '../budget_form/budget_form_screen.dart';
 import '../invite_members/invite_members_screen.dart';
+import '../member_expenses/member_expenses_screen.dart';
 import '../shopping_list/shopping_list_screen.dart';
 
 class BudgetDetailsScreen extends StatelessWidget {
@@ -242,6 +243,24 @@ class BudgetDetailsScreen extends StatelessWidget {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 12),
+                        // Período dentro del progress bar
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.access_time,
+                              size: 14,
+                              color: AppColors.textGray,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              '${AppLocalizations.of(context)!.duration}: ${_getPeriodText(context, currentBudget.budgetPeriod)}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: AppColors.textGray,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -286,60 +305,6 @@ class BudgetDetailsScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Period Info
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: theme.cardTheme.color,
-                  borderRadius: BorderRadius.circular(16),
-                  border:
-                      isDark
-                          ? null
-                          : Border.all(
-                            color: Colors.grey.withOpacity(0.15),
-                            width: 1,
-                          ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.period,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: AppColors.textWhite,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildInfoRow(
-                      context,
-                      Icons.calendar_today_outlined,
-                      AppLocalizations.of(context)!.duration,
-                      _getPeriodText(context, currentBudget.budgetPeriod),
-                    ),
-                    if (currentBudget.budgetPeriod == BudgetPeriod.custom &&
-                        currentBudget.customPeriodStart != null &&
-                        currentBudget.customPeriodEnd != null) ...[
-                      const SizedBox(height: 12),
-                      _buildInfoRow(
-                        context,
-                        Icons.date_range_outlined,
-                        AppLocalizations.of(context)!.from,
-                        _formatDate(currentBudget.customPeriodStart!),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildInfoRow(
-                        context,
-                        Icons.date_range_outlined,
-                        AppLocalizations.of(context)!.to,
-                        _formatDate(currentBudget.customPeriodEnd!),
-                      ),
-                    ],
                   ],
                 ),
               ),
@@ -423,6 +388,39 @@ class BudgetDetailsScreen extends StatelessWidget {
                             label: Text(AppLocalizations.of(context)!.invite),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 16),
+                      // Botón Ver Gastos por Miembro
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => MemberExpensesScreen(
+                                      budget: currentBudget,
+                                    ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.pie_chart_outline, size: 20),
+                          label: Text(
+                            AppLocalizations.of(context)!.viewExpensesByMember,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryBlue,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 14,
+                              horizontal: 20,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 16),
                       // Lista de miembros
@@ -768,34 +766,6 @@ class BudgetDetailsScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInfoRow(
-    BuildContext context,
-    IconData icon,
-    String label,
-    String value,
-  ) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: AppColors.primaryBlue),
-        const SizedBox(width: 12),
-        Text(
-          label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: AppColors.textGray),
-        ),
-        const Spacer(),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: AppColors.textWhite,
-            fontWeight: FontWeight.w600,
-          ),
         ),
       ],
     );

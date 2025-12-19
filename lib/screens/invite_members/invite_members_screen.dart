@@ -574,7 +574,7 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                           ],
                         ),
                       );
-                    }).toList(),
+                    }),
 
                   const SizedBox(height: 24),
 
