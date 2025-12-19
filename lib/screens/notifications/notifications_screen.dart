@@ -229,6 +229,8 @@ class _NotificationItem extends StatelessWidget {
         return Icons.account_balance_wallet_outlined;
       case NotificationType.memberAdded:
         return Icons.person_add_outlined;
+      case NotificationType.memberRemoved:
+        return Icons.person_remove_outlined;
       case NotificationType.itemAdded:
         return Icons.add_shopping_cart_outlined;
       case NotificationType.itemDeleted:
@@ -246,6 +248,8 @@ class _NotificationItem extends StatelessWidget {
         return AppColors.primaryBlue;
       case NotificationType.memberAdded:
         return AppColors.primaryGreen;
+      case NotificationType.memberRemoved:
+        return AppColors.errorRed;
       case NotificationType.itemAdded:
         return AppColors.primaryGreen;
       case NotificationType.itemDeleted:
@@ -305,16 +309,20 @@ class _NotificationItem extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Icon
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: _getIconColor().withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(_getIcon(), color: _getIconColor(), size: 24),
+            // User Avatar
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: _getIconColor().withOpacity(0.2),
+              backgroundImage:
+                  notification.userPhotoUrl != null
+                      ? NetworkImage(notification.userPhotoUrl!)
+                      : null,
+              child:
+                  notification.userPhotoUrl == null
+                      ? Icon(Icons.person, color: _getIconColor(), size: 20)
+                      : null,
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 12),
 
             // Content
             Expanded(
@@ -324,18 +332,37 @@ class _NotificationItem extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          notification.title,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textWhite,
-                          ),
+                        child: Row(
+                          children: [
+                            // Nombre del usuario
+                            Text(
+                              notification.userName ?? 'Usuario',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.primaryBlue,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            // Icono de acción
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: _getIconColor().withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Icon(
+                                _getIcon(),
+                                color: _getIconColor(),
+                                size: 14,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       Text(
                         _getTimeAgo(context, notification.createdAt),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textGray,
                         ),
@@ -344,9 +371,18 @@ class _NotificationItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
+                    notification.title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textWhite,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
                     notification.description,
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: const TextStyle(
+                      fontSize: 13,
                       color: AppColors.textGray,
                       height: 1.4,
                     ),

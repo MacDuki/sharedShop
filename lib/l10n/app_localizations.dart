@@ -1190,6 +1190,30 @@ abstract class AppLocalizations {
   /// **'Remove Member'**
   String get removeMember;
 
+  /// No description provided for @removeMemberConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove'**
+  String get removeMemberConfirm;
+
+  /// No description provided for @wasRemovedFromBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'was removed from budget'**
+  String get wasRemovedFromBudget;
+
+  /// No description provided for @removedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'removed successfully'**
+  String get removedSuccessfully;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
   /// No description provided for @leaveGroup.
   ///
   /// In en, this message translates to:
@@ -1849,6 +1873,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No items yet'**
   String get noItemsYet;
+
+  /// No description provided for @noHistoryYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No history yet'**
+  String get noHistoryYet;
 
   /// No description provided for @selectStartEndDates.
   ///

@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/models.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
+import '../budget_details/budget_details_screen.dart';
 import '../budget_form/budget_form_screen.dart';
 import '../budget_list/budget_list_screen.dart';
 import '../history/history_screen.dart';
@@ -609,31 +610,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     final activeBudget = budgetProvider.activeBudget;
 
                     if (activeBudget != null) {
-                      // Verificar permisos: personal o admin de compartido
-                      final canEdit =
-                          activeBudget.type == BudgetType.personal ||
-                          (activeBudget.type == BudgetType.shared &&
-                              activeBudget.ownerId ==
-                                  budgetProvider.currentUser?.id);
-
-                      if (canEdit) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    BudgetFormScreen(budget: activeBudget),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(l10n.noEditPermission),
-                            backgroundColor: AppColors.errorRed,
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) =>
+                                  BudgetDetailsScreen(budget: activeBudget),
+                        ),
+                      );
                     }
                   },
                 ),
@@ -805,6 +789,8 @@ class _NotificationItem extends StatelessWidget {
         return Icons.account_balance_wallet_outlined;
       case NotificationType.memberAdded:
         return Icons.person_add_outlined;
+      case NotificationType.memberRemoved:
+        return Icons.person_remove_outlined;
       case NotificationType.itemAdded:
         return Icons.add_shopping_cart_outlined;
       case NotificationType.itemDeleted:
@@ -822,6 +808,8 @@ class _NotificationItem extends StatelessWidget {
         return AppColors.primaryBlue;
       case NotificationType.memberAdded:
         return AppColors.primaryGreen;
+      case NotificationType.memberRemoved:
+        return AppColors.errorRed;
       case NotificationType.itemAdded:
         return AppColors.primaryGreen;
       case NotificationType.itemDeleted:

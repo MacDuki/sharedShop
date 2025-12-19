@@ -8,6 +8,8 @@ class ShoppingItemModel {
   final String createdBy;
   final DateTime createdAt;
   final bool isPurchased;
+  final String? purchasedBy; // ID del usuario que completó el item
+  final DateTime? purchasedAt; // Fecha de completado
 
   ShoppingItemModel({
     required this.id,
@@ -19,6 +21,8 @@ class ShoppingItemModel {
     required this.createdBy,
     required this.createdAt,
     this.isPurchased = false,
+    this.purchasedBy,
+    this.purchasedAt,
   }) : householdId = householdId ?? budgetId ?? '',
        budgetId = budgetId ?? householdId ?? '';
 
@@ -33,6 +37,10 @@ class ShoppingItemModel {
       createdBy: json['createdBy'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       isPurchased: json['isPurchased'] as bool? ?? false,
+      purchasedBy: json['purchasedBy'] as String?,
+      purchasedAt: json['purchasedAt'] != null
+          ? DateTime.parse(json['purchasedAt'] as String)
+          : null,
     );
   }
 
@@ -43,6 +51,8 @@ class ShoppingItemModel {
       'budgetId': budgetId,
       'name': name,
       'estimatedPrice': estimatedPrice,
+      'purchasedBy': purchasedBy,
+      'purchasedAt': purchasedAt?.toIso8601String(),
       'category': category,
       'createdBy': createdBy,
       'createdAt': createdAt.toIso8601String(),
@@ -60,6 +70,8 @@ class ShoppingItemModel {
     String? createdBy,
     DateTime? createdAt,
     bool? isPurchased,
+    String? purchasedBy,
+    DateTime? purchasedAt,
   }) {
     return ShoppingItemModel(
       id: id ?? this.id,
@@ -71,6 +83,8 @@ class ShoppingItemModel {
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       isPurchased: isPurchased ?? this.isPurchased,
+      purchasedBy: purchasedBy ?? this.purchasedBy,
+      purchasedAt: purchasedAt ?? this.purchasedAt,
     );
   }
 }

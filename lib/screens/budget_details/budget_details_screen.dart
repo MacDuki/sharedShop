@@ -6,6 +6,8 @@ import '../../models/models.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
 import '../budget_form/budget_form_screen.dart';
+import '../invite_members/invite_members_screen.dart';
+import '../shopping_list/shopping_list_screen.dart';
 
 class BudgetDetailsScreen extends StatelessWidget {
   final BudgetModel budget;
@@ -364,16 +366,55 @@ class BudgetDetailsScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            AppLocalizations.of(context)!.members,
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              color: AppColors.textWhite,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          Row(
+                            children: [
+                              Text(
+                                AppLocalizations.of(context)!.members,
+                                style: theme.textTheme.titleLarge?.copyWith(
+                                  color: AppColors.textWhite,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryBlue.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.people,
+                                      size: 14,
+                                      color: AppColors.primaryBlue,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${currentBudget.memberIds.length}',
+                                      style: const TextStyle(
+                                        color: AppColors.primaryBlue,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                           TextButton.icon(
                             onPressed: () {
-                              // TODO: Navigate to member management
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => const InviteMembersScreen(),
+                                ),
+                              );
                             },
                             icon: const Icon(
                               Icons.person_add_outlined,
@@ -383,13 +424,149 @@ class BudgetDetailsScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        AppLocalizations.of(
-                          context,
-                        )!.membersCount(currentBudget.memberIds.length),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textGray,
+                      const SizedBox(height: 16),
+                      // Lista de miembros
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight:
+                              budgetProvider.householdMembers
+                                          .where(
+                                            (member) => currentBudget.memberIds
+                                                .contains(member.id),
+                                          )
+                                          .length >
+                                      3
+                                  ? 250
+                                  : double.infinity,
+                        ),
+                        child: ListView(
+                          shrinkWrap: true,
+                          physics:
+                              budgetProvider.householdMembers
+                                          .where(
+                                            (member) => currentBudget.memberIds
+                                                .contains(member.id),
+                                          )
+                                          .length >
+                                      3
+                                  ? const AlwaysScrollableScrollPhysics()
+                                  : const NeverScrollableScrollPhysics(),
+                          children:
+                              budgetProvider.householdMembers
+                                  .where(
+                                    (member) => currentBudget.memberIds
+                                        .contains(member.id),
+                                  )
+                                  .map((member) {
+                                    final isOwner =
+                                        member.id == currentBudget.ownerId;
+                                    final canRemove =
+                                        !isOwner &&
+                                        budgetProvider.currentUser?.id ==
+                                            currentBudget.ownerId;
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 12,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 20,
+                                            backgroundColor: AppColors
+                                                .primaryBlue
+                                                .withOpacity(0.2),
+                                            child: Text(
+                                              member.name[0].toUpperCase(),
+                                              style: const TextStyle(
+                                                color: AppColors.primaryBlue,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      member.name,
+                                                      style: theme
+                                                          .textTheme
+                                                          .bodyLarge
+                                                          ?.copyWith(
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
+                                                    ),
+                                                    if (isOwner) ...[
+                                                      const SizedBox(width: 8),
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 8,
+                                                              vertical: 2,
+                                                            ),
+                                                        decoration: BoxDecoration(
+                                                          color: AppColors
+                                                              .primaryBlue
+                                                              .withOpacity(0.2),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                4,
+                                                              ),
+                                                        ),
+                                                        child: Text(
+                                                          'Owner',
+                                                          style: TextStyle(
+                                                            color:
+                                                                AppColors
+                                                                    .primaryBlue,
+                                                            fontSize: 10,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ],
+                                                ),
+                                                Text(
+                                                  member.email,
+                                                  style: theme
+                                                      .textTheme
+                                                      .bodySmall
+                                                      ?.copyWith(
+                                                        color:
+                                                            AppColors
+                                                                .textGrayLight,
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          if (canRemove)
+                                            IconButton(
+                                              icon: const Icon(
+                                                Icons.person_remove_outlined,
+                                                color: AppColors.errorRed,
+                                                size: 20,
+                                              ),
+                                              onPressed:
+                                                  () => _showRemoveMemberDialog(
+                                                    context,
+                                                    budgetProvider,
+                                                    currentBudget,
+                                                    member,
+                                                  ),
+                                            ),
+                                        ],
+                                      ),
+                                    );
+                                  })
+                                  .toList(),
                         ),
                       ),
                     ],
@@ -398,7 +575,7 @@ class BudgetDetailsScreen extends StatelessWidget {
                 const SizedBox(height: 20),
               ],
 
-              // Recent Items
+              // Historial del presupuesto
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -416,84 +593,148 @@ class BudgetDetailsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.recentItems,
+                      AppLocalizations.of(context)!.historyTitle,
                       style: theme.textTheme.titleLarge?.copyWith(
                         color: AppColors.textWhite,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    if (items.isEmpty)
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 400),
+                      child: ListView(
+                        shrinkWrap: true,
+                        physics:
+                            budgetProvider.budgetHistory
+                                        .where(
+                                          (h) => h.budgetId == currentBudget.id,
+                                        )
+                                        .length >
+                                    5
+                                ? const AlwaysScrollableScrollPhysics()
+                                : const NeverScrollableScrollPhysics(),
+                        children:
+                            budgetProvider.budgetHistory
+                                .where((h) => h.budgetId == currentBudget.id)
+                                .map((history) {
+                                  final percentage =
+                                      currentBudget.budgetAmount > 0
+                                          ? (history.totalSpent /
+                                                  currentBudget.budgetAmount *
+                                                  100)
+                                              .clamp(0.0, 100.0)
+                                          : 0.0;
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) =>
+                                                    const ShoppingListScreen(),
+                                          ),
+                                        );
+                                      },
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: theme.scaffoldBackgroundColor,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.grey.withOpacity(0.1),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 40,
+                                              height: 40,
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    percentage > 100
+                                                        ? AppColors.errorRed
+                                                            .withOpacity(0.15)
+                                                        : AppColors.success
+                                                            .withOpacity(0.15),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Icon(
+                                                percentage > 100
+                                                    ? Icons.warning_outlined
+                                                    : Icons
+                                                        .check_circle_outline,
+                                                color:
+                                                    percentage > 100
+                                                        ? AppColors.errorRed
+                                                        : AppColors.success,
+                                                size: 20,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    '${_formatDate(history.periodStart)} - ${_formatDate(history.periodEnd)}',
+                                                    style: theme
+                                                        .textTheme
+                                                        .bodyMedium
+                                                        ?.copyWith(
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                  ),
+                                                  Text(
+                                                    '\$${history.totalSpent.toStringAsFixed(2)} (${percentage.toStringAsFixed(0)}%)',
+                                                    style: theme
+                                                        .textTheme
+                                                        .bodySmall
+                                                        ?.copyWith(
+                                                          color:
+                                                              AppColors
+                                                                  .textGrayLight,
+                                                        ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const Icon(
+                                              Icons.arrow_forward_ios,
+                                              size: 16,
+                                              color: AppColors.textGrayLight,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                })
+                                .toList(),
+                      ),
+                    ),
+                    if (budgetProvider.budgetHistory
+                        .where((h) => h.budgetId == currentBudget.id)
+                        .isEmpty)
                       Center(
                         child: Padding(
                           padding: const EdgeInsets.all(20),
                           child: Text(
-                            AppLocalizations.of(context)!.noItemsYet,
+                            AppLocalizations.of(context)!.noHistoryYet,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: AppColors.textGray,
                             ),
                           ),
                         ),
-                      )
-                    else
-                      ...items
-                          .take(5)
-                          .map(
-                            (item) => Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primaryBlue.withOpacity(
-                                        0.15,
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: const Icon(
-                                      Icons.shopping_bag_outlined,
-                                      color: AppColors.primaryBlue,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          item.name,
-                                          style: theme.textTheme.bodyLarge
-                                              ?.copyWith(
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                        ),
-                                        if (item.category != null)
-                                          Text(
-                                            item.category!,
-                                            style: theme.textTheme.bodySmall
-                                                ?.copyWith(
-                                                  color:
-                                                      AppColors.textGrayLight,
-                                                ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                  Text(
-                                    '\$${item.estimatedPrice.toStringAsFixed(2)}',
-                                    style: theme.textTheme.bodyLarge?.copyWith(
-                                      color: AppColors.textWhite,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                      ),
                   ],
                 ),
               ),
@@ -615,5 +856,66 @@ class BudgetDetailsScreen extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  void _showRemoveMemberDialog(
+    BuildContext context,
+    BudgetProvider budgetProvider,
+    BudgetModel budget,
+    UserModel member,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).cardTheme.color,
+          title: Text(
+            AppLocalizations.of(context)!.removeMember,
+            style: const TextStyle(color: AppColors.textWhite),
+          ),
+          content: Text(
+            '${AppLocalizations.of(context)!.removeMemberConfirm} ${member.name}?',
+            style: const TextStyle(color: AppColors.textGray),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(AppLocalizations.of(context)!.cancel),
+            ),
+            TextButton(
+              onPressed: () {
+                // Eliminar miembro del presupuesto
+                final updatedBudget = budget.copyWith(
+                  memberIds:
+                      budget.memberIds.where((id) => id != member.id).toList(),
+                );
+                budgetProvider.updateBudgetData(updatedBudget);
+
+                // Generar notificación
+                budgetProvider.addMemberRemovedNotification(
+                  member.name,
+                  budget.name,
+                );
+
+                Navigator.of(context).pop();
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${member.name} ${AppLocalizations.of(context)!.removedSuccessfully}',
+                    ),
+                    backgroundColor: AppColors.success,
+                  ),
+                );
+              },
+              child: Text(
+                AppLocalizations.of(context)!.remove,
+                style: const TextStyle(color: AppColors.errorRed),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

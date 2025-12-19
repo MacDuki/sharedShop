@@ -289,6 +289,10 @@
   "members": "Miembros",
   "addMember": "Agregar Miembro",
   "removeMember": "Eliminar Miembro",
+  "removeMemberConfirm": "¿Estás seguro de eliminar a",
+  "wasRemovedFromBudget": "fue eliminado del presupuesto",
+  "removedSuccessfully": "eliminado exitosamente",
+  "remove": "Eliminar",
   "leaveGroup": "Salir del Grupo",
   
   "inviteMembers": "Invitar Miembros",
@@ -450,6 +454,7 @@
   },
   "recentItems": "Ítems Recientes",
   "noItemsYet": "Aún no hay ítems",
+  "noHistoryYet": "Aún no hay historial",
   "selectStartEndDates": "Por favor selecciona fechas de inicio y fin",
   "enterBudgetName": "Por favor ingresa un nombre de presupuesto",
   "addDescription": "Agrega una descripción...",

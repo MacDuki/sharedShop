@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../models/models.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
 
@@ -84,8 +85,24 @@ class HistoryScreen extends StatelessWidget {
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final period = history[index];
-                final household = budgetProvider.household;
-                final budgetAmount = household?.budgetAmount ?? 0;
+                // Obtener el presupuesto correcto basado en el budgetId del período
+                final budget = budgetProvider.budgets.firstWhere(
+                  (b) => b.id == period.budgetId,
+                  orElse:
+                      () =>
+                          budgetProvider.budgets.isNotEmpty
+                              ? budgetProvider.budgets.first
+                              : BudgetModel(
+                                id: '',
+                                name: '',
+                                ownerId: '',
+                                type: BudgetType.personal,
+                                budgetAmount: 0,
+                                budgetPeriod: BudgetPeriod.monthly,
+                                createdAt: DateTime.now(),
+                              ),
+                );
+                final budgetAmount = budget.budgetAmount;
                 final percentage =
                     budgetAmount > 0
                         ? (period.totalSpent / budgetAmount) * 100
@@ -163,6 +180,61 @@ class HistoryScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Información del presupuesto
+                        Consumer<BudgetProvider>(
+                          builder: (context, provider, child) {
+                            final budget = provider.budgets.firstWhere(
+                              (b) => b.id == period.budgetId,
+                              orElse: () => provider.budgets.first,
+                            );
+
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        budget.name,
+                                        style: const TextStyle(
+                                          color: AppColors.textWhite,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            budget.type == BudgetType.personal
+                                                ? Icons.person_outline
+                                                : Icons.group_outlined,
+                                            size: 14,
+                                            color: AppColors.textGray,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            budget.type == BudgetType.personal
+                                                ? l10n.personal
+                                                : l10n.shared,
+                                            style: TextStyle(
+                                              color: AppColors.textGray,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 16),
+
                         // Período
                         Row(
                           children: [

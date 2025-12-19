@@ -94,6 +94,10 @@ class BudgetProvider extends ChangeNotifier {
 
   // Initialize with sample data
   void initializeHousehold() {
+    // Obtener el ID del usuario actual (Firebase o fallback)
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    final currentUserId = firebaseUser?.uid ?? 'user1';
+
     // Legacy household for compatibility
     _household = HouseholdModel(
       id: '1',
@@ -103,66 +107,242 @@ class BudgetProvider extends ChangeNotifier {
       createdAt: DateTime.now(),
     );
 
+    // IDs de usuarios ficticios para presupuestos compartidos
+    const user2Id = 'member_maria_garcia';
+    const user3Id = 'member_juan_lopez';
+    const user4Id = 'member_ana_martinez';
+    const user5Id = 'member_carlos_rodriguez';
+
     // Initialize with sample budgets
     _budgets = [
+      // 1. Presupuesto Personal con varios items
       BudgetModel(
-        id: 'budget_1',
-        name: 'Groceries',
-        description: 'Weekly grocery shopping',
-        ownerId: 'user1',
+        id: 'budget_personal',
+        name: 'My Personal Budget',
+        description: 'Personal expenses and shopping',
+        ownerId: currentUserId,
         type: BudgetType.personal,
-        budgetAmount: 500.0,
+        budgetAmount: 800.0,
         budgetPeriod: BudgetPeriod.weekly,
-        createdAt: DateTime.now(),
-        iconName: 'local_grocery_store',
+        createdAt: DateTime.now().subtract(const Duration(days: 30)),
+        iconName: 'account_balance_wallet',
         colorHex: '#10B981',
-        memberIds: ['user1'],
+        memberIds: [currentUserId],
       ),
+      // 2. Presupuesto Grupal donde SOY el owner con 4+ miembros
       BudgetModel(
-        id: 'budget_2',
+        id: 'budget_family',
         name: 'Family Budget',
-        description: 'Shared family expenses',
-        ownerId: 'user1',
+        description: 'Shared family expenses and groceries',
+        ownerId: currentUserId,
         type: BudgetType.shared,
-        budgetAmount: 2000.0,
+        budgetAmount: 3500.0,
         budgetPeriod: BudgetPeriod.monthly,
-        createdAt: DateTime.now(),
+        createdAt: DateTime.now().subtract(const Duration(days: 60)),
         iconName: 'home',
         colorHex: '#8B5CF6',
-        memberIds: ['user1', 'user2'],
+        memberIds: [currentUserId, user2Id, user3Id, user4Id, user5Id],
+      ),
+      // 3. Presupuesto Grupal donde NO soy el owner
+      BudgetModel(
+        id: 'budget_roommates',
+        name: 'Roommates Expenses',
+        description: 'Shared apartment utilities and supplies',
+        ownerId: user2Id, // Maria es la owner
+        type: BudgetType.shared,
+        budgetAmount: 1200.0,
+        budgetPeriod: BudgetPeriod.monthly,
+        createdAt: DateTime.now().subtract(const Duration(days: 45)),
+        iconName: 'people',
+        colorHex: '#F59E0B',
+        memberIds: [user2Id, currentUserId, user3Id],
       ),
     ];
 
     // Set first budget as active
     _activeBudget = _budgets.first;
 
-    // Sample shopping items
+    // Sample shopping items distribuidos entre los 3 presupuestos
     _shoppingItems = [
+      // Items del presupuesto PERSONAL
       ShoppingItemModel(
-        id: '1',
-        budgetId: 'budget_1',
+        id: 'item_p1',
+        budgetId: 'budget_personal',
+        name: 'Coffee',
+        estimatedPrice: 12.99,
+        category: 'Beverages',
+        createdBy: currentUserId,
+        createdAt: DateTime.now().subtract(const Duration(days: 2)),
+      ),
+      ShoppingItemModel(
+        id: 'item_p2',
+        budgetId: 'budget_personal',
+        name: 'Cereal',
+        estimatedPrice: 5.49,
+        category: 'Breakfast',
+        createdBy: currentUserId,
+        createdAt: DateTime.now().subtract(const Duration(days: 1)),
+      ),
+      ShoppingItemModel(
+        id: 'item_p3',
+        budgetId: 'budget_personal',
+        name: 'Yogurt',
+        estimatedPrice: 4.25,
+        category: 'Dairy',
+        createdBy: currentUserId,
+        createdAt: DateTime.now().subtract(const Duration(hours: 6)),
+        isPurchased: true,
+        purchasedBy: currentUserId,
+        purchasedAt: DateTime.now().subtract(const Duration(hours: 2)),
+      ),
+      ShoppingItemModel(
+        id: 'item_p4',
+        budgetId: 'budget_personal',
+        name: 'Orange Juice',
+        estimatedPrice: 6.99,
+        category: 'Beverages',
+        createdBy: currentUserId,
+        createdAt: DateTime.now(),
+      ),
+      ShoppingItemModel(
+        id: 'item_p5',
+        budgetId: 'budget_personal',
+        name: 'Protein Bars',
+        estimatedPrice: 15.99,
+        category: 'Snacks',
+        createdBy: currentUserId,
+        createdAt: DateTime.now().subtract(const Duration(hours: 5)),
+      ),
+
+      // Items del presupuesto FAMILIAR (donde soy owner)
+      ShoppingItemModel(
+        id: 'item_f1',
+        budgetId: 'budget_family',
         name: 'Milk',
-        estimatedPrice: 2.50,
+        estimatedPrice: 3.50,
         category: 'Dairy',
-        createdBy: 'user1',
-        createdAt: DateTime.now(),
+        createdBy: currentUserId,
+        createdAt: DateTime.now().subtract(const Duration(days: 3)),
       ),
       ShoppingItemModel(
-        id: '2',
-        budgetId: 'budget_1',
+        id: 'item_f2',
+        budgetId: 'budget_family',
         name: 'Bread',
-        estimatedPrice: 1.50,
+        estimatedPrice: 2.99,
         category: 'Bakery',
-        createdBy: 'user1',
+        createdBy: user2Id,
+        createdAt: DateTime.now().subtract(const Duration(days: 2)),
+        isPurchased: true,
+        purchasedBy: user3Id,
+        purchasedAt: DateTime.now().subtract(
+          const Duration(days: 1, hours: 12),
+        ),
+      ),
+      ShoppingItemModel(
+        id: 'item_f3',
+        budgetId: 'budget_family',
+        name: 'Eggs (Dozen)',
+        estimatedPrice: 4.50,
+        category: 'Dairy',
+        createdBy: currentUserId,
+        createdAt: DateTime.now().subtract(const Duration(days: 2)),
+      ),
+      ShoppingItemModel(
+        id: 'item_f4',
+        budgetId: 'budget_family',
+        name: 'Chicken Breast',
+        estimatedPrice: 18.99,
+        category: 'Meat',
+        createdBy: user3Id,
+        createdAt: DateTime.now().subtract(const Duration(days: 1)),
+      ),
+      ShoppingItemModel(
+        id: 'item_f5',
+        budgetId: 'budget_family',
+        name: 'Rice (5kg)',
+        estimatedPrice: 12.49,
+        category: 'Grains',
+        createdBy: currentUserId,
+        createdAt: DateTime.now().subtract(const Duration(hours: 12)),
+      ),
+      ShoppingItemModel(
+        id: 'item_f6',
+        budgetId: 'budget_family',
+        name: 'Tomatoes',
+        estimatedPrice: 5.99,
+        category: 'Vegetables',
+        createdBy: user2Id,
+        createdAt: DateTime.now().subtract(const Duration(hours: 8)),
+      ),
+      ShoppingItemModel(
+        id: 'item_f7',
+        budgetId: 'budget_family',
+        name: 'Pasta',
+        estimatedPrice: 3.25,
+        category: 'Grains',
+        createdBy: currentUserId,
         createdAt: DateTime.now(),
       ),
       ShoppingItemModel(
-        id: '3',
-        budgetId: 'budget_2',
-        name: 'Eggs',
-        estimatedPrice: 3.20,
-        category: 'Dairy',
-        createdBy: 'user1',
+        id: 'item_f8',
+        budgetId: 'budget_family',
+        name: 'Olive Oil',
+        estimatedPrice: 9.99,
+        category: 'Cooking',
+        createdBy: user3Id,
+        createdAt: DateTime.now().subtract(const Duration(hours: 3)),
+        isPurchased: true,
+        purchasedBy: currentUserId,
+        purchasedAt: DateTime.now().subtract(const Duration(minutes: 30)),
+      ),
+
+      // Items del presupuesto ROOMMATES (donde NO soy owner)
+      ShoppingItemModel(
+        id: 'item_r1',
+        budgetId: 'budget_roommates',
+        name: 'Toilet Paper',
+        estimatedPrice: 12.99,
+        category: 'Household',
+        createdBy: user2Id,
+        createdAt: DateTime.now().subtract(const Duration(days: 4)),
+      ),
+      ShoppingItemModel(
+        id: 'item_r2',
+        budgetId: 'budget_roommates',
+        name: 'Dish Soap',
+        estimatedPrice: 4.49,
+        category: 'Cleaning',
+        createdBy: currentUserId,
+        createdAt: DateTime.now().subtract(const Duration(days: 3)),
+        isPurchased: true,
+        purchasedBy: user2Id,
+        purchasedAt: DateTime.now().subtract(const Duration(days: 2, hours: 8)),
+      ),
+      ShoppingItemModel(
+        id: 'item_r3',
+        budgetId: 'budget_roommates',
+        name: 'Paper Towels',
+        estimatedPrice: 8.99,
+        category: 'Household',
+        createdBy: user3Id,
+        createdAt: DateTime.now().subtract(const Duration(days: 1)),
+      ),
+      ShoppingItemModel(
+        id: 'item_r4',
+        budgetId: 'budget_roommates',
+        name: 'Trash Bags',
+        estimatedPrice: 11.49,
+        category: 'Household',
+        createdBy: user2Id,
+        createdAt: DateTime.now().subtract(const Duration(hours: 10)),
+      ),
+      ShoppingItemModel(
+        id: 'item_r5',
+        budgetId: 'budget_roommates',
+        name: 'Laundry Detergent',
+        estimatedPrice: 13.99,
+        category: 'Cleaning',
+        createdBy: currentUserId,
         createdAt: DateTime.now(),
       ),
     ];
@@ -324,8 +504,13 @@ class BudgetProvider extends ChangeNotifier {
     if (index != -1) {
       final item = _shoppingItems[index];
       final newStatus = !item.isPurchased;
+      final firebaseUser = FirebaseAuth.instance.currentUser;
 
-      _shoppingItems[index] = item.copyWith(isPurchased: newStatus);
+      _shoppingItems[index] = item.copyWith(
+        isPurchased: newStatus,
+        purchasedBy: newStatus ? (firebaseUser?.uid ?? _currentUser?.id) : null,
+        purchasedAt: newStatus ? DateTime.now() : null,
+      );
 
       if (newStatus) {
         _addNotification(
@@ -403,26 +588,73 @@ class BudgetProvider extends ChangeNotifier {
   void _initializeHistory() {
     final now = DateTime.now();
     _budgetHistory = [
+      // Historial del presupuesto PERSONAL
       BudgetHistoryModel(
-        id: '1',
-        budgetId: 'budget_1',
+        id: 'hist_p1',
+        budgetId: 'budget_personal',
         periodStart: DateTime(now.year, now.month - 2, 1),
         periodEnd: DateTime(now.year, now.month - 2, 7),
-        totalSpent: 245.80,
+        totalSpent: 456.75,
       ),
       BudgetHistoryModel(
-        id: '2',
-        budgetId: 'budget_1',
+        id: 'hist_p2',
+        budgetId: 'budget_personal',
         periodStart: DateTime(now.year, now.month - 1, 8),
         periodEnd: DateTime(now.year, now.month - 1, 14),
-        totalSpent: 312.50,
+        totalSpent: 523.40,
       ),
       BudgetHistoryModel(
-        id: '3',
-        budgetId: 'budget_2',
+        id: 'hist_p3',
+        budgetId: 'budget_personal',
         periodStart: DateTime(now.year, now.month - 1, 15),
         periodEnd: DateTime(now.year, now.month - 1, 21),
-        totalSpent: 487.20,
+        totalSpent: 687.90,
+      ),
+
+      // Historial del presupuesto FAMILIAR (donde soy owner)
+      BudgetHistoryModel(
+        id: 'hist_f1',
+        budgetId: 'budget_family',
+        periodStart: DateTime(now.year, now.month - 3, 1),
+        periodEnd: DateTime(now.year, now.month - 2, 30),
+        totalSpent: 2845.30,
+      ),
+      BudgetHistoryModel(
+        id: 'hist_f2',
+        budgetId: 'budget_family',
+        periodStart: DateTime(now.year, now.month - 2, 1),
+        periodEnd: DateTime(now.year, now.month - 1, 30),
+        totalSpent: 3156.80,
+      ),
+      BudgetHistoryModel(
+        id: 'hist_f3',
+        budgetId: 'budget_family',
+        periodStart: DateTime(now.year, now.month - 1, 1),
+        periodEnd: DateTime(now.year, now.month, 1),
+        totalSpent: 2923.45,
+      ),
+
+      // Historial del presupuesto ROOMMATES (donde NO soy owner)
+      BudgetHistoryModel(
+        id: 'hist_r1',
+        budgetId: 'budget_roommates',
+        periodStart: DateTime(now.year, now.month - 3, 1),
+        periodEnd: DateTime(now.year, now.month - 2, 30),
+        totalSpent: 987.60,
+      ),
+      BudgetHistoryModel(
+        id: 'hist_r2',
+        budgetId: 'budget_roommates',
+        periodStart: DateTime(now.year, now.month - 2, 1),
+        periodEnd: DateTime(now.year, now.month - 1, 30),
+        totalSpent: 1045.25,
+      ),
+      BudgetHistoryModel(
+        id: 'hist_r3',
+        budgetId: 'budget_roommates',
+        periodStart: DateTime(now.year, now.month - 1, 1),
+        periodEnd: DateTime(now.year, now.month, 1),
+        totalSpent: 1123.75,
       ),
     ];
   }
@@ -431,14 +663,19 @@ class BudgetProvider extends ChangeNotifier {
     // Obtener usuario actual de Firebase Auth
     final firebaseUser = FirebaseAuth.instance.currentUser;
 
+    // Obtener IDs de los presupuestos creados
+    final userBudgetIds = _budgets.map((b) => b.id).toList();
+    final firstBudgetId = _budgets.isNotEmpty ? _budgets.first.id : null;
+    final householdId = _household?.id ?? '1';
+
     if (firebaseUser != null) {
       _currentUser = UserModel(
         id: firebaseUser.uid,
         name: firebaseUser.displayName ?? 'Usuario',
         email: firebaseUser.email ?? 'email@ejemplo.com',
-        householdId: '1',
-        budgetIds: ['budget_1', 'budget_2'],
-        activeBudgetId: 'budget_1',
+        householdId: householdId,
+        budgetIds: userBudgetIds,
+        activeBudgetId: firstBudgetId,
       );
     } else {
       // Fallback si no hay usuario autenticado
@@ -446,21 +683,46 @@ class BudgetProvider extends ChangeNotifier {
         id: 'user1',
         name: 'Main User',
         email: 'user@example.com',
-        householdId: '1',
-        budgetIds: ['budget_1', 'budget_2'],
-        activeBudgetId: 'budget_1',
+        householdId: householdId,
+        budgetIds: userBudgetIds,
+        activeBudgetId: firstBudgetId,
       );
     }
 
+    // Crear miembros ficticios para los presupuestos compartidos
     _householdMembers = [
       _currentUser!,
       UserModel(
-        id: 'user2',
+        id: 'member_maria_garcia',
         name: 'Maria Garcia',
-        email: 'maria@example.com',
-        householdId: '1',
-        budgetIds: ['budget_2'],
-        activeBudgetId: 'budget_2',
+        email: 'maria.garcia@example.com',
+        householdId: householdId,
+        budgetIds: ['budget_family', 'budget_roommates'],
+        activeBudgetId: 'budget_roommates',
+      ),
+      UserModel(
+        id: 'member_juan_lopez',
+        name: 'Juan Lopez',
+        email: 'juan.lopez@example.com',
+        householdId: householdId,
+        budgetIds: ['budget_family', 'budget_roommates'],
+        activeBudgetId: 'budget_family',
+      ),
+      UserModel(
+        id: 'member_ana_martinez',
+        name: 'Ana Martinez',
+        email: 'ana.martinez@example.com',
+        householdId: householdId,
+        budgetIds: ['budget_family'],
+        activeBudgetId: 'budget_family',
+      ),
+      UserModel(
+        id: 'member_carlos_rodriguez',
+        name: 'Carlos Rodriguez',
+        email: 'carlos.rodriguez@example.com',
+        householdId: householdId,
+        budgetIds: ['budget_family'],
+        activeBudgetId: 'budget_family',
       ),
     ];
   }
@@ -471,10 +733,15 @@ class BudgetProvider extends ChangeNotifier {
     required String description,
     Map<String, dynamic>? metadata,
   }) {
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+
     final notification = NotificationModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       householdId: _household?.id ?? '1',
       budgetId: _activeBudget?.id, // Anclar notificación al presupuesto activo
+      userId: firebaseUser?.uid ?? _currentUser?.id,
+      userName: firebaseUser?.displayName ?? _currentUser?.name ?? 'Usuario',
+      userPhotoUrl: firebaseUser?.photoURL,
       type: type,
       title: title,
       description: description,
@@ -493,6 +760,32 @@ class BudgetProvider extends ChangeNotifier {
     _notifications.removeWhere(
       (notification) => notification.id == notificationId,
     );
+    notifyListeners();
+  }
+
+  // Método público para agregar notificación de miembro eliminado
+  void addMemberRemovedNotification(String memberName, String budgetName) {
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+
+    final notification = NotificationModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      householdId: _household?.id ?? '1',
+      budgetId: _activeBudget?.id,
+      userId: firebaseUser?.uid ?? _currentUser?.id,
+      userName: firebaseUser?.displayName ?? _currentUser?.name ?? 'Usuario',
+      userPhotoUrl: firebaseUser?.photoURL,
+      type: NotificationType.memberRemoved,
+      title: 'Miembro eliminado',
+      description: '$memberName fue eliminado del presupuesto "$budgetName"',
+      createdAt: DateTime.now(),
+    );
+
+    _notifications.insert(0, notification);
+
+    if (_notifications.length > 50) {
+      _notifications = _notifications.sublist(0, 50);
+    }
+
     notifyListeners();
   }
 

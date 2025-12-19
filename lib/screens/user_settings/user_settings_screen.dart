@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -229,18 +230,37 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
               Center(
                 child: Stack(
                   children: [
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryPurple.withValues(alpha: 0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.person,
-                        color: AppColors.primaryPurple,
-                        size: 60,
-                      ),
+                    Consumer<BudgetProvider>(
+                      builder: (context, budgetProvider, child) {
+                        final firebaseUser = FirebaseAuth.instance.currentUser;
+                        final photoUrl = firebaseUser?.photoURL;
+
+                        return Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryPurple.withValues(
+                              alpha: 0.2,
+                            ),
+                            shape: BoxShape.circle,
+                            image:
+                                photoUrl != null
+                                    ? DecorationImage(
+                                      image: NetworkImage(photoUrl),
+                                      fit: BoxFit.cover,
+                                    )
+                                    : null,
+                          ),
+                          child:
+                              photoUrl == null
+                                  ? const Icon(
+                                    Icons.person,
+                                    color: AppColors.primaryPurple,
+                                    size: 60,
+                                  )
+                                  : null,
+                        );
+                      },
                     ),
                     Positioned(
                       bottom: 0,

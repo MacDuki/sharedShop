@@ -289,6 +289,10 @@
   "members": "Members",
   "addMember": "Add Member",
   "removeMember": "Remove Member",
+  "removeMemberConfirm": "Are you sure you want to remove",
+  "wasRemovedFromBudget": "was removed from budget",
+  "removedSuccessfully": "removed successfully",
+  "remove": "Remove",
   "leaveGroup": "Leave Group",
   
   "inviteMembers": "Invite Members",
@@ -450,6 +454,7 @@
   },
   "recentItems": "Recent Items",
   "noItemsYet": "No items yet",
+  "noHistoryYet": "No history yet",
   "selectStartEndDates": "Please select start and end dates",
   "enterBudgetName": "Please enter a budget name",
   "addDescription": "Add a description...",

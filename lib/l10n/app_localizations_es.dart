@@ -592,6 +592,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get removeMember => 'Eliminar Miembro';
 
   @override
+  String get removeMemberConfirm => '¿Estás seguro de eliminar a';
+
+  @override
+  String get wasRemovedFromBudget => 'fue eliminado del presupuesto';
+
+  @override
+  String get removedSuccessfully => 'eliminado exitosamente';
+
+  @override
+  String get remove => 'Eliminar';
+
+  @override
   String get leaveGroup => 'Salir del Grupo';
 
   @override
@@ -938,6 +950,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noItemsYet => 'Aún no hay ítems';
+
+  @override
+  String get noHistoryYet => 'Aún no hay historial';
 
   @override
   String get selectStartEndDates =>

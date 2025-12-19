@@ -451,6 +451,16 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                     )
                   else
                     ...members.map((member) {
+                      final activeBudget = budgetProvider.activeBudget;
+                      final isOwner =
+                          activeBudget != null &&
+                          member.id == activeBudget.ownerId;
+                      final canRemove =
+                          activeBudget != null &&
+                          !isOwner &&
+                          budgetProvider.currentUser?.id ==
+                              activeBudget.ownerId;
+
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.all(16),
@@ -485,13 +495,44 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    member.name,
-                                    style: const TextStyle(
-                                      color: AppColors.textWhite,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          member.name,
+                                          style: const TextStyle(
+                                            color: AppColors.textWhite,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      if (isOwner) ...[
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.primaryBlue
+                                                .withOpacity(0.2),
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            'Owner',
+                                            style: TextStyle(
+                                              color: AppColors.primaryBlue,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
@@ -500,10 +541,26 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                                       color: AppColors.textGray,
                                       fontSize: 13,
                                     ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
                             ),
+                            if (canRemove)
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.person_remove_outlined,
+                                  color: AppColors.errorRed,
+                                  size: 20,
+                                ),
+                                onPressed:
+                                    () => _showRemoveMemberDialog(
+                                      context,
+                                      budgetProvider,
+                                      activeBudget,
+                                      member,
+                                    ),
+                              ),
                           ],
                         ),
                       );
@@ -546,6 +603,65 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
           },
         ),
       ),
+    );
+  }
+
+  void _showRemoveMemberDialog(
+    BuildContext context,
+    BudgetProvider budgetProvider,
+    BudgetModel budget,
+    UserModel member,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AppColors.darkCard,
+          title: Text(
+            AppLocalizations.of(context)!.removeMember,
+            style: const TextStyle(color: AppColors.textWhite),
+          ),
+          content: Text(
+            '${AppLocalizations.of(context)!.removeMemberConfirm} ${member.name}?',
+            style: const TextStyle(color: AppColors.textGray),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(AppLocalizations.of(context)!.cancel),
+            ),
+            TextButton(
+              onPressed: () {
+                final updatedBudget = budget.copyWith(
+                  memberIds:
+                      budget.memberIds.where((id) => id != member.id).toList(),
+                );
+                budgetProvider.updateBudgetData(updatedBudget);
+
+                budgetProvider.addMemberRemovedNotification(
+                  member.name,
+                  budget.name,
+                );
+
+                Navigator.of(context).pop();
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${member.name} ${AppLocalizations.of(context)!.removedSuccessfully}',
+                    ),
+                    backgroundColor: AppColors.success,
+                  ),
+                );
+              },
+              child: Text(
+                AppLocalizations.of(context)!.remove,
+                style: const TextStyle(color: AppColors.errorRed),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
