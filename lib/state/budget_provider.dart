@@ -405,14 +405,18 @@ class BudgetProvider extends ChangeNotifier {
         'colorHex': budget.colorHex,
       });
 
+      debugPrint('Budget created: ${result.data}');
+
       // Re-fetch budgets from backend (single source of truth)
       await fetchUserBudgets();
 
-      // If created successfully, fetch its details
+      // If created successfully, fetch its details and set as active
       if (result.data != null && result.data['budgetId'] != null) {
         final newBudgetId = result.data['budgetId'];
         await fetchBudgetDetails(newBudgetId);
         await fetchBudgetItems(newBudgetId);
+
+        debugPrint('New budget set as active: $newBudgetId');
       }
     } catch (e) {
       debugPrint('Error creating budget: $e');
@@ -475,9 +479,14 @@ class BudgetProvider extends ChangeNotifier {
   // ============================================================================
 
   /// Adds a new shopping item via Cloud Function.
+  /// Implements optimistic update for instant UI feedback.
   /// After success, re-fetches items from backend.
   Future<void> addItem(ShoppingItemModel item) async {
     if (_activeBudget == null) return;
+
+    // Optimistic update: Add item to local list immediately
+    _shoppingItems.add(item);
+    notifyListeners(); // Instant UI feedback
 
     try {
       final callable = _functions.httpsCallable('addShoppingItem');
@@ -488,10 +497,14 @@ class BudgetProvider extends ChangeNotifier {
         'category': item.category ?? '',
       });
 
-      // Re-fetch from backend (no local state mutation)
+      // Re-fetch from backend (single source of truth)
       await fetchBudgetItems(_activeBudget!.id);
       await fetchBudgetDetails(_activeBudget!.id);
+      // notifyListeners() is called inside fetch methods
     } catch (e) {
+      // Rollback optimistic update on error
+      _shoppingItems.removeWhere((i) => i.id == item.id);
+      notifyListeners();
       debugPrint('Error adding item: $e');
       rethrow;
     }
@@ -511,9 +524,10 @@ class BudgetProvider extends ChangeNotifier {
         'category': updatedItem.category,
       });
 
-      // Re-fetch from backend (no local state mutation)
+      // Re-fetch from backend (single source of truth)
       await fetchBudgetItems(_activeBudget!.id);
       await fetchBudgetDetails(_activeBudget!.id);
+      // notifyListeners() is called inside fetch methods
     } catch (e) {
       debugPrint('Error updating item: $e');
       rethrow;
@@ -529,9 +543,10 @@ class BudgetProvider extends ChangeNotifier {
       final callable = _functions.httpsCallable('deleteShoppingItem');
       await callable.call({'itemId': itemId});
 
-      // Re-fetch from backend (no local state mutation)
+      // Re-fetch from backend (single source of truth)
       await fetchBudgetItems(_activeBudget!.id);
       await fetchBudgetDetails(_activeBudget!.id);
+      // notifyListeners() is called inside fetch methods
     } catch (e) {
       debugPrint('Error deleting item: $e');
       rethrow;
@@ -554,9 +569,10 @@ class BudgetProvider extends ChangeNotifier {
       final callable = _functions.httpsCallable('updateShoppingItem');
       await callable.call({'itemId': itemId, 'isPurchased': newStatus});
 
-      // Re-fetch from backend (no local state mutation)
+      // Re-fetch from backend (single source of truth)
       await fetchBudgetItems(_activeBudget!.id);
       await fetchBudgetDetails(_activeBudget!.id);
+      // notifyListeners() is called inside fetch methods
     } catch (e) {
       debugPrint('Error toggling item purchased: $e');
       rethrow;

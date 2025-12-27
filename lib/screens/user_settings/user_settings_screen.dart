@@ -306,26 +306,17 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
                           width: 120,
                           height: 120,
                           decoration: BoxDecoration(
-                            color: AppColors.primaryPurple.withValues(
-                              alpha: 0.2,
-                            ),
                             shape: BoxShape.circle,
-                            image:
-                                photoUrl != null
-                                    ? DecorationImage(
-                                      image: NetworkImage(photoUrl),
-                                      fit: BoxFit.cover,
-                                    )
-                                    : null,
+                            image: DecorationImage(
+                              image:
+                                  photoUrl != null && photoUrl.isNotEmpty
+                                      ? NetworkImage(photoUrl) as ImageProvider
+                                      : const AssetImage(
+                                        'assets/default_user.png',
+                                      ),
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                          child:
-                              photoUrl == null
-                                  ? const Icon(
-                                    Icons.person,
-                                    color: AppColors.primaryPurple,
-                                    size: 60,
-                                  )
-                                  : null,
                         );
                       },
                     ),

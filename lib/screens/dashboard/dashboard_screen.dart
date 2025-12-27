@@ -30,7 +30,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final budgetProvider = context.read<BudgetProvider>();
       // Fetch budgets from backend via provider
-      budgetProvider.fetchUserBudgets();
+      budgetProvider.fetchUserBudgets().then((_) {
+        debugPrint('Budgets loaded: ${budgetProvider.budgets.length}');
+        debugPrint('Active budget: ${budgetProvider.activeBudget?.name}');
+      });
     });
   }
 
@@ -81,21 +84,62 @@ class _DashboardScreenState extends State<DashboardScreen> {
             // Empty state
             if (activeBudget == null) {
               return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.account_balance_wallet_outlined,
-                      size: 48,
-                      color: AppColors.textGray,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No budget available',
-                      style: theme.textTheme.bodyMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.account_balance_wallet_outlined,
+                        size: 64,
+                        color: AppColors.textGray,
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        'No hay presupuestos disponibles',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Crea tu primer presupuesto para comenzar a gestionar tus gastos',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 32),
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          final result = await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const BudgetFormScreen(),
+                            ),
+                          );
+
+                          // Recargar budgets después de crear
+                          if (mounted) {
+                            await budgetProvider.fetchUserBudgets();
+                          }
+                        },
+                        icon: const Icon(Icons.add),
+                        label: const Text('Crear Presupuesto'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryBlue,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }
@@ -134,8 +178,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               const SizedBox(height: 4),
                               Text(
                                 l10n.dashboardGreeting(
-                                  budgetProvider.currentUser?.name ??
-                                      activeBudget.name,
+                                  budgetProvider.currentUser?.name ?? 'Usuario',
                                 ),
                                 style: theme.textTheme.displayMedium?.copyWith(
                                   fontSize: 28,

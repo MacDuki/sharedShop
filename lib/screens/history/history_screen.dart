@@ -132,10 +132,14 @@ class HistoryScreen extends StatelessWidget {
                 final period = history[index];
 
                 // Get budget data from backend - no fallback/invention
-                final budget = budgetProvider.budgets.firstWhere(
-                  (b) => b.id == period.budgetId,
-                  orElse: () => null as BudgetModel,
-                );
+                BudgetModel? budget;
+                try {
+                  budget = budgetProvider.budgets.firstWhere(
+                    (b) => b.id == period.budgetId,
+                  );
+                } catch (e) {
+                  budget = null;
+                }
 
                 // If budget not found, skip rendering this history item
                 if (budget == null) {

@@ -25,13 +25,18 @@ void main() async {
   // Firestore y Functions en local para ver datos en tiempo real
 
   // ❌ Auth Emulator desactivado - usar producción para Google Sign-In
-  // await FirebaseAuth.instance.useAuthEmulator('localhost', 9199);
+  // await FirebaseAuth.instance.useAuthEmulator('10.0.2.2', 9199);
 
   // ✅ Firestore Emulator - Puerto 8180 (verificado en emulator output)
-  FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8180);
+  // Usar 10.0.2.2 para emulador Android (apunta al localhost de la PC host)
+  FirebaseFirestore.instance.useFirestoreEmulator('10.0.2.2', 8180);
 
   // ✅ Functions Emulator - Puerto 5101 (verificado en emulator output)
-  FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5101);
+  FirebaseFunctions.instance.useFunctionsEmulator('10.0.2.2', 5101);
+
+  debugPrint('🔥 Firebase emulators configured for Android Emulator:');
+  debugPrint('   Firestore: 10.0.2.2:8180');
+  debugPrint('   Functions: 10.0.2.2:5101');
 
   runApp(
     MultiProvider(

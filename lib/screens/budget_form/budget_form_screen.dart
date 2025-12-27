@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -100,12 +101,12 @@ class _BudgetFormScreenState extends State<BudgetFormScreen> {
           ),
         );
       } else {
-        // Create new budget
+        // Create new budget - let backend handle IDs and memberIds
         final newBudget = BudgetModel(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          id: '', // Backend will generate
           name: _nameController.text.trim(),
           description: _descriptionController.text.trim(),
-          ownerId: 'current_user_id', // TODO: Get from auth
+          ownerId: '', // Backend will set from auth
           type: _selectedType,
           budgetAmount: double.parse(_amountController.text.trim()),
           budgetPeriod: _selectedPeriod,
@@ -114,28 +115,60 @@ class _BudgetFormScreenState extends State<BudgetFormScreen> {
           customPeriodEnd: _customEndDate,
           iconName: _selectedIcon,
           colorHex: _selectedColor,
-          memberIds: ['current_user_id'], // Owner is always a member
+          memberIds: [], // Backend will populate
         );
-        budgetProvider.addBudget(newBudget);
+
+        await budgetProvider.addBudget(newBudget);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.budgetCreatedSuccess),
+              backgroundColor: AppColors.success,
+            ),
+          );
+        }
+      }
+
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    } on FirebaseException catch (e) {
+      debugPrint('Firebase error creating budget: ${e.code} - ${e.message}');
+      if (mounted) {
+        String errorMessage = 'Error al crear el presupuesto';
+        if (e.code == 'unavailable') {
+          errorMessage =
+              'Los emuladores de Firebase no están disponibles. Asegúrate de que estén corriendo.';
+        } else if (e.code == 'unauthenticated') {
+          errorMessage = 'Debes iniciar sesión para crear un presupuesto';
+        } else if (e.message != null) {
+          errorMessage = e.message!;
+        }
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.budgetCreatedSuccess),
-            backgroundColor: AppColors.success,
+            content: Text(errorMessage),
+            backgroundColor: AppColors.errorRed,
+            duration: const Duration(seconds: 4),
           ),
         );
       }
-
-      Navigator.of(context).pop();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: AppColors.errorRed,
-        ),
-      );
+      debugPrint('Unexpected error creating budget: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error inesperado: $e'),
+            backgroundColor: AppColors.errorRed,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 

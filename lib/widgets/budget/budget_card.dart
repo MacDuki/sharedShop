@@ -1,32 +1,34 @@
 import 'package:flutter/material.dart';
 
-import '../../state/state.dart';
 import '../../utils/app_colors.dart';
 
 class BudgetCard extends StatelessWidget {
   final double totalBudget;
-  final double totalSpent;
-  final double remaining;
-  final double percentage;
-  final BudgetState budgetState;
+  final double? totalSpent;
+  final double? remaining;
+  final double? percentage;
+  final String? status;
 
   const BudgetCard({
     super.key,
     required this.totalBudget,
-    required this.totalSpent,
-    required this.remaining,
-    required this.percentage,
-    required this.budgetState,
+    this.totalSpent,
+    this.remaining,
+    this.percentage,
+    this.status,
   });
 
   Color _getProgressColor() {
-    switch (budgetState) {
-      case BudgetState.normal:
-        return AppColors.primaryBlue;
-      case BudgetState.warning:
-        return AppColors.warningAmber;
-      case BudgetState.exceeded:
+    if (status == null) return AppColors.primaryBlue;
+
+    switch (status!.toLowerCase()) {
+      case 'exceeded':
         return AppColors.errorRed;
+      case 'warning':
+        return AppColors.warningAmber;
+      case 'normal':
+      default:
+        return AppColors.primaryBlue;
     }
   }
 
@@ -63,7 +65,7 @@ class BudgetCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                '\$${remaining.toStringAsFixed(2)}',
+                remaining != null ? '\$${remaining!.toStringAsFixed(2)}' : '—',
                 style: TextStyle(
                   fontSize: 48,
                   fontWeight: FontWeight.bold,
@@ -80,26 +82,32 @@ class BudgetCard extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Barra de progreso
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(
-              value: percentage / 100,
-              minHeight: 12,
-              backgroundColor: AppColors.background,
-              valueColor: AlwaysStoppedAnimation<Color>(_getProgressColor()),
+          if (percentage != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: percentage! / 100,
+                minHeight: 12,
+                backgroundColor: AppColors.background,
+                valueColor: AlwaysStoppedAnimation<Color>(_getProgressColor()),
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
+          if (percentage != null) const SizedBox(height: 16),
 
           // Detalles
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildDetailItem('Total', '\$${totalBudget.toStringAsFixed(2)}'),
-              _buildDetailItem('Gastado', '\$${totalSpent.toStringAsFixed(2)}'),
+              _buildDetailItem(
+                'Gastado',
+                totalSpent != null
+                    ? '\$${totalSpent!.toStringAsFixed(2)}'
+                    : '—',
+              ),
               _buildDetailItem(
                 'Porcentaje',
-                '${percentage.toStringAsFixed(0)}%',
+                percentage != null ? '${percentage!.toStringAsFixed(0)}%' : '—',
               ),
             ],
           ),

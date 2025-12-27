@@ -62,37 +62,44 @@ class _ShoppingItemCardState extends State<ShoppingItemCard>
 
   @override
   Widget build(BuildContext context) {
-    final budgetProvider = Provider.of<BudgetProvider>(context, listen: false);
+    // Use Selector to rebuild only when budgetMembers change
+    return Selector<BudgetProvider, List<UserModel>>(
+      selector: (context, provider) => provider.budgetMembers,
+      builder: (context, budgetMembers, child) {
+        // Obtener información del creador dinámicamente
+        UserModel? creator;
+        try {
+          creator = budgetMembers.firstWhere(
+            (member) => member.id == widget.item.createdBy,
+          );
+        } catch (e) {
+          // Si no se encuentra el creador, usar datos por defecto
+          creator = null;
+        }
 
-    // Obtener información del creador dinámicamente
-    final creator = budgetProvider.householdMembers.firstWhere(
-      (member) => member.id == widget.item.createdBy,
-      orElse:
-          () => UserModel(
-            id: widget.item.createdBy,
-            name: 'Unknown User',
-            email: '',
-            householdId: '',
-            budgetIds: [],
-          ),
+        // Obtener información de quién completó el item (si está completado)
+        UserModel? purchaser;
+        if (widget.item.isPurchased && widget.item.purchasedBy != null) {
+          try {
+            purchaser = budgetMembers.firstWhere(
+              (member) => member.id == widget.item.purchasedBy,
+            );
+          } catch (e) {
+            // Si no se encuentra el comprador, usar null
+            purchaser = null;
+          }
+        }
+
+        return _buildCard(context, creator, purchaser);
+      },
     );
+  }
 
-    // Obtener información de quién completó el item (si está completado)
-    UserModel? purchaser;
-    if (widget.item.isPurchased && widget.item.purchasedBy != null) {
-      purchaser = budgetProvider.householdMembers.firstWhere(
-        (member) => member.id == widget.item.purchasedBy,
-        orElse:
-            () => UserModel(
-              id: widget.item.purchasedBy!,
-              name: 'Unknown User',
-              email: '',
-              householdId: '',
-              budgetIds: [],
-            ),
-      );
-    }
-
+  Widget _buildCard(
+    BuildContext context,
+    UserModel? creator,
+    UserModel? purchaser,
+  ) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       margin: const EdgeInsets.only(bottom: 12),
@@ -134,22 +141,26 @@ class _ShoppingItemCardState extends State<ShoppingItemCard>
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    // Foto del creador
-                    _buildCreatorAvatar(creator),
-                    const SizedBox(width: 8),
+                    // Foto del creador (solo si existe)
+                    if (creator != null) ...[
+                      _buildCreatorAvatar(creator),
+                      const SizedBox(width: 8),
+                    ],
 
-                    // Checkbox
-                    Checkbox(
-                      value: widget.item.isPurchased,
-                      onChanged: widget.onTogglePurchased,
-                      activeColor: AppColors.primaryGreen,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
+                    // Checkbox (solo si el callback existe)
+                    if (widget.onTogglePurchased != null) ...[
+                      Checkbox(
+                        value: widget.item.isPurchased,
+                        onChanged: widget.onTogglePurchased,
+                        activeColor: AppColors.primaryGreen,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        visualDensity: VisualDensity.compact,
                       ),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
-                    ),
-                    const SizedBox(width: 8),
+                      const SizedBox(width: 8),
+                    ],
 
                     // Información del item
                     Expanded(
@@ -283,13 +294,15 @@ class _ShoppingItemCardState extends State<ShoppingItemCard>
                       height: 1,
                     ),
                     const SizedBox(height: 12),
-                    _buildDetailRow(
-                      icon: Icons.person_outline,
-                      label: 'Created by',
-                      value: creator.name,
-                      avatar: creator,
-                    ),
-                    const SizedBox(height: 8),
+                    if (creator != null) ...[
+                      _buildDetailRow(
+                        icon: Icons.person_outline,
+                        label: 'Created by',
+                        value: creator.name,
+                        avatar: creator,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
                     _buildDetailRow(
                       icon: Icons.calendar_today,
                       label: 'Created on',
@@ -304,15 +317,16 @@ class _ShoppingItemCardState extends State<ShoppingItemCard>
                         avatar: purchaser,
                         valueColor: AppColors.primaryGreen,
                       ),
-                      if (widget.item.purchasedAt != null) ...[
-                        const SizedBox(height: 8),
-                        _buildDetailRow(
-                          icon: Icons.event_available,
-                          label: 'Completed on',
-                          value: _formatDateTime(widget.item.purchasedAt!),
-                          valueColor: AppColors.primaryGreen,
-                        ),
-                      ],
+                    ],
+                    if (widget.item.isPurchased &&
+                        widget.item.purchasedAt != null) ...[
+                      const SizedBox(height: 8),
+                      _buildDetailRow(
+                        icon: Icons.event_available,
+                        label: 'Completed on',
+                        value: _formatDateTime(widget.item.purchasedAt!),
+                        valueColor: AppColors.primaryGreen,
+                      ),
                     ],
                   ],
                 ),

@@ -277,9 +277,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
                     // Use data from backend (no calculations)
                     final currentRemaining = activeBudget.remaining ?? 0.0;
-                    final budgetAmount = activeBudget.budgetAmount;
-                    final totalSpent = activeBudget.totalSpent ?? 0.0;
-                    final percentage = activeBudget.percentageUsed ?? 0.0;
 
                     // Predictive feedback (visual only, not business logic)
                     final itemPrice =
