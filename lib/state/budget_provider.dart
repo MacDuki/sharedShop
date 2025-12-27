@@ -72,6 +72,7 @@ class BudgetProvider extends ChangeNotifier {
     }
     return List.unmodifiable(_shoppingItems);
   }
+
   bool get itemsLoading => _itemsLoading;
   String? get itemsError => _itemsError;
 
@@ -79,16 +80,20 @@ class BudgetProvider extends ChangeNotifier {
   List<BudgetHistoryModel> get budgetHistory {
     if (_activeBudget != null) {
       return List.unmodifiable(
-        _budgetHistory.where((history) => history.budgetId == _activeBudget!.id),
+        _budgetHistory.where(
+          (history) => history.budgetId == _activeBudget!.id,
+        ),
       );
     }
     return List.unmodifiable(_budgetHistory);
   }
+
   bool get historyLoading => _historyLoading;
   String? get historyError => _historyError;
 
   // Getters - Member expenses
-  List<MemberExpenseModel> get memberExpenses => List.unmodifiable(_memberExpenses);
+  List<MemberExpenseModel> get memberExpenses =>
+      List.unmodifiable(_memberExpenses);
   double get memberExpensesGrandTotal => _memberExpensesGrandTotal;
   int get memberExpensesTotalItems => _memberExpensesTotalItems;
   bool get memberExpensesLoading => _memberExpensesLoading;
@@ -127,21 +132,23 @@ class BudgetProvider extends ChangeNotifier {
       final result = await callable.call();
 
       final budgetsData = result.data['budgets'] as List;
-      
-      _budgets = budgetsData.map((data) {
-        return BudgetModel(
-          id: data['id'],
-          name: data['name'],
-          budgetAmount: data['budgetAmount'].toDouble(),
-          ownerId: FirebaseAuth.instance.currentUser?.uid ?? '',
-          type: data['isOwner'] == true
-              ? BudgetType.personal
-              : BudgetType.shared,
-          budgetPeriod: BudgetPeriod.monthly,
-          createdAt: DateTime.now(),
-          memberIds: [],
-        );
-      }).toList();
+
+      _budgets =
+          budgetsData.map((data) {
+            return BudgetModel(
+              id: data['id'],
+              name: data['name'],
+              budgetAmount: data['budgetAmount'].toDouble(),
+              ownerId: FirebaseAuth.instance.currentUser?.uid ?? '',
+              type:
+                  data['isOwner'] == true
+                      ? BudgetType.personal
+                      : BudgetType.shared,
+              budgetPeriod: BudgetPeriod.monthly,
+              createdAt: DateTime.now(),
+              memberIds: [],
+            );
+          }).toList();
 
       _budgetsLoading = false;
       notifyListeners();
@@ -168,7 +175,7 @@ class BudgetProvider extends ChangeNotifier {
       final result = await callable.call({'budgetId': budgetId});
 
       final budgetData = result.data['budget'];
-      
+
       // Parse budgetPeriod from backend
       BudgetPeriod parseBudgetPeriod(String? period) {
         switch (period) {
@@ -197,21 +204,24 @@ class BudgetProvider extends ChangeNotifier {
         }
         return DateTime.now();
       }
-      
+
       _activeBudget = BudgetModel(
         id: budgetData['id'],
         name: budgetData['name'],
         description: budgetData['description'],
         budgetAmount: budgetData['budgetAmount'].toDouble(),
         ownerId: budgetData['ownerId'],
-        type: budgetData['ownerId'] == FirebaseAuth.instance.currentUser?.uid
-            ? BudgetType.personal
-            : BudgetType.shared,
+        type:
+            budgetData['ownerId'] == FirebaseAuth.instance.currentUser?.uid
+                ? BudgetType.personal
+                : BudgetType.shared,
         budgetPeriod: parseBudgetPeriod(budgetData['budgetPeriod']),
         createdAt: parseCreatedAt(budgetData['createdAt']),
-        memberIds: (budgetData['memberIds'] as List?)
-            ?.map((id) => id as String)
-            .toList() ?? [],
+        memberIds:
+            (budgetData['memberIds'] as List?)
+                ?.map((id) => id as String)
+                .toList() ??
+            [],
         totalSpent: budgetData['totalSpent']?.toDouble(),
         remaining: budgetData['remaining']?.toDouble(),
         percentageUsed: budgetData['percentageUsed']?.toDouble(),
@@ -221,16 +231,17 @@ class BudgetProvider extends ChangeNotifier {
         colorHex: budgetData['colorHex'],
       );
 
-      _budgetMembers = (budgetData['members'] as List).map((memberData) {
-        return UserModel(
-          id: memberData['userId'],
-          name: memberData['name'],
-          email: memberData['email'],
-          photoUrl: memberData['photoURL'],
-          householdId: '',
-          budgetIds: [],
-        );
-      }).toList();
+      _budgetMembers =
+          (budgetData['members'] as List).map((memberData) {
+            return UserModel(
+              id: memberData['userId'],
+              name: memberData['name'],
+              email: memberData['email'],
+              photoUrl: memberData['photoURL'],
+              householdId: '',
+              budgetIds: [],
+            );
+          }).toList();
 
       _activeBudgetLoading = false;
       _membersLoading = false;
@@ -261,23 +272,28 @@ class BudgetProvider extends ChangeNotifier {
       });
 
       final itemsData = result.data['items'] as List;
-      
-      _shoppingItems = itemsData.map((data) {
-        return ShoppingItemModel(
-          id: data['id'],
-          budgetId: budgetId,
-          name: data['name'],
-          estimatedPrice: data['estimatedPrice'].toDouble(),
-          category: data['category'],
-          isPurchased: data['isPurchased'],
-          createdBy: data['createdBy'],
-          createdAt: (data['createdAt'] as dynamic)?.toDate?.() ?? DateTime.now(),
-          purchasedBy: data['purchasedBy'],
-          purchasedAt: data['purchasedAt'] != null 
-              ? (data['purchasedAt'] as dynamic).toDate() 
-              : null,
-        );
-      }).toList();
+
+      _shoppingItems =
+          itemsData.map((data) {
+            return ShoppingItemModel(
+              id: data['id'],
+              budgetId: budgetId,
+              name: data['name'],
+              estimatedPrice: data['estimatedPrice'].toDouble(),
+              category: data['category'],
+              isPurchased: data['isPurchased'],
+              createdBy: data['createdBy'],
+              createdAt:
+                  data['createdAt'] != null
+                      ? (data['createdAt'] as dynamic).toDate()
+                      : DateTime.now(),
+              purchasedBy: data['purchasedBy'],
+              purchasedAt:
+                  data['purchasedAt'] != null
+                      ? (data['purchasedAt'] as dynamic).toDate()
+                      : null,
+            );
+          }).toList();
 
       _itemsLoading = false;
       notifyListeners();
@@ -303,29 +319,30 @@ class BudgetProvider extends ChangeNotifier {
 
       final historyData = result.data['history'] as List;
 
-      _budgetHistory = historyData.map((data) {
-        // Parse periodStart and periodEnd
-        DateTime parsePeriod(dynamic period) {
-          if (period == null) return DateTime.now();
-          if (period is String) return DateTime.parse(period);
-          // Handle Firestore Timestamp
-          if (period is Map && period['_seconds'] != null) {
-            return DateTime.fromMillisecondsSinceEpoch(
-              period['_seconds'] * 1000,
-            );
-          }
-          return DateTime.now();
-        }
+      _budgetHistory =
+          historyData.map((data) {
+            // Parse periodStart and periodEnd
+            DateTime parsePeriod(dynamic period) {
+              if (period == null) return DateTime.now();
+              if (period is String) return DateTime.parse(period);
+              // Handle Firestore Timestamp
+              if (period is Map && period['_seconds'] != null) {
+                return DateTime.fromMillisecondsSinceEpoch(
+                  period['_seconds'] * 1000,
+                );
+              }
+              return DateTime.now();
+            }
 
-        return BudgetHistoryModel(
-          id: data['id'],
-          budgetId: data['budgetId'],
-          periodStart: parsePeriod(data['periodStart']),
-          periodEnd: parsePeriod(data['periodEnd']),
-          totalSpent: (data['totalSpent'] ?? 0).toDouble(),
-          percentageUsed: data['percentageUsed']?.toDouble(),
-        );
-      }).toList();
+            return BudgetHistoryModel(
+              id: data['id'],
+              budgetId: data['budgetId'],
+              periodStart: parsePeriod(data['periodStart']),
+              periodEnd: parsePeriod(data['periodEnd']),
+              totalSpent: (data['totalSpent'] ?? 0).toDouble(),
+              percentageUsed: data['percentageUsed']?.toDouble(),
+            );
+          }).toList();
 
       _historyLoading = false;
       notifyListeners();
@@ -350,10 +367,11 @@ class BudgetProvider extends ChangeNotifier {
       final result = await callable.call({'budgetId': budgetId});
 
       final expensesData = result.data['memberExpenses'] as List;
-      
-      _memberExpenses = expensesData.map((data) {
-        return MemberExpenseModel.fromJson(data);
-      }).toList();
+
+      _memberExpenses =
+          expensesData.map((data) {
+            return MemberExpenseModel.fromJson(data);
+          }).toList();
 
       _memberExpensesGrandTotal = (result.data['grandTotal'] ?? 0).toDouble();
       _memberExpensesTotalItems = result.data['totalItems'] as int? ?? 0;
@@ -389,7 +407,7 @@ class BudgetProvider extends ChangeNotifier {
 
       // Re-fetch budgets from backend (single source of truth)
       await fetchUserBudgets();
-      
+
       // If created successfully, fetch its details
       if (result.data != null && result.data['budgetId'] != null) {
         final newBudgetId = result.data['budgetId'];
@@ -483,7 +501,7 @@ class BudgetProvider extends ChangeNotifier {
   /// After success, re-fetches items from backend.
   Future<void> updateItem(String itemId, ShoppingItemModel updatedItem) async {
     if (_activeBudget == null) return;
-    
+
     try {
       final callable = _functions.httpsCallable('updateShoppingItem');
       await callable.call({
@@ -506,7 +524,7 @@ class BudgetProvider extends ChangeNotifier {
   /// After success, re-fetches items from backend.
   Future<void> deleteItem(String itemId) async {
     if (_activeBudget == null) return;
-    
+
     try {
       final callable = _functions.httpsCallable('deleteShoppingItem');
       await callable.call({'itemId': itemId});
@@ -524,20 +542,17 @@ class BudgetProvider extends ChangeNotifier {
   /// After success, re-fetches items from backend.
   Future<void> toggleItemPurchased(String itemId) async {
     if (_activeBudget == null) return;
-    
+
     final item = _shoppingItems.firstWhere(
       (item) => item.id == itemId,
       orElse: () => throw Exception('Item not found'),
     );
-    
+
     final newStatus = !item.isPurchased;
 
     try {
       final callable = _functions.httpsCallable('updateShoppingItem');
-      await callable.call({
-        'itemId': itemId,
-        'isPurchased': newStatus,
-      });
+      await callable.call({'itemId': itemId, 'isPurchased': newStatus});
 
       // Re-fetch from backend (no local state mutation)
       await fetchBudgetItems(_activeBudget!.id);

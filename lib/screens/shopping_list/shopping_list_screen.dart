@@ -8,269 +8,8 @@ import '../../utils/app_colors.dart';
 import '../../widgets/shopping/shopping_item_card.dart';
 import '../add_item/add_item_screen.dart';
 
-enum SortOption { name, price, status }
-
-class ShoppingListScreen extends StatefulWidget {
+class ShoppingListScreen extends StatelessWidget {
   const ShoppingListScreen({super.key});
-
-  @override
-  State<ShoppingListScreen> createState() => _ShoppingListScreenState();
-}
-
-class _ShoppingListScreenState extends State<ShoppingListScreen> {
-  String? _selectedCategory;
-  SortOption _sortOption = SortOption.name;
-  bool _ascending = true;
-
-  List<ShoppingItemModel> _filterAndSortItems(List<ShoppingItemModel> items) {
-    // Filtrar por categoría
-    List<ShoppingItemModel> filtered;
-    if (_selectedCategory != null && _selectedCategory != 'all') {
-      filtered =
-          items.where((item) => item.category == _selectedCategory).toList();
-    } else {
-      filtered = List.from(items); // Crear copia mutable
-    }
-
-    // Ordenar
-    filtered.sort((a, b) {
-      int comparison = 0;
-      switch (_sortOption) {
-        case SortOption.name:
-          comparison = a.name.toLowerCase().compareTo(b.name.toLowerCase());
-          break;
-        case SortOption.price:
-          comparison = a.estimatedPrice.compareTo(b.estimatedPrice);
-          break;
-        case SortOption.status:
-          comparison = (a.isPurchased ? 1 : 0).compareTo(b.isPurchased ? 1 : 0);
-          break;
-      }
-      return _ascending ? comparison : -comparison;
-    });
-
-    return filtered;
-  }
-
-  Set<String> _getCategories(List<ShoppingItemModel> items) {
-    return items
-        .map((item) => item.category)
-        .where((category) => category != null)
-        .cast<String>()
-        .toSet();
-  }
-
-  void _showFilterDialog(BuildContext context, List<ShoppingItemModel> items) {
-    final l10n = AppLocalizations.of(context)!;
-    final categories = _getCategories(items);
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.darkCard,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return DraggableScrollableSheet(
-              initialChildSize: 0.75,
-              minChildSize: 0.5,
-              maxChildSize: 0.95,
-              expand: false,
-              builder: (context, scrollController) {
-                return SingleChildScrollView(
-                  controller: scrollController,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: 24,
-                      right: 24,
-                      top: 24,
-                      bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.filterAndSort,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textWhite,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Filtro por categoría
-                        Text(
-                          l10n.category,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textGray,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            FilterChip(
-                              label: Text(l10n.all),
-                              selected:
-                                  _selectedCategory == null ||
-                                  _selectedCategory == 'all',
-                              onSelected: (selected) {
-                                setState(
-                                  () =>
-                                      _selectedCategory =
-                                          selected ? 'all' : null,
-                                );
-                                setModalState(() {});
-                              },
-                              backgroundColor: AppColors.darkBackground,
-                              selectedColor: AppColors.primaryBlue.withValues(
-                                alpha: 0.3,
-                              ),
-                              labelStyle: TextStyle(
-                                color:
-                                    (_selectedCategory == null ||
-                                            _selectedCategory == 'all')
-                                        ? AppColors.primaryBlue
-                                        : AppColors.textGray,
-                              ),
-                            ),
-                            ...categories.map(
-                              (category) => FilterChip(
-                                label: Text(category),
-                                selected: _selectedCategory == category,
-                                onSelected: (selected) {
-                                  setState(
-                                    () =>
-                                        _selectedCategory =
-                                            selected ? category : null,
-                                  );
-                                  setModalState(() {});
-                                },
-                                backgroundColor: AppColors.darkBackground,
-                                selectedColor: AppColors.primaryBlue.withValues(
-                                  alpha: 0.3,
-                                ),
-                                labelStyle: TextStyle(
-                                  color:
-                                      _selectedCategory == category
-                                          ? AppColors.primaryBlue
-                                          : AppColors.textGray,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Ordenar por
-                        Text(
-                          l10n.sortBy,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textGray,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Column(
-                          children: [
-                            RadioListTile<SortOption>(
-                              title: Text(
-                                l10n.name,
-                                style: const TextStyle(
-                                  color: AppColors.textWhite,
-                                ),
-                              ),
-                              value: SortOption.name,
-                              groupValue: _sortOption,
-                              onChanged: (value) {
-                                setState(() => _sortOption = value!);
-                                setModalState(() {});
-                              },
-                              activeColor: AppColors.primaryBlue,
-                            ),
-                            RadioListTile<SortOption>(
-                              title: Text(
-                                l10n.price,
-                                style: const TextStyle(
-                                  color: AppColors.textWhite,
-                                ),
-                              ),
-                              value: SortOption.price,
-                              groupValue: _sortOption,
-                              onChanged: (value) {
-                                setState(() => _sortOption = value!);
-                                setModalState(() {});
-                              },
-                              activeColor: AppColors.primaryBlue,
-                            ),
-                            RadioListTile<SortOption>(
-                              title: Text(
-                                l10n.status,
-                                style: const TextStyle(
-                                  color: AppColors.textWhite,
-                                ),
-                              ),
-                              value: SortOption.status,
-                              groupValue: _sortOption,
-                              onChanged: (value) {
-                                setState(() => _sortOption = value!);
-                                setModalState(() {});
-                              },
-                              activeColor: AppColors.primaryBlue,
-                            ),
-                          ],
-                        ),
-
-                        // Orden ascendente/descendente
-                        SwitchListTile(
-                          title: Text(
-                            _ascending ? l10n.ascending : l10n.descending,
-                            style: const TextStyle(color: AppColors.textWhite),
-                          ),
-                          value: _ascending,
-                          onChanged: (value) {
-                            setState(() => _ascending = value);
-                            setModalState(() {});
-                          },
-                          activeThumbColor: AppColors.primaryBlue,
-                        ),
-
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryBlue,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Text(l10n.apply),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            );
-          },
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -280,15 +19,79 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       body: SafeArea(
         child: Consumer<BudgetProvider>(
           builder: (context, budgetProvider, child) {
-            final allItems = budgetProvider.shoppingItems;
-            final items = _filterAndSortItems(allItems);
-            final household = budgetProvider.household;
-
-            if (household == null) {
+            // Estado de carga inicial
+            if (budgetProvider.activeBudgetLoading ||
+                budgetProvider.itemsLoading) {
               return const Center(
                 child: CircularProgressIndicator(color: AppColors.primaryBlue),
               );
             }
+
+            // Estado de error
+            if (budgetProvider.activeBudgetError != null) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: AppColors.errorRed,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.errorLoadingBudget,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        color: AppColors.textWhite,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: Text(
+                        budgetProvider.activeBudgetError!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textGray,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // Estado sin presupuesto activo
+            if (budgetProvider.activeBudget == null) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.account_balance_wallet_outlined,
+                      size: 64,
+                      color: AppColors.textGray,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.noBudgetSelected,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        color: AppColors.textWhite,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // Datos del backend - sin procesamiento local
+            final items = budgetProvider.shoppingItems;
+            final activeBudget = budgetProvider.activeBudget!;
 
             return Column(
               children: [
@@ -322,7 +125,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                           children: [
                             Text(
                               l10n.shoppingList,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.textGray,
@@ -343,28 +146,6 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                           ],
                         ),
                       ),
-                      // Botón de filtro
-                      if (allItems.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          margin: const EdgeInsets.only(right: 8),
-                          decoration: BoxDecoration(
-                            color: AppColors.darkCard,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: InkWell(
-                            onTap: () => _showFilterDialog(context, allItems),
-                            child: Icon(
-                              Icons.filter_list,
-                              color:
-                                  (_selectedCategory != null &&
-                                          _selectedCategory != 'all')
-                                      ? AppColors.primaryBlue
-                                      : AppColors.textWhite,
-                              size: 24,
-                            ),
-                          ),
-                        ),
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -391,7 +172,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                   ),
                 ),
 
-                // Budget Summary Card
+                // Budget Summary Card - Datos del backend
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                   child: Container(
@@ -412,7 +193,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                 children: [
                                   Text(
                                     l10n.total,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
                                       color: AppColors.textGray,
@@ -421,7 +202,9 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    '\$${budgetProvider.totalSpent.toStringAsFixed(2)}',
+                                    activeBudget.totalSpent != null
+                                        ? '\$${activeBudget.totalSpent!.toStringAsFixed(2)}'
+                                        : '\$0.00',
                                     style: const TextStyle(
                                       fontSize: 28,
                                       fontWeight: FontWeight.bold,
@@ -442,7 +225,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                 children: [
                                   Text(
                                     l10n.remaining,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
                                       color: AppColors.textGray,
@@ -451,12 +234,14 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    '\$${budgetProvider.remainingBudget.toStringAsFixed(2)}',
+                                    activeBudget.remaining != null
+                                        ? '\$${activeBudget.remaining!.toStringAsFixed(2)}'
+                                        : '\$${activeBudget.budgetAmount.toStringAsFixed(2)}',
                                     style: TextStyle(
                                       fontSize: 28,
                                       fontWeight: FontWeight.bold,
-                                      color: _getTotalColor(
-                                        budgetProvider.budgetState,
+                                      color: _getStatusColor(
+                                        activeBudget.status,
                                       ),
                                     ),
                                   ),
@@ -470,13 +255,15 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                           borderRadius: BorderRadius.circular(10),
                           child: LinearProgressIndicator(
                             value:
-                                budgetProvider.budgetPercentage > 100
-                                    ? 1.0
-                                    : budgetProvider.budgetPercentage / 100,
+                                activeBudget.percentageUsed != null
+                                    ? (activeBudget.percentageUsed! > 100
+                                        ? 1.0
+                                        : activeBudget.percentageUsed! / 100)
+                                    : 0.0,
                             minHeight: 10,
                             backgroundColor: AppColors.darkBackground,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              _getTotalColor(budgetProvider.budgetState),
+                              _getStatusColor(activeBudget.status),
                             ),
                           ),
                         ),
@@ -485,22 +272,22 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              l10n.percentageUsed(
-                                budgetProvider.budgetPercentage.toStringAsFixed(
-                                  0,
-                                ),
-                              ),
-                              style: TextStyle(
+                              activeBudget.percentageUsed != null
+                                  ? l10n.percentageUsed(
+                                    activeBudget.percentageUsed!
+                                        .toStringAsFixed(0),
+                                  )
+                                  : l10n.percentageUsed('0'),
+                              style: const TextStyle(
                                 fontSize: 13,
                                 color: AppColors.textGray,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            if (budgetProvider.budgetState ==
-                                BudgetState.exceeded)
+                            if (activeBudget.status == 'exceeded')
                               Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.warning_rounded,
                                     size: 14,
                                     color: AppColors.errorRed,
@@ -508,7 +295,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                   const SizedBox(width: 4),
                                   Text(
                                     l10n.budgetExceeded,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 13,
                                       color: AppColors.errorRed,
                                       fontWeight: FontWeight.w600,
@@ -516,11 +303,10 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                   ),
                                 ],
                               )
-                            else if (budgetProvider.budgetState ==
-                                BudgetState.warning)
+                            else if (activeBudget.status == 'warning')
                               Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.info_outline,
                                     size: 14,
                                     color: AppColors.warningAmber,
@@ -528,7 +314,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                   const SizedBox(width: 4),
                                   Text(
                                     l10n.nearLimit,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 13,
                                       color: AppColors.warningAmber,
                                       fontWeight: FontWeight.w600,
@@ -674,14 +460,15 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     );
   }
 
-  Color _getTotalColor(BudgetState state) {
-    switch (state) {
-      case BudgetState.normal:
-        return AppColors.primaryGreen;
-      case BudgetState.warning:
-        return AppColors.warningAmber;
-      case BudgetState.exceeded:
+  Color _getStatusColor(String? status) {
+    switch (status) {
+      case 'exceeded':
         return AppColors.errorRed;
+      case 'warning':
+        return AppColors.warningAmber;
+      case 'normal':
+      default:
+        return AppColors.primaryGreen;
     }
   }
 
@@ -742,13 +529,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                 child: Text(l10n.cancel),
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  final navigator = Navigator.of(dialogContext);
+                  final messenger = ScaffoldMessenger.of(context);
+
                   final name = nameController.text.trim();
                   final priceStr = priceController.text.trim();
                   final category = categoryController.text.trim();
 
                   if (name.isEmpty || priceStr.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    messenger.showSnackBar(
                       SnackBar(
                         content: Text(l10n.requiredFieldsMissing),
                         backgroundColor: AppColors.errorRed,
@@ -759,7 +549,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
                   final price = double.tryParse(priceStr);
                   if (price == null || price <= 0) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    messenger.showSnackBar(
                       SnackBar(
                         content: Text(l10n.invalidPriceError),
                         backgroundColor: AppColors.errorRed,
@@ -774,15 +564,23 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                     category: category.isEmpty ? null : category,
                   );
 
-                  budgetProvider.updateItem(item.id, updatedItem);
-                  Navigator.pop(dialogContext);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.itemUpdated),
-                      backgroundColor: AppColors.primaryGreen,
-                    ),
-                  );
+                  try {
+                    await budgetProvider.updateItem(item.id, updatedItem);
+                    navigator.pop();
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.itemUpdated),
+                        backgroundColor: AppColors.primaryGreen,
+                      ),
+                    );
+                  } catch (e) {
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(e.toString()),
+                        backgroundColor: AppColors.errorRed,
+                      ),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryGreen,
@@ -812,16 +610,29 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                 child: Text(l10n.cancel),
               ),
               ElevatedButton(
-                onPressed: () {
-                  budgetProvider.deleteItem(item.id);
-                  Navigator.pop(dialogContext);
+                onPressed: () async {
+                  final navigator = Navigator.of(dialogContext);
+                  final messenger = ScaffoldMessenger.of(context);
+                  final itemName = item.name;
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.itemDeleted(item.name)),
-                      backgroundColor: AppColors.errorRed,
-                    ),
-                  );
+                  try {
+                    await budgetProvider.deleteItem(item.id);
+                    navigator.pop();
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.itemDeleted(itemName)),
+                        backgroundColor: AppColors.errorRed,
+                      ),
+                    );
+                  } catch (e) {
+                    navigator.pop();
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(e.toString()),
+                        backgroundColor: AppColors.errorRed,
+                      ),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.errorRed,
