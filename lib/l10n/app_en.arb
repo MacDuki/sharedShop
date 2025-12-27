@@ -233,6 +233,9 @@
   "privacyPolicy": "Privacy Policy",
   "termsOfService": "Terms of Service",
   "logout": "Logout",
+  "logoutConfirmTitle": "Logout?",
+  "logoutConfirmMessage": "Are you sure you want to logout?",
+  "logoutError": "Error logging out",
   
   "history": "HISTORY",
   "historyTitle": "History",
@@ -520,5 +523,17 @@
     }
   },
   "noMemberExpenses": "No expenses recorded",
-  "noMemberExpensesDescription": "Members haven't completed any items in this budget yet"
+  "noMemberExpensesDescription": "Members haven't completed any items in this budget yet",
+  
+  "errorLoadingBudget": "Error loading budget",
+  "budgetNotFound": "Budget not found",
+  "errorAddingItem": "Error adding item",
+  "currentBudgetStatus": "Current Budget Status",
+  "currentRemaining": "Current Remaining",
+  "afterAdding": "After adding this item",
+  "budgetWillBeExceeded": "This item will exceed your budget",
+  "errorUpdatingBudget": "Error updating budget",
+  "currentBudgetLabel": "Current Budget",
+  "newRemainingLabel": "New Remaining",
+  "budgetLowerThanSpent": "The new budget is lower than current spending"
 }

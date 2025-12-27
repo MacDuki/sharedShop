@@ -486,6 +486,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get logout => 'Cerrar sesión';
 
   @override
+  String get logoutConfirmTitle => '¿Cerrar sesión?';
+
+  @override
+  String get logoutConfirmMessage =>
+      '¿Estás seguro de que quieres cerrar sesión?';
+
+  @override
+  String get logoutError => 'Error al cerrar sesión';
+
+  @override
   String get history => 'HISTORIAL';
 
   @override
@@ -1059,4 +1069,38 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get noMemberExpensesDescription =>
       'Los miembros aún no han completado ítems en este presupuesto';
+
+  @override
+  String get errorLoadingBudget => 'Error al cargar presupuesto';
+
+  @override
+  String get budgetNotFound => 'Presupuesto no encontrado';
+
+  @override
+  String get errorAddingItem => 'Error al agregar ítem';
+
+  @override
+  String get currentBudgetStatus => 'Estado Actual del Presupuesto';
+
+  @override
+  String get currentRemaining => 'Restante Actual';
+
+  @override
+  String get afterAdding => 'Después de agregar este ítem';
+
+  @override
+  String get budgetWillBeExceeded => 'Este ítem excederá tu presupuesto';
+
+  @override
+  String get errorUpdatingBudget => 'Error al actualizar presupuesto';
+
+  @override
+  String get currentBudgetLabel => 'Presupuesto Actual';
+
+  @override
+  String get newRemainingLabel => 'Nuevo Restante';
+
+  @override
+  String get budgetLowerThanSpent =>
+      'El nuevo presupuesto es menor que el gasto actual';
 }

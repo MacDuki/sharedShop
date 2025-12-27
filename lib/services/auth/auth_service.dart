@@ -16,12 +16,12 @@ class AuthService {
 
       final GoogleSignInAuthentication auth = await result.authentication;
 
-      if (auth?.accessToken == null || auth?.idToken == null) {
+      if (auth.accessToken == null || auth.idToken == null) {
         throw Exception('Error al obtener credenciales de Google');
       }
 
       final credential = GoogleAuthProvider.credential(
-        accessToken: auth!.accessToken,
+        accessToken: auth.accessToken,
         idToken: auth.idToken,
       );
 
@@ -50,4 +50,17 @@ class AuthService {
       throw Exception('Error al iniciar sesión con Apple: ${e.toString()}');
     }
   }
+
+  Future<void> signOut() async {
+    try {
+      await GoogleSignIn().signOut();
+      await _firebaseAuth.signOut();
+    } catch (e) {
+      throw Exception('Error al cerrar sesión: ${e.toString()}');
+    }
+  }
+
+  User? get currentUser => _firebaseAuth.currentUser;
+
+  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 }

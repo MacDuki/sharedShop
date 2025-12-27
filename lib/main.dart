@@ -1,4 +1,5 @@
 import 'package:appfast/firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,20 @@ import 'utils/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initServices();
-  FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+
+  // 🔧 CONFIGURACIÓN DE EMULADORES PARA DESARROLLO LOCAL
+  // Auth usa producción (Google Sign-In requiere OAuth real)
+  // Firestore y Functions en local para ver datos en tiempo real
+
+  // ❌ Auth Emulator desactivado - usar producción para Google Sign-In
+  // await FirebaseAuth.instance.useAuthEmulator('localhost', 9199);
+
+  // ✅ Firestore Emulator - Puerto 8180 (verificado en emulator output)
+  FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8180);
+
+  // ✅ Functions Emulator - Puerto 5101 (verificado en emulator output)
+  FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5101);
+
   runApp(
     MultiProvider(
       providers: [

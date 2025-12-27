@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isBudgetMember(budgetId) {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/budgets/$(budgetId)).data.memberIds.hasAny([request.auth.uid]);
+    }
+    
+    function isBudgetOwner(budgetId) {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/budgets/$(budgetId)).data.ownerId == request.auth.uid;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
+    }
+    
+    // Budgets collection
+    match /budgets/{budgetId} {
+      allow read: if isBudgetMember(budgetId);
+      allow create: if isAuthenticated();
+      allow update: if isBudgetOwner(budgetId);
+      allow delete: if isBudgetOwner(budgetId);
+    }
+    
+    // Shopping Items collection
+    match /shoppingItems/{itemId} {
+      allow read: if isBudgetMember(resource.data.budgetId);
+      allow create: if isAuthenticated() && isBudgetMember(request.resource.data.budgetId);
+      allow update: if isBudgetMember(resource.data.budgetId);
+      allow delete: if isBudgetMember(resource.data.budgetId) && 
+        (resource.data.createdBy == request.auth.uid || isBudgetOwner(resource.data.budgetId));
+    }
+    
+    // Invitations collection
+    match /invitations/{invitationId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && 
+        (resource.data.inviterUserId == request.auth.uid || 
+         resource.data.invitedUserId == request.auth.uid);
+      allow delete: if resource.data.inviterUserId == request.auth.uid;
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Only server can write
+    }
+    
+    // Budget History collection
+    match /budgetHistory/{historyId} {
+      allow read: if isBudgetMember(resource.data.budgetId);
+      allow write: if false; // Only server can write
+    }
+  }
+}

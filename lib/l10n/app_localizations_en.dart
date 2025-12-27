@@ -484,6 +484,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logout => 'Logout';
 
   @override
+  String get logoutConfirmTitle => 'Logout?';
+
+  @override
+  String get logoutConfirmMessage => 'Are you sure you want to logout?';
+
+  @override
+  String get logoutError => 'Error logging out';
+
+  @override
   String get history => 'HISTORY';
 
   @override
@@ -1054,4 +1063,38 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noMemberExpensesDescription =>
       'Members haven\'t completed any items in this budget yet';
+
+  @override
+  String get errorLoadingBudget => 'Error loading budget';
+
+  @override
+  String get budgetNotFound => 'Budget not found';
+
+  @override
+  String get errorAddingItem => 'Error adding item';
+
+  @override
+  String get currentBudgetStatus => 'Current Budget Status';
+
+  @override
+  String get currentRemaining => 'Current Remaining';
+
+  @override
+  String get afterAdding => 'After adding this item';
+
+  @override
+  String get budgetWillBeExceeded => 'This item will exceed your budget';
+
+  @override
+  String get errorUpdatingBudget => 'Error updating budget';
+
+  @override
+  String get currentBudgetLabel => 'Current Budget';
+
+  @override
+  String get newRemainingLabel => 'New Remaining';
+
+  @override
+  String get budgetLowerThanSpent =>
+      'The new budget is lower than current spending';
 }

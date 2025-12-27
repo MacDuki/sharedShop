@@ -30,7 +30,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     super.dispose();
   }
 
-  void _addItem() {
+  Future<void> _addItem() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -43,8 +43,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
     if (activeBudget == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No budget selected'),
+        SnackBar(
+          content: Text(l10n.budgetNotFound),
           backgroundColor: AppColors.errorRed,
         ),
       );
@@ -53,10 +53,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
     }
 
     final price = double.parse(_priceController.text.trim());
-
-    // Show feedback of the impact
-    final newTotal = budgetProvider.totalSpent + price;
-    final newRemaining = activeBudget.budgetAmount - newTotal;
 
     final item = ShoppingItemModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -67,30 +63,52 @@ class _AddItemScreenState extends State<AddItemScreen> {
           _categoryController.text.trim().isEmpty
               ? null
               : _categoryController.text.trim(),
-      createdBy: 'currentUser', // TODO: Get from auth
+      createdBy: budgetProvider.currentUser?.id ?? 'unknown',
       createdAt: DateTime.now(),
     );
 
-    budgetProvider.addItem(item);
+    try {
+      await budgetProvider.addItem(item);
 
-    // Show feedback
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          l10n.itemAddedRemaining('\$${newRemaining.toStringAsFixed(2)}'),
+      if (!mounted) return;
+
+      // Get updated budget data from backend
+      final updatedBudget = budgetProvider.activeBudget;
+      if (updatedBudget != null) {
+        final remaining = updatedBudget.remaining ?? 0.0;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              l10n.itemAddedRemaining('\$${remaining.toStringAsFixed(2)}'),
+            ),
+            backgroundColor:
+                remaining < 0
+                    ? AppColors.errorRed
+                    : (updatedBudget.status == 'warning' ||
+                        updatedBudget.status == 'exceeded')
+                    ? AppColors.warningAmber
+                    : AppColors.success,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+
+      Navigator.of(context).pop();
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorAddingItem),
+          backgroundColor: AppColors.errorRed,
         ),
-        backgroundColor:
-            newRemaining < 0
-                ? AppColors.errorRed
-                : newRemaining < activeBudget.budgetAmount * 0.3
-                ? AppColors.warningAmber
-                : AppColors.success,
-        duration: const Duration(seconds: 3),
-      ),
-    );
-
-    setState(() => _isLoading = false);
-    Navigator.of(context).pop();
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -248,16 +266,27 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
                 const SizedBox(height: 32),
 
-                // Feedback del impacto
+                // Current budget status from backend
                 Consumer<BudgetProvider>(
                   builder: (context, budgetProvider, child) {
-                    final currentPrice =
-                        double.tryParse(_priceController.text.trim()) ?? 0;
-                    final newTotal = budgetProvider.totalSpent + currentPrice;
-                    final newRemaining =
-                        budgetProvider.household!.budgetAmount - newTotal;
+                    final activeBudget = budgetProvider.activeBudget;
 
-                    if (currentPrice > 0) {
+                    if (activeBudget == null) {
+                      return const SizedBox.shrink();
+                    }
+
+                    // Use data from backend (no calculations)
+                    final currentRemaining = activeBudget.remaining ?? 0.0;
+                    final budgetAmount = activeBudget.budgetAmount;
+                    final totalSpent = activeBudget.totalSpent ?? 0.0;
+                    final percentage = activeBudget.percentageUsed ?? 0.0;
+
+                    // Predictive feedback (visual only, not business logic)
+                    final itemPrice =
+                        double.tryParse(_priceController.text.trim()) ?? 0;
+                    final predictedRemaining = currentRemaining - itemPrice;
+
+                    if (itemPrice > 0) {
                       return Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -265,7 +294,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color:
-                                newRemaining < 0
+                                predictedRemaining < 0
                                     ? AppColors.errorRed
                                     : AppColors.primaryBlue.withOpacity(0.3),
                             width: 1,
@@ -275,43 +304,68 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              l10n.budgetImpact,
+                              l10n.currentBudgetStatus,
                               style: const TextStyle(
                                 color: AppColors.textGray,
                                 fontSize: 14,
+                                fontWeight: FontWeight.w500,
                               ),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  l10n.currentRemaining,
+                                  style: const TextStyle(
+                                    color: AppColors.textWhite,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                Text(
+                                  '\$${currentRemaining.toStringAsFixed(2)}',
+                                  style: TextStyle(
+                                    color:
+                                        currentRemaining < 0
+                                            ? AppColors.errorRed
+                                            : AppColors.primaryGreen,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  l10n.newRemaining,
+                                  l10n.afterAdding,
                                   style: const TextStyle(
-                                    color: AppColors.textWhite,
-                                    fontSize: 16,
+                                    color: AppColors.primaryBlue,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
                                 Text(
-                                  '\$${newRemaining.toStringAsFixed(2)}',
+                                  '\$${predictedRemaining.toStringAsFixed(2)}',
                                   style: TextStyle(
                                     color:
-                                        newRemaining < 0
+                                        predictedRemaining < 0
                                             ? AppColors.errorRed
                                             : AppColors.primaryGreen,
-                                    fontSize: 20,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
                               ],
                             ),
-                            if (newRemaining < 0)
+                            if (predictedRemaining < 0)
                               Padding(
-                                padding: const EdgeInsets.only(top: 8),
+                                padding: const EdgeInsets.only(top: 12),
                                 child: Row(
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.warning_rounded,
                                       color: AppColors.errorRed,
                                       size: 16,
@@ -319,7 +373,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
-                                        l10n.budgetExceededWarning,
+                                        l10n.budgetWillBeExceeded,
                                         style: const TextStyle(
                                           color: AppColors.errorRed,
                                           fontSize: 13,

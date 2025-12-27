@@ -40,8 +40,53 @@ class HistoryScreen extends StatelessWidget {
       body: SafeArea(
         child: Consumer<BudgetProvider>(
           builder: (context, budgetProvider, child) {
+            // Handle loading state
+            if (budgetProvider.historyLoading) {
+              return const Center(
+                child: CircularProgressIndicator(color: AppColors.primaryBlue),
+              );
+            }
+
+            // Handle error state
+            if (budgetProvider.historyError != null) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: AppColors.errorRed,
+                        size: 64,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Error al cargar el historial',
+                        style: TextStyle(
+                          color: AppColors.textWhite,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        budgetProvider.historyError!,
+                        style: const TextStyle(
+                          color: AppColors.textGray,
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
             final history = budgetProvider.budgetHistory;
 
+            // Handle empty state
             if (history.isEmpty) {
               return Center(
                 child: Column(
@@ -85,403 +130,280 @@ class HistoryScreen extends StatelessWidget {
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final period = history[index];
-                // Obtener el presupuesto correcto basado en el budgetId del período
+
+                // Get budget data from backend - no fallback/invention
                 final budget = budgetProvider.budgets.firstWhere(
                   (b) => b.id == period.budgetId,
-                  orElse:
-                      () =>
-                          budgetProvider.budgets.isNotEmpty
-                              ? budgetProvider.budgets.first
-                              : BudgetModel(
-                                id: '',
-                                name: '',
-                                ownerId: '',
-                                type: BudgetType.personal,
-                                budgetAmount: 0,
-                                budgetPeriod: BudgetPeriod.monthly,
-                                createdAt: DateTime.now(),
-                              ),
+                  orElse: () => null as BudgetModel,
                 );
-                final budgetAmount = budget.budgetAmount;
-                final percentage =
-                    budgetAmount > 0
-                        ? (period.totalSpent / budgetAmount) * 100
-                        : 0;
 
-                return Dismissible(
-                  key: Key(period.id),
-                  direction: DismissDirection.endToStart,
-                  background: Container(
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 24),
-                    decoration: BoxDecoration(
-                      color: AppColors.errorRed,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Icon(
-                      Icons.delete,
-                      color: AppColors.textWhite,
-                      size: 28,
+                // If budget not found, skip rendering this history item
+                if (budget == null) {
+                  return const SizedBox.shrink();
+                }
+
+                // Use percentage from backend, not calculated in UI
+                final percentage = period.percentageUsed ?? 0.0;
+                final budgetAmount = budget.budgetAmount;
+
+                return Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkCard,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color:
+                          percentage > 100
+                              ? AppColors.errorRed.withOpacity(0.3)
+                              : Colors.transparent,
+                      width: 1,
                     ),
                   ),
-                  confirmDismiss: (direction) async {
-                    return await showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          backgroundColor: AppColors.darkCard,
-                          title: const Text(
-                            'Eliminar período',
-                            style: TextStyle(color: AppColors.textWhite),
-                          ),
-                          content: Text(
-                            '¿Estás seguro de que quieres eliminar este período del historial?',
-                            style: TextStyle(color: AppColors.textGray),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
-                              child: const Text('Cancelar'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.of(context).pop(true),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.errorRed,
-                              ),
-                              child: const Text('Eliminar'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  onDismissed: (direction) {
-                    budgetProvider.deleteBudgetHistory(period.id);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Período eliminado del historial'),
-                        backgroundColor: AppColors.errorRed,
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.darkCard,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color:
-                            percentage > 100
-                                ? AppColors.errorRed.withOpacity(0.3)
-                                : Colors.transparent,
-                        width: 1,
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Información del presupuesto
-                        Consumer<BudgetProvider>(
-                          builder: (context, provider, child) {
-                            final budget = provider.budgets.firstWhere(
-                              (b) => b.id == period.budgetId,
-                              orElse: () => provider.budgets.first,
-                            );
-
-                            return Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Información del presupuesto
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        budget.name,
-                                        style: const TextStyle(
-                                          color: AppColors.textWhite,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                Text(
+                                  budget.name,
+                                  style: const TextStyle(
+                                    color: AppColors.textWhite,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      budget.type == BudgetType.personal
+                                          ? Icons.person_outline
+                                          : Icons.group_outlined,
+                                      size: 14,
+                                      color: AppColors.textGray,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      budget.type == BudgetType.personal
+                                          ? l10n.personal
+                                          : l10n.shared,
+                                      style: const TextStyle(
+                                        color: AppColors.textGray,
+                                        fontSize: 12,
                                       ),
-                                      const SizedBox(height: 4),
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            budget.type == BudgetType.personal
-                                                ? Icons.person_outline
-                                                : Icons.group_outlined,
-                                            size: 14,
-                                            color: AppColors.textGray,
-                                          ),
-                                          const SizedBox(width: 6),
-                                          Text(
-                                            budget.type == BudgetType.personal
-                                                ? l10n.personal
-                                                : l10n.shared,
-                                            style: TextStyle(
-                                              color: AppColors.textGray,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Período
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.darkBackground,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.calendar_today,
+                                  size: 14,
+                                  color: AppColors.primaryBlue,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  _formatPeriod(
+                                    period.periodStart,
+                                    period.periodEnd,
+                                  ),
+                                  style: TextStyle(
+                                    color: AppColors.textWhite,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
-                            );
-                          },
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Período
-                        Row(
-                          children: [
+                            ),
+                          ),
+                          const Spacer(),
+                          // Badge de estado
+                          if (percentage > 100)
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
+                                horizontal: 10,
+                                vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.darkBackground,
-                                borderRadius: BorderRadius.circular(8),
+                                color: AppColors.errorRed.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(6),
                               ),
                               child: Row(
                                 children: [
                                   Icon(
-                                    Icons.calendar_today,
-                                    size: 14,
-                                    color: AppColors.primaryBlue,
+                                    Icons.warning_rounded,
+                                    size: 12,
+                                    color: AppColors.errorRed,
                                   ),
-                                  const SizedBox(width: 8),
+                                  const SizedBox(width: 4),
                                   Text(
-                                    _formatPeriod(
-                                      period.periodStart,
-                                      period.periodEnd,
-                                    ),
+                                    l10n.exceeded,
                                     style: TextStyle(
-                                      color: AppColors.textWhite,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.errorRed,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else if (percentage >= 90)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.warningAmber.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                l10n.nearLimit,
+                                style: TextStyle(
+                                  color: AppColors.warningAmber,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.success.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.check_circle,
+                                    size: 12,
+                                    color: AppColors.success,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    l10n.underControl,
+                                    style: TextStyle(
+                                      color: AppColors.success,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            const Spacer(),
-                            // Badge de estado
-                            if (percentage > 100)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.errorRed.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.warning_rounded,
-                                      size: 12,
-                                      color: AppColors.errorRed,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      l10n.exceeded,
-                                      style: TextStyle(
-                                        color: AppColors.errorRed,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            else if (percentage >= 90)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.warningAmber.withOpacity(
-                                    0.2,
-                                  ),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  l10n.nearLimit,
-                                  style: TextStyle(
-                                    color: AppColors.warningAmber,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              )
-                            else
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.success.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.check_circle,
-                                      size: 12,
-                                      color: AppColors.success,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      l10n.underControl,
-                                      style: TextStyle(
-                                        color: AppColors.success,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                          ],
-                        ),
+                        ],
+                      ),
 
-                        const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                        // Total gastado
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.totalSpentLabel,
-                                  style: TextStyle(
-                                    color: AppColors.textGray,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '\$${period.totalSpent.toStringAsFixed(2)}',
-                                  style: TextStyle(
-                                    color:
-                                        percentage > 100
-                                            ? AppColors.errorRed
-                                            : AppColors.textWhite,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  l10n.ofAmount(
-                                    '\$${budgetAmount.toStringAsFixed(2)}',
-                                  ),
-                                  style: TextStyle(
-                                    color: AppColors.textGray,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${percentage.toStringAsFixed(1)}%',
-                                  style: TextStyle(
-                                    color:
-                                        percentage > 100
-                                            ? AppColors.errorRed
-                                            : percentage >= 70
-                                            ? AppColors.warningAmber
-                                            : AppColors.primaryGreen,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Barra de progreso
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: LinearProgressIndicator(
-                            value: percentage > 100 ? 1.0 : percentage / 100,
-                            backgroundColor: AppColors.darkBackground,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              percentage > 100
-                                  ? AppColors.errorRed
-                                  : percentage >= 70
-                                  ? AppColors.warningAmber
-                                  : AppColors.primaryGreen,
-                            ),
-                            minHeight: 10,
-                          ),
-                        ),
-
-                        // Diferencia
-                        if (percentage > 100) ...[
-                          const SizedBox(height: 12),
-                          Row(
+                      // Total gastado
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.arrow_upward,
-                                size: 14,
-                                color: AppColors.errorRed,
-                              ),
-                              const SizedBox(width: 6),
                               Text(
-                                l10n.exceededBy(
-                                  '\$${(period.totalSpent - budgetAmount).toStringAsFixed(2)}',
-                                ),
+                                l10n.totalSpentLabel,
                                 style: TextStyle(
-                                  color: AppColors.errorRed,
+                                  color: AppColors.textGray,
                                   fontSize: 13,
-                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '\$${period.totalSpent.toStringAsFixed(2)}',
+                                style: TextStyle(
+                                  color:
+                                      percentage > 100
+                                          ? AppColors.errorRed
+                                          : AppColors.textWhite,
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ],
                           ),
-                        ] else if (budgetAmount - period.totalSpent > 0) ...[
-                          const SizedBox(height: 12),
-                          Row(
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Icon(
-                                Icons.savings_outlined,
-                                size: 14,
-                                color: AppColors.primaryGreen,
-                              ),
-                              const SizedBox(width: 6),
                               Text(
-                                l10n.saved(
-                                  '\$${(budgetAmount - period.totalSpent).toStringAsFixed(2)}',
+                                l10n.ofAmount(
+                                  '\$${budgetAmount.toStringAsFixed(2)}',
                                 ),
                                 style: TextStyle(
-                                  color: AppColors.primaryGreen,
+                                  color: AppColors.textGray,
                                   fontSize: 13,
-                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${percentage.toStringAsFixed(1)}%',
+                                style: TextStyle(
+                                  color:
+                                      percentage > 100
+                                          ? AppColors.errorRed
+                                          : percentage >= 70
+                                          ? AppColors.warningAmber
+                                          : AppColors.primaryGreen,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ],
                           ),
                         ],
-                      ],
-                    ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Barra de progreso
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: LinearProgressIndicator(
+                          value: percentage > 100 ? 1.0 : percentage / 100,
+                          backgroundColor: AppColors.darkBackground,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            percentage > 100
+                                ? AppColors.errorRed
+                                : percentage >= 70
+                                ? AppColors.warningAmber
+                                : AppColors.primaryGreen,
+                          ),
+                          minHeight: 10,
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },

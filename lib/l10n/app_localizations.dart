@@ -998,6 +998,24 @@ abstract class AppLocalizations {
   /// **'Logout'**
   String get logout;
 
+  /// No description provided for @logoutConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout?'**
+  String get logoutConfirmTitle;
+
+  /// No description provided for @logoutConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to logout?'**
+  String get logoutConfirmMessage;
+
+  /// No description provided for @logoutError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error logging out'**
+  String get logoutError;
+
   /// No description provided for @history.
   ///
   /// In en, this message translates to:
@@ -2065,6 +2083,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Members haven\'t completed any items in this budget yet'**
   String get noMemberExpensesDescription;
+
+  /// No description provided for @errorLoadingBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading budget'**
+  String get errorLoadingBudget;
+
+  /// No description provided for @budgetNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget not found'**
+  String get budgetNotFound;
+
+  /// No description provided for @errorAddingItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Error adding item'**
+  String get errorAddingItem;
+
+  /// No description provided for @currentBudgetStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Budget Status'**
+  String get currentBudgetStatus;
+
+  /// No description provided for @currentRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Remaining'**
+  String get currentRemaining;
+
+  /// No description provided for @afterAdding.
+  ///
+  /// In en, this message translates to:
+  /// **'After adding this item'**
+  String get afterAdding;
+
+  /// No description provided for @budgetWillBeExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'This item will exceed your budget'**
+  String get budgetWillBeExceeded;
+
+  /// No description provided for @errorUpdatingBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Error updating budget'**
+  String get errorUpdatingBudget;
+
+  /// No description provided for @currentBudgetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Budget'**
+  String get currentBudgetLabel;
+
+  /// No description provided for @newRemainingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New Remaining'**
+  String get newRemainingLabel;
+
+  /// No description provided for @budgetLowerThanSpent.
+  ///
+  /// In en, this message translates to:
+  /// **'The new budget is lower than current spending'**
+  String get budgetLowerThanSpent;
 }
 
 class _AppLocalizationsDelegate

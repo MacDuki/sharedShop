@@ -24,48 +24,13 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
 
-  int _calculateRemainingDays(BudgetModel budget) {
-    final now = DateTime.now();
-    DateTime endDate;
-
-    switch (budget.budgetPeriod) {
-      case BudgetPeriod.weekly:
-        // Calcular el último día de la semana (domingo)
-        final daysUntilSunday = DateTime.sunday - now.weekday;
-        endDate = now.add(
-          Duration(
-            days: daysUntilSunday >= 0 ? daysUntilSunday : daysUntilSunday + 7,
-          ),
-        );
-        endDate = DateTime(
-          endDate.year,
-          endDate.month,
-          endDate.day,
-          23,
-          59,
-          59,
-        );
-        break;
-      case BudgetPeriod.monthly:
-        // Último día del mes
-        endDate = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
-        break;
-      case BudgetPeriod.custom:
-        // Para custom, asumimos fin de mes por defecto
-        endDate = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
-        break;
-    }
-
-    final difference = endDate.difference(now);
-    return difference.inDays + 1; // +1 para incluir el día actual
-  }
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final budgetProvider = context.read<BudgetProvider>();
-      budgetProvider.initializeHousehold();
+      // Fetch budgets from backend via provider
+      budgetProvider.fetchUserBudgets();
     });
   }
 
@@ -80,17 +45,67 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: SafeArea(
         child: Consumer<BudgetProvider>(
           builder: (context, budgetProvider, child) {
-            final household = budgetProvider.household;
             final activeBudget = budgetProvider.activeBudget;
+            final isLoading = budgetProvider.activeBudgetLoading;
+            final error = budgetProvider.activeBudgetError;
 
-            if (household == null || activeBudget == null) {
+            // Loading state
+            if (isLoading) {
               return const Center(
                 child: CircularProgressIndicator(color: AppColors.primaryBlue),
               );
             }
 
-            final remainingPercentage = 100 - budgetProvider.budgetPercentage;
-            final daysLeft = _calculateRemainingDays(activeBudget);
+            // Error state
+            if (error != null) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: AppColors.errorRed,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Error: $error',
+                      style: theme.textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // Empty state
+            if (activeBudget == null) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.account_balance_wallet_outlined,
+                      size: 48,
+                      color: AppColors.textGray,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No budget available',
+                      style: theme.textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // Data from backend - no calculations in UI
+            final remainingBudget = activeBudget.remaining ?? 0.0;
+            final totalSpent = activeBudget.totalSpent ?? 0.0;
+            final percentageUsed = activeBudget.percentageUsed ?? 0.0;
+            final budgetTotal = activeBudget.budgetAmount;
+            final daysLeft = activeBudget.daysRemaining ?? 0;
 
             return Column(
               children: [
@@ -120,7 +135,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Text(
                                 l10n.dashboardGreeting(
                                   budgetProvider.currentUser?.name ??
-                                      household.name,
+                                      activeBudget.name,
                                 ),
                                 style: theme.textTheme.displayMedium?.copyWith(
                                   fontSize: 28,
@@ -377,7 +392,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                '\$${budgetProvider.remainingBudget.toStringAsFixed(2)}',
+                                '\$${remainingBudget.toStringAsFixed(2)}',
                                 style: theme.textTheme.displayLarge?.copyWith(
                                   fontSize: 64,
                                   fontWeight: FontWeight.bold,
@@ -387,6 +402,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               const SizedBox(height: 16),
 
                               // Items comprados/pendientes Badge (clickeable)
+                              // Data comes from provider - no business logic in UI
                               Builder(
                                 builder: (context) {
                                   final allItems = budgetProvider.shoppingItems;
@@ -398,19 +414,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       allItems.length - purchasedItems;
                                   final totalItems = allItems.length;
 
-                                  // Calcular color basado en la proporción
-                                  Color badgeColor;
-                                  if (totalItems == 0) {
-                                    badgeColor = AppColors.textGray;
-                                  } else if (pendingItems == 0) {
-                                    badgeColor = AppColors.success;
-                                  } else if (pendingItems <= totalItems * 0.3) {
-                                    badgeColor = AppColors.primaryGreen;
-                                  } else if (pendingItems <= totalItems * 0.5) {
-                                    badgeColor = AppColors.warningAmber;
-                                  } else {
-                                    badgeColor = AppColors.errorRed;
-                                  }
+                                  // Simple color indicator - complex rules should be in backend/provider
+                                  Color badgeColor =
+                                      totalItems == 0
+                                          ? AppColors.textGray
+                                          : (pendingItems == 0
+                                              ? AppColors.success
+                                              : AppColors.primaryBlue);
 
                                   return InkWell(
                                     onTap: () {
@@ -478,14 +488,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                               const SizedBox(height: 32),
 
-                              // Progress Bar
+                              // Progress Bar - data from backend
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     l10n.percentageRemaining(
-                                      remainingPercentage.toStringAsFixed(0),
+                                      (100 - percentageUsed).toStringAsFixed(0),
                                     ),
                                     style: const TextStyle(
                                       fontSize: 14,
@@ -495,9 +505,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ),
                                   Text(
                                     l10n.amountSpent(
-                                      budgetProvider.totalSpent.toStringAsFixed(
-                                        2,
-                                      ),
+                                      totalSpent.toStringAsFixed(2),
                                     ),
                                     style: theme.textTheme.bodyMedium,
                                   ),
@@ -507,16 +515,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: LinearProgressIndicator(
-                                  value: budgetProvider.budgetPercentage / 100,
+                                  value: percentageUsed / 100,
                                   minHeight: 10,
                                   backgroundColor:
                                       theme.brightness == Brightness.dark
                                           ? AppColors.darkCardSecondary
                                           : Colors.grey.shade300,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    _getProgressBarColor(
-                                      budgetProvider.budgetPercentage,
-                                    ),
+                                    _getProgressBarColor(percentageUsed),
                                   ),
                                 ),
                               ),
@@ -537,8 +543,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   0.15,
                                 ),
                                 title: l10n.total,
-                                value:
-                                    '\$${activeBudget.budgetAmount.toStringAsFixed(0)}',
+                                value: '\$${budgetTotal.toStringAsFixed(0)}',
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -720,6 +725,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  // Pure presentation logic - maps backend data to Flutter widgets
   Color _getBudgetColor(BudgetModel budget) {
     if (budget.colorHex != null) {
       try {
@@ -733,6 +739,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         : AppColors.primaryPurple;
   }
 
+  // Pure presentation logic - maps backend iconName to Flutter IconData
   IconData _getBudgetIcon(BudgetModel budget) {
     if (budget.iconName != null) {
       switch (budget.iconName) {
@@ -755,6 +762,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         : Icons.people_outline;
   }
 
+  // Pure presentation logic - maps percentage to color
+  // Business rules about when budget is critical should come from backend 'status' field
   Color _getProgressBarColor(double percentage) {
     if (percentage >= 90) {
       return AppColors.errorRed;
@@ -847,6 +856,7 @@ class _NotificationItem extends StatelessWidget {
 
   const _NotificationItem({required this.notification, required this.onDelete});
 
+  // Pure presentation logic - maps notification type to icon
   IconData _getIcon() {
     switch (notification.type) {
       case NotificationType.budgetUpdated:
@@ -866,6 +876,7 @@ class _NotificationItem extends StatelessWidget {
     }
   }
 
+  // Pure presentation logic - maps notification type to color
   Color _getIconColor() {
     switch (notification.type) {
       case NotificationType.budgetUpdated:
@@ -885,6 +896,7 @@ class _NotificationItem extends StatelessWidget {
     }
   }
 
+  // Pure presentation logic - formats date as relative time
   String _getTimeAgo(BuildContext context, DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);

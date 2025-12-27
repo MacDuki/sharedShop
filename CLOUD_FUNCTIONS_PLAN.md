@@ -30,7 +30,6 @@ Este documento define el **100% de las Cloud Functions** necesarias para el sist
 - **Functions Críticas:** 8
 - **Functions de Soporte:** 10
 - **Functions de Automatización:** 7
-- **Tiempo Estimado Total:** 12-16 semanas
 
 ---
 

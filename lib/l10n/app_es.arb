@@ -233,6 +233,9 @@
   "privacyPolicy": "Política de Privacidad",
   "termsOfService": "Términos de Servicio",
   "logout": "Cerrar sesión",
+  "logoutConfirmTitle": "¿Cerrar sesión?",
+  "logoutConfirmMessage": "¿Estás seguro de que quieres cerrar sesión?",
+  "logoutError": "Error al cerrar sesión",
   
   "history": "HISTORIAL",
   "historyTitle": "Historial",
@@ -520,5 +523,17 @@
     }
   },
   "noMemberExpenses": "Sin gastos registrados",
-  "noMemberExpensesDescription": "Los miembros aún no han completado ítems en este presupuesto"
+  "noMemberExpensesDescription": "Los miembros aún no han completado ítems en este presupuesto",
+  
+  "errorLoadingBudget": "Error al cargar presupuesto",
+  "budgetNotFound": "Presupuesto no encontrado",
+  "errorAddingItem": "Error al agregar ítem",
+  "currentBudgetStatus": "Estado Actual del Presupuesto",
+  "currentRemaining": "Restante Actual",
+  "afterAdding": "Después de agregar este ítem",
+  "budgetWillBeExceeded": "Este ítem excederá tu presupuesto",
+  "errorUpdatingBudget": "Error al actualizar presupuesto",
+  "currentBudgetLabel": "Presupuesto Actual",
+  "newRemainingLabel": "Nuevo Restante",
+  "budgetLowerThanSpent": "El nuevo presupuesto es menor que el gasto actual"
 }

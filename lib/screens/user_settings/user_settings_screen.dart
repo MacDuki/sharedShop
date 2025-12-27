@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../state/state.dart';
 import '../../utils/app_colors.dart';
+import '../auth/auth_wrapper.dart';
 
 class UserSettingsScreen extends StatefulWidget {
   const UserSettingsScreen({super.key});
@@ -18,6 +20,71 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
 
   String _getLanguageDisplayName(String languageCode) {
     return languageCode == 'es' ? 'Español' : 'English';
+  }
+
+  Future<void> _handleLogout() async {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: theme.cardTheme.color,
+            title: Text(
+              l10n.logoutConfirmTitle,
+              style: theme.textTheme.headlineSmall,
+            ),
+            content: Text(
+              l10n.logoutConfirmMessage,
+              style: theme.textTheme.bodyMedium,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.errorRed,
+                ),
+                child: Text(l10n.logout),
+              ),
+            ],
+          ),
+    );
+
+    if (confirm == true && mounted) {
+      try {
+        // Cerrar sesión de Google Sign-In primero (si está logueado con Google)
+        final googleSignIn = GoogleSignIn();
+        if (await googleSignIn.isSignedIn()) {
+          await googleSignIn.signOut();
+        }
+
+        // Cerrar sesión de Firebase Auth
+        await FirebaseAuth.instance.signOut();
+
+        // Navegar de vuelta al AuthWrapper eliminando toda la pila de navegación
+        if (mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const AuthWrapper()),
+            (route) => false,
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${l10n.logoutError}: ${e.toString()}'),
+              backgroundColor: AppColors.errorRed,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
+      }
+    }
   }
 
   void _changeProfilePhoto() {
@@ -443,6 +510,38 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
                       ),
                     ),
                   ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Botón de cerrar sesión
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _handleLogout,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.errorRed,
+                    foregroundColor: AppColors.textWhite,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.logout, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        AppLocalizations.of(context)!.logout,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

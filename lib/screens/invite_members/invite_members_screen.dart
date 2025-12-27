@@ -15,124 +15,89 @@ class InviteMembersScreen extends StatefulWidget {
 }
 
 class _InviteMembersScreenState extends State<InviteMembersScreen> {
-  String? _inviteCode;
-  bool _isGeneratingCode = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _generateInviteCode();
+  void _copyToClipboard(String inviteCode) {
+    Clipboard.setData(ClipboardData(text: inviteCode));
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.inviteCodeCopied),
+        backgroundColor: AppColors.success,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
-  void _generateInviteCode() {
-    setState(() => _isGeneratingCode = true);
+  void _shareInvite(String inviteCode, BudgetType? budgetType) {
+    final l10n = AppLocalizations.of(context)!;
 
-    // Simulación de generación de código (en producción vendría del backend)
-    final budgetProvider = context.read<BudgetProvider>();
-    final householdId = budgetProvider.household?.id ?? '';
-
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        setState(() {
-          _inviteCode =
-              'GROCERY-${householdId.toUpperCase()}-${DateTime.now().millisecondsSinceEpoch % 10000}';
-          _isGeneratingCode = false;
-        });
-      }
-    });
-  }
-
-  void _copyToClipboard() {
-    if (_inviteCode != null) {
-      Clipboard.setData(ClipboardData(text: _inviteCode!));
-      final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.inviteCodeCopied),
-          backgroundColor: AppColors.success,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
-  }
-
-  void _shareInvite() {
-    if (_inviteCode != null) {
-      final l10n = AppLocalizations.of(context)!;
-      final budgetProvider = context.read<BudgetProvider>();
-      final activeBudget = budgetProvider.activeBudget;
-
-      // Si el presupuesto es personal, mostrar advertencia
-      if (activeBudget?.type == BudgetType.personal) {
-        showDialog(
-          context: context,
-          builder:
-              (context) => AlertDialog(
-                backgroundColor: AppColors.darkCard,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                title: Text(
-                  l10n.personalProjectWarningTitle,
-                  style: const TextStyle(
-                    color: AppColors.textWhite,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                content: Text(
-                  l10n.personalProjectWarning,
-                  style: const TextStyle(
-                    color: AppColors.textGray,
-                    fontSize: 15,
-                    height: 1.5,
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text(
-                      l10n.cancel,
-                      style: const TextStyle(color: AppColors.textGray),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      _executeShare();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.warningAmber,
-                      foregroundColor: AppColors.darkBackground,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(l10n.continueButton),
-                  ),
-                ],
+    // Si el presupuesto es personal, mostrar advertencia
+    if (budgetType == BudgetType.personal) {
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              backgroundColor: AppColors.darkCard,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-        );
-      } else {
-        _executeShare();
-      }
+              title: Text(
+                l10n.personalProjectWarningTitle,
+                style: const TextStyle(
+                  color: AppColors.textWhite,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              content: Text(
+                l10n.personalProjectWarning,
+                style: const TextStyle(
+                  color: AppColors.textGray,
+                  fontSize: 15,
+                  height: 1.5,
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    l10n.cancel,
+                    style: const TextStyle(color: AppColors.textGray),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _executeShare(inviteCode);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.warningAmber,
+                    foregroundColor: AppColors.darkBackground,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text(l10n.continueButton),
+                ),
+              ],
+            ),
+      );
+    } else {
+      _executeShare(inviteCode);
     }
   }
 
-  void _executeShare() {
-    if (_inviteCode != null) {
-      // TODO: Implementar share real con share_plus package
-      final l10n = AppLocalizations.of(context)!;
-      final message = l10n.joinGroupMessage(_inviteCode!);
-      Clipboard.setData(ClipboardData(text: message));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.inviteMessageCopied),
-          backgroundColor: AppColors.success,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
+  void _executeShare(String inviteCode) {
+    // TODO: Implementar share real con share_plus package
+    final l10n = AppLocalizations.of(context)!;
+    final message = l10n.joinGroupMessage(inviteCode);
+    Clipboard.setData(ClipboardData(text: message));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.inviteMessageCopied),
+        backgroundColor: AppColors.success,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   @override
@@ -159,17 +124,86 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
       body: SafeArea(
         child: Consumer<BudgetProvider>(
           builder: (context, budgetProvider, child) {
+            // Handle loading state
+            if (budgetProvider.activeBudgetLoading ||
+                budgetProvider.membersLoading) {
+              return const Center(
+                child: CircularProgressIndicator(color: AppColors.primaryBlue),
+              );
+            }
+
+            // Handle error state
+            if (budgetProvider.activeBudgetError != null) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: AppColors.errorRed,
+                        size: 64,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Error al cargar los datos',
+                        style: TextStyle(
+                          color: AppColors.textWhite,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        budgetProvider.activeBudgetError!,
+                        style: const TextStyle(
+                          color: AppColors.textGray,
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
             final activeBudget = budgetProvider.activeBudget;
-            // Filtrar solo los miembros que pertenecen al presupuesto activo
-            final members =
-                activeBudget != null
-                    ? budgetProvider.householdMembers
-                        .where(
-                          (member) =>
-                              activeBudget.memberIds.contains(member.id),
-                        )
-                        .toList()
-                    : <UserModel>[];
+
+            // Handle null budget
+            if (activeBudget == null) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.inbox_outlined,
+                        color: AppColors.textGray,
+                        size: 64,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'No hay presupuesto activo',
+                        style: TextStyle(
+                          color: AppColors.textWhite,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            // Use budgetMembers from provider (already filtered by active budget)
+            final members = budgetProvider.budgetMembers;
+
+            // Generate invite code from budget ID (temporary solution until backend provides it)
+            final inviteCode = 'BUDGET-${activeBudget.id.toUpperCase()}';
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(24),
@@ -251,83 +285,82 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                     ),
                     child: Column(
                       children: [
-                        if (_isGeneratingCode)
-                          const CircularProgressIndicator(
-                            color: AppColors.primaryBlue,
-                          )
-                        else if (_inviteCode != null) ...[
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 16,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.darkBackground,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    _inviteCode!,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: AppColors.primaryBlue,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
-                                      letterSpacing: 1.5,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
                           ),
-                          const SizedBox(height: 16),
-                          Row(
+                          decoration: BoxDecoration(
+                            color: AppColors.darkBackground,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: _copyToClipboard,
-                                  icon: const Icon(Icons.copy, size: 18),
-                                  label: Text(l10n.copy),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: AppColors.primaryBlue,
-                                    side: const BorderSide(
-                                      color: AppColors.primaryBlue,
-                                      width: 1,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  onPressed: _shareInvite,
-                                  icon: const Icon(Icons.share, size: 18),
-                                  label: Text(l10n.share),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primaryBlue,
-                                    foregroundColor: AppColors.textWhite,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
-                                    ),
-                                    elevation: 0,
+                                child: Text(
+                                  inviteCode,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: AppColors.primaryBlue,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 1.5,
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                        ],
+                        ),
+                        const SizedBox(height: 16),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: () => _copyToClipboard(inviteCode),
+                                icon: const Icon(Icons.copy, size: 18),
+                                label: Text(l10n.copy),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppColors.primaryBlue,
+                                  side: const BorderSide(
+                                    color: AppColors.primaryBlue,
+                                    width: 1,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed:
+                                    () => _shareInvite(
+                                      inviteCode,
+                                      activeBudget.type,
+                                    ),
+                                icon: const Icon(Icons.share, size: 18),
+                                label: Text(l10n.share),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primaryBlue,
+                                  foregroundColor: AppColors.textWhite,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  elevation: 0,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -360,14 +393,12 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          budgetProvider.activeBudget?.type ==
-                                  BudgetType.personal
+                          activeBudget.type == BudgetType.personal
                               ? l10n.privateProject
-                              : '${budgetProvider.activeBudget?.memberIds.length ?? 0}',
+                              : '${members.length}',
                           style: TextStyle(
                             color:
-                                budgetProvider.activeBudget?.type ==
-                                        BudgetType.personal
+                                activeBudget.type == BudgetType.personal
                                     ? AppColors.primaryPurple
                                     : AppColors.primaryBlue,
                             fontSize: 13,
@@ -380,7 +411,7 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                   const SizedBox(height: 16),
 
                   // Si es presupuesto personal, mostrar mensaje
-                  if (budgetProvider.activeBudget?.type == BudgetType.personal)
+                  if (activeBudget.type == BudgetType.personal)
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -461,12 +492,8 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
                     )
                   else
                     ...members.map((member) {
-                      final activeBudget = budgetProvider.activeBudget;
-                      final isOwner =
-                          activeBudget != null &&
-                          member.id == activeBudget.ownerId;
+                      final isOwner = member.id == activeBudget.ownerId;
                       final canRemove =
-                          activeBudget != null &&
                           !isOwner &&
                           budgetProvider.currentUser?.id ==
                               activeBudget.ownerId;
@@ -641,28 +668,40 @@ class _InviteMembersScreenState extends State<InviteMembersScreen> {
               child: Text(AppLocalizations.of(context)!.cancel),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 final updatedBudget = budget.copyWith(
                   memberIds:
                       budget.memberIds.where((id) => id != member.id).toList(),
                 );
-                budgetProvider.updateBudgetData(updatedBudget);
 
-                budgetProvider.addMemberRemovedNotification(
-                  member.name,
-                  budget.name,
-                );
+                try {
+                  await budgetProvider.updateBudgetData(updatedBudget);
 
-                Navigator.of(context).pop();
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${member.name} ${AppLocalizations.of(context)!.removedSuccessfully}',
-                    ),
-                    backgroundColor: AppColors.success,
-                  ),
-                );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          '${member.name} ${AppLocalizations.of(context)!.removedSuccessfully}',
+                        ),
+                        backgroundColor: AppColors.success,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Error al eliminar miembro: ${e.toString()}',
+                        ),
+                        backgroundColor: AppColors.errorRed,
+                      ),
+                    );
+                  }
+                }
               },
               child: Text(
                 AppLocalizations.of(context)!.remove,

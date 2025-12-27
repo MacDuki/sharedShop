@@ -18,6 +18,13 @@ class BudgetModel {
   final List<String> memberIds;
   final bool isActive;
 
+  // Calculated fields from backend
+  final double? totalSpent;
+  final double? remaining;
+  final double? percentageUsed;
+  final String? status;
+  final int? daysRemaining;
+
   BudgetModel({
     required this.id,
     required this.name,
@@ -33,6 +40,11 @@ class BudgetModel {
     this.colorHex,
     this.memberIds = const [],
     this.isActive = true,
+    this.totalSpent,
+    this.remaining,
+    this.percentageUsed,
+    this.status,
+    this.daysRemaining,
   });
 
   factory BudgetModel.fromJson(Map<String, dynamic> json) {
@@ -67,6 +79,20 @@ class BudgetModel {
               .toList() ??
           [],
       isActive: json['isActive'] as bool? ?? true,
+      totalSpent:
+          json['totalSpent'] != null
+              ? (json['totalSpent'] as num).toDouble()
+              : null,
+      remaining:
+          json['remaining'] != null
+              ? (json['remaining'] as num).toDouble()
+              : null,
+      percentageUsed:
+          json['percentageUsed'] != null
+              ? (json['percentageUsed'] as num).toDouble()
+              : null,
+      status: json['status'] as String?,
+      daysRemaining: json['daysRemaining'] as int?,
     );
   }
 
@@ -86,6 +112,11 @@ class BudgetModel {
       'colorHex': colorHex,
       'memberIds': memberIds,
       'isActive': isActive,
+      'totalSpent': totalSpent,
+      'remaining': remaining,
+      'percentageUsed': percentageUsed,
+      'status': status,
+      'daysRemaining': daysRemaining,
     };
   }
 
@@ -104,6 +135,11 @@ class BudgetModel {
     String? colorHex,
     List<String>? memberIds,
     bool? isActive,
+    double? totalSpent,
+    double? remaining,
+    double? percentageUsed,
+    String? status,
+    int? daysRemaining,
   }) {
     return BudgetModel(
       id: id ?? this.id,
@@ -120,6 +156,11 @@ class BudgetModel {
       colorHex: colorHex ?? this.colorHex,
       memberIds: memberIds ?? this.memberIds,
       isActive: isActive ?? this.isActive,
+      totalSpent: totalSpent ?? this.totalSpent,
+      remaining: remaining ?? this.remaining,
+      percentageUsed: percentageUsed ?? this.percentageUsed,
+      status: status ?? this.status,
+      daysRemaining: daysRemaining ?? this.daysRemaining,
     );
   }
 }

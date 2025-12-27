@@ -3,6 +3,7 @@ export 'budget_invitation_model.dart';
 export 'budget_member_model.dart';
 export 'budget_model.dart';
 export 'household_model.dart';
+export 'member_expense_model.dart';
 export 'notification_model.dart';
 export 'shopping_item_model.dart';
 export 'user_model.dart';

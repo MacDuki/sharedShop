@@ -28,13 +28,13 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
   void initState() {
     super.initState();
     final budgetProvider = context.read<BudgetProvider>();
-    final household = budgetProvider.household;
+    final activeBudget = budgetProvider.activeBudget;
 
-    if (household != null) {
-      _budgetController.text = household.budgetAmount.toStringAsFixed(2);
-      _selectedPeriod = household.budgetPeriod as BudgetPeriod?;
-      _customStartDate = household.customPeriodStart;
-      _customEndDate = household.customPeriodEnd;
+    if (activeBudget != null) {
+      _budgetController.text = activeBudget.budgetAmount.toStringAsFixed(2);
+      _selectedPeriod = activeBudget.budgetPeriod;
+      _customStartDate = activeBudget.customPeriodStart;
+      _customEndDate = activeBudget.customPeriodEnd;
     }
 
     _budgetController.addListener(_onFieldChanged);
@@ -53,7 +53,7 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
     super.dispose();
   }
 
-  void _saveBudget() {
+  Future<void> _saveBudget() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -63,29 +63,62 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
       return;
     }
 
+    final budgetProvider = context.read<BudgetProvider>();
+    final activeBudget = budgetProvider.activeBudget;
+
+    if (activeBudget == null) {
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.budgetNotFound),
+          backgroundColor: AppColors.errorRed,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
-    final budgetProvider = context.read<BudgetProvider>();
     final newAmount = double.parse(_budgetController.text.trim());
 
-    budgetProvider.updateBudget(
+    // Create updated budget with new values
+    final updatedBudget = activeBudget.copyWith(
       budgetAmount: newAmount,
-      budgetPeriod: _selectedPeriod!,
+      budgetPeriod: _selectedPeriod,
       customPeriodStart: _customStartDate,
       customPeriodEnd: _customEndDate,
     );
 
-    final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.budgetUpdatedSuccess),
-        backgroundColor: AppColors.success,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    try {
+      await budgetProvider.updateBudgetData(updatedBudget);
 
-    setState(() => _isLoading = false);
-    Navigator.of(context).pop();
+      if (!mounted) return;
+
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.budgetUpdatedSuccess),
+          backgroundColor: AppColors.success,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+
+      Navigator.of(context).pop();
+    } catch (e) {
+      if (!mounted) return;
+
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorUpdatingBudget),
+          backgroundColor: AppColors.errorRed,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -599,12 +632,32 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                 const SizedBox(height: 32),
                 Consumer<BudgetProvider>(
                   builder: (context, budgetProvider, child) {
+                    final activeBudget = budgetProvider.activeBudget;
+
+                    if (activeBudget == null) {
+                      return const SizedBox.shrink();
+                    }
+
                     final currentBudget =
                         double.tryParse(_budgetController.text.trim()) ?? 0;
+
                     if (currentBudget > 0 && _hasChanges) {
-                      final totalSpent = budgetProvider.totalSpent;
-                      final newRemaining = currentBudget - totalSpent;
-                      final percentage = (totalSpent / currentBudget) * 100;
+                      // Use data from backend (no calculations)
+                      final totalSpent = activeBudget.totalSpent ?? 0.0;
+                      final currentRemaining = activeBudget.remaining ?? 0.0;
+
+                      // Predictive feedback (visual only, not business logic)
+                      final budgetDifference =
+                          currentBudget - activeBudget.budgetAmount;
+                      final predictedRemaining =
+                          currentRemaining + budgetDifference;
+                      final predictedPercentage =
+                          currentBudget > 0
+                              ? (totalSpent / currentBudget * 100).clamp(
+                                0.0,
+                                200.0,
+                              )
+                              : 0.0;
 
                       return Container(
                         padding: const EdgeInsets.all(16),
@@ -624,9 +677,31 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                               style: const TextStyle(
                                 color: AppColors.textGray,
                                 fontSize: 14,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                             const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  l10n.currentBudgetLabel,
+                                  style: const TextStyle(
+                                    color: AppColors.textWhite,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                Text(
+                                  '\$${activeBudget.budgetAmount.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    color: AppColors.textWhite,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -652,18 +727,18 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  l10n.remainingLabel,
+                                  l10n.newRemainingLabel,
                                   style: const TextStyle(
-                                    color: AppColors.textWhite,
+                                    color: AppColors.primaryBlue,
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 Text(
-                                  '\$${newRemaining.toStringAsFixed(2)}',
+                                  '\$${predictedRemaining.toStringAsFixed(2)}',
                                   style: TextStyle(
                                     color:
-                                        newRemaining < 0
+                                        predictedRemaining < 0
                                             ? AppColors.errorRed
                                             : AppColors.primaryGreen,
                                     fontSize: 18,
@@ -676,18 +751,41 @@ class _BudgetSettingsScreenState extends State<BudgetSettingsScreen> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: LinearProgressIndicator(
-                                value: percentage / 100,
+                                value: predictedPercentage / 100,
                                 backgroundColor: AppColors.darkBackground,
                                 valueColor: AlwaysStoppedAnimation<Color>(
-                                  percentage > 100
+                                  predictedPercentage > 100
                                       ? AppColors.errorRed
-                                      : percentage >= 70
+                                      : predictedPercentage >= 70
                                       ? AppColors.warningAmber
                                       : AppColors.primaryGreen,
                                 ),
                                 minHeight: 8,
                               ),
                             ),
+                            if (predictedRemaining < 0)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.warning_rounded,
+                                      color: AppColors.errorRed,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        l10n.budgetLowerThanSpent,
+                                        style: const TextStyle(
+                                          color: AppColors.errorRed,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                           ],
                         ),
                       );

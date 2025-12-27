@@ -5,6 +5,7 @@ class BudgetHistoryModel {
   final DateTime periodStart;
   final DateTime periodEnd;
   final double totalSpent;
+  final double? percentageUsed;
 
   BudgetHistoryModel({
     required this.id,
@@ -13,6 +14,7 @@ class BudgetHistoryModel {
     required this.periodStart,
     required this.periodEnd,
     required this.totalSpent,
+    this.percentageUsed,
   }) : householdId = householdId ?? budgetId ?? '',
        budgetId = budgetId ?? householdId ?? '';
 
@@ -24,6 +26,10 @@ class BudgetHistoryModel {
       periodStart: DateTime.parse(json['periodStart'] as String),
       periodEnd: DateTime.parse(json['periodEnd'] as String),
       totalSpent: (json['totalSpent'] as num).toDouble(),
+      percentageUsed:
+          json['percentageUsed'] != null
+              ? (json['percentageUsed'] as num).toDouble()
+              : null,
     );
   }
 
@@ -35,6 +41,7 @@ class BudgetHistoryModel {
       'periodStart': periodStart.toIso8601String(),
       'periodEnd': periodEnd.toIso8601String(),
       'totalSpent': totalSpent,
+      'percentageUsed': percentageUsed,
     };
   }
 
@@ -45,6 +52,7 @@ class BudgetHistoryModel {
     DateTime? periodStart,
     DateTime? periodEnd,
     double? totalSpent,
+    double? percentageUsed,
   }) {
     return BudgetHistoryModel(
       id: id ?? this.id,
@@ -53,6 +61,7 @@ class BudgetHistoryModel {
       periodStart: periodStart ?? this.periodStart,
       periodEnd: periodEnd ?? this.periodEnd,
       totalSpent: totalSpent ?? this.totalSpent,
+      percentageUsed: percentageUsed ?? this.percentageUsed,
     );
   }
 }
